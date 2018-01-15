@@ -57,11 +57,11 @@
                 data: '',
                 dataType: 'json',
                 success: function (r) {
-                    exchangeGroupProp = parseFloat(r[0].exchangeGroupProp/100);
+                    exchangeGroupProp = parseFloat(r[0].exchangeGroupProp / 100);
                     exchangeGroupPeriod = parseInt(r[0].exchangeGroupPeriod);
                     $('#span_exchangeGroupPeriod').html(exchangeGroupPeriod);
                     $('#span_ExchangeCountT').html(parseFloat($('input[name=ExchangeCount]').val()) * exchangeGroupPeriod);
-                    $('#spanGroupinfo').html('分时批量兑换规则:购买价格为兑换价格的' + r[0].exchangeGroupProp + '%,分' + exchangeGroupPeriod+'个月分批兑付。');
+                    $('#spanGroupinfo').html('分时批量兑换规则:购买价格为兑换价格的' + r[0].exchangeGroupProp + '%,分' + exchangeGroupPeriod + '个月分批兑付。');
                 }, error: function (r) {
                     showMsg('获取当前营业员的操作限额时发生错误 ！');
                 }
@@ -441,8 +441,8 @@
                 return false;
             }
 
-            //var GoodCount = $('input[name=ExchangeCount]').val();
-            var GoodCount = parseFloat($('input[name=ExchangeCount]').val()) * parseInt(exchangeGroupPeriod); //商品数量
+            var GoodCount = $('input[name=ExchangeCount]').val();//商品兑换额度只计算本月的
+            //var GoodCount = parseFloat($('input[name=ExchangeCount]').val()) * parseInt(exchangeGroupPeriod); //商品数量
 
             if (isNaN(GoodCount)) {
                 showMsg('兑换数量请输入数字 ！');
@@ -635,7 +635,7 @@
                 var JieCun = $('input[name=txtStorageNumber]').val();//结存数据在此处不改变
                 var VarietyID = $('input[name=txtVarietyID]').val();
 
-                
+
                 var exinfo = { id: guid.newGUID(), BusinessName: '兑换', GoodID: GoodID, WBWareHouseID: WBWareHouseID, GoodName: GoodName, SpecName: SpecName, UnitName: UnitName, GoodPrice_ex: GoodPrice_ex, GoodPrice: GoodPrice, GoodCount_ex: GoodCount_ex, GoodCount: GoodCount, VarietyLiXi: 0, VarietyCount: VarietyCount, JinE: JinE, JieCun: JieCun, Money_YouHui: 0, YouHui_Count: 0 }
                 //arrayex.push(exinfo);//添加一条兑换信息
                 exarrayPush(arrayex, exinfo);//添加一条兑换信息
@@ -665,7 +665,7 @@
             var JinE_t = 0;
             var VarietyLiXi_t = 0;
             var Money_YouHui_t = 0;//优惠金额
-            var JinE_Group_t=0;//批量优惠金额
+            var JinE_Group_t = 0;//批量优惠金额
             $('#tabexchangelist .tr_exchangelist').remove();//清空原来的兑换列表
             $('#tabexchangelist .tr_exchangesummary').remove();//清空原来的兑换列表
             if (arrayex.length != 0) {
@@ -678,13 +678,13 @@
                     VarietyLiXi_t += parseFloat(exinfo.VarietyLiXi);
                     Money_YouHui_t += parseFloat(exinfo.Money_YouHui);
 
-                    var strlixi = changeTwoDecimal_f(parseFloat(exinfo.VarietyLiXi)+parseFloat(exinfo.Money_YouHui));
+                    var strlixi = changeTwoDecimal_f(parseFloat(exinfo.VarietyLiXi) + parseFloat(exinfo.Money_YouHui));
 
                     var JinE_Group = (parseFloat(exinfo.GoodPrice_ex) - parseFloat(exinfo.GoodPrice)) * parseFloat(exinfo.GoodCount);
                     JinE_Group = changeTwoDecimal_f(JinE_Group);//批量优惠金额
-                    JinE_Group_t +=parseFloat( JinE_Group);
+                    JinE_Group_t += parseFloat(JinE_Group);
                     var tr_ex = ' <tr class="tr_exchangelist">';
-                    
+
                     tr_ex += '<td style="width:140px;height:30px;">' + exinfo.GoodName + '</td>';
                     tr_ex += '<td style="width:60px;">' + exinfo.SpecName + '</td>';
                     tr_ex += '<td style="width:80px;">' + exinfo.GoodPrice_ex + '</td>';
@@ -828,7 +828,7 @@
 
         //计算商品总数
         function caclExchangeCountT() {
-            var ExchangeCountT=parseFloat($('input[name=ExchangeCount]').val())*parseInt($('#span_exchangeGroupPeriod').html());
+            var ExchangeCountT = parseFloat($('input[name=ExchangeCount]').val()) * parseInt($('#span_exchangeGroupPeriod').html());
 
             $('#span_ExchangeCountT').html(ExchangeCountT);
         }
@@ -1172,10 +1172,10 @@
         <table id="tabexchangeChoose">
             <thead>
                 <tr>
-                    
+
                     <td align="center" colspan="7" style="color:green;font-weight:bold;height:25px;margin-left:20px;"><span id="spanGroupinfo"></span></td>
-                    </tr>
-                  <tr>
+                </tr>
+                <tr>
                     <td align="right" style="width: 80px"><span>商品:</span></td>
                     <td id="tdselect_goodlist" style="width: 140px; border-right: 1px solid #999"><!--<select name="select_goodlist" style="width:120px;"><option value="122">XX面粉25KG</option></select>--></td>
                     <td align="right" style="width: 80px"><span>仓库:</span></td>
@@ -1183,11 +1183,11 @@
                     <td align="right" style="width: 60px"><span>库存:</span></td>
                     <td style="width: 200px;"><span id="GoodStorage" style="color:Green">0</span></td>
                     <td style="width:100px;"></td>
-                    </tr>
+                </tr>
                 <tr>
-                    <td align="right" ><span>兑换价格:</span></td>
+                    <td align="right"><span>兑换价格:</span></td>
                     <td style=" border-right: 1px solid #999"><span id="GoodPrice" style="color:Green;font-weight:bold;"></span><span class="spanGoodUnit" style="color:Green"></span></td>
-                    <td align="right" ><span>批量价格:</span></td>
+                    <td align="right"><span>批量价格:</span></td>
                     <td style=" border-right: 1px solid #999"><span id="GoodPriceGroup" style="color:Green;font-weight:bold;"></span><span class="spanGoodUnit" style="color:Green"></span></td>
                     <td align="right"><span>数量:</span></td>
                     <td>

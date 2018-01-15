@@ -25,6 +25,7 @@ namespace Web.Ashx
                     case "GetGoodStoreByGoodID": GetGoodStoreByGoodID(context); break;
                     case "GetExchangeGoodStore": GetExchangeGoodStore(context); break;
                     case "PrintDep_StorageInfo": PrintDep_StorageInfo(context); break;//储户的存折内容打印
+                    case "getDepOperateLogAll": getDepOperateLogAll(context); break;
                     case "PrintDep_OperateLog": PrintDep_OperateLog(context); break;//储户的存折内容打印
                     case "PrintDep_OperateLogList": PrintDep_OperateLogList(context); break;//储户的存折内容打印
 
@@ -38,11 +39,111 @@ namespace Web.Ashx
                     case "updatePrintTime": updatePrintTime(context); break;//更新小票打印次数
                     case "updatePrintTime_List": updatePrintTime_List(context); break;//更新小票打印次数
                     case "getPrintTime": getPrintTime(context); break;//获取小票打印次数
-
-                        
+             
                 }
             }
 
+        }
+
+
+        /// <summary>
+        /// 打印储户存粮凭证
+        /// </summary>
+        /// <param name="context"></param>
+        void getDepOperateLogAll(HttpContext context)
+        {
+            string WBID = context.Request.Form["WBID"].ToString(); ;//当前网点ID
+           string AccountNumber = context.Request.Form["AccountNumber"].ToString();//当前网点ID
+          
+           string Qdtstart = "";//当前网点ID
+           if (context.Request.Form["Qdtstart"] != null)
+           {
+              Qdtstart= context.Request.Form["Qdtstart"].ToString();
+           }
+           string Qdtend = "";//当前网点ID
+           if (context.Request.Form["Qdtend"] != null)
+           {
+              Qdtend= context.Request.Form["Qdtend"].ToString();
+           }
+
+             StringBuilder strSql = new StringBuilder();
+             strSql.Append("   select ID,WBID,AccountNumber,strPassword, CunID as  BD_Address_CunID,strAddress,strName,PhoneNO,ISSendMessage,BankCardNO,dt_Update,ISClosing,numState,");
+            strSql.Append("   CASE( numState) WHEN 1 THEN '正常' ELSE '挂失' END AS numState,dt_Add,");
+            strSql.Append("   CASE (IDCard) WHEN '' THEN '未填写' ELSE '******' END as IDCard");
+            strSql.Append(" FROM dbo.Depositor  where 1=1 ");
+            //strSql.Append(" and ISClosing=0");//排除销户储户
+            //strSql.Append(" and numState=1");//排除挂失储户
+          
+            strSql.Append(" and AccountNumber=@AccountNumber ");
+            SqlParameter[] parameters = {
+					new SqlParameter("@AccountNumber", SqlDbType.NVarChar,50)};
+            parameters[0].Value = AccountNumber;
+            DataTable dt = SQLHelper.ExecuteDataTable(strSql.ToString(), parameters);
+            if (dt == null || dt.Rows.Count == 0)
+            {
+                var res = new { state = "false", msg = "系统中没有该储户的信息。" };
+                context.Response.Write(JsonHelper.ToJson(res));
+                return;
+            }
+            else {
+                if (Convert.ToBoolean(common.GetWBAuthority()["Enable_Distance"]) == false)//不允许异地存取的要进行判断
+                {
+                    if (dt.Rows[0]["WBID"].ToString() != WBID) {
+                        var res = new { state = "false", msg = "系统已禁止异地存取和查询，无法显示该储户信息!" };
+                        context.Response.Write(JsonHelper.ToJson(res));
+                        return;
+                    }
+
+                }
+                if (Convert.ToBoolean( dt.Rows[0]["ISClosing"]) ==true)
+                {
+                    var res = new { state = "false", msg = "该储户已销户，无法查询!" };
+                    context.Response.Write(JsonHelper.ToJson(res));
+                    return;
+                }
+                if (Convert.ToBoolean(dt.Rows[0]["numState"]) == false)
+                {
+                    var res = new { state = "false", msg = "该储户已挂失，无法查询!" };
+                    context.Response.Write(JsonHelper.ToJson(res));
+                    return;
+                }
+            }
+
+                StringBuilder strSqlCommune = new StringBuilder();
+                strSqlCommune.Append("  SELECT A.ID,B.ID as WBID, B.strName AS WBName,C.strRealName AS UserID,A.Price,A.Dep_AccountNumber,A.BusinessNO, A.VarietyName,A.UnitName,A.GoodCount,A.Count_Trade,A.Money_Trade,A.Count_Balance,CONVERT(NVARCHAR(100),A.dt_Trade,23) AS dt_Trade,A.BusinessName,");
+                strSqlCommune.Append("  CASE A.BusinessName WHEN '1' THEN '存入' WHEN '2' THEN '兑换' WHEN '3' THEN '存转销'  WHEN '5' THEN '修改错误存粮' WHEN '6' THEN '退还兑换' WHEN '7' THEN '退还存转销' WHEN '8' THEN '退还存粮' WHEN '9' THEN '产品换购' WHEN '10' THEN '退还产品换购' WHEN '11' THEN '结息' WHEN '12' THEN '换存折' WHEN '13' THEN '商品销售' WHEN '14' THEN '退还商品销售' WHEN '15' THEN '积分兑换商品' WHEN '16' THEN '存粮转存'  WHEN '17' THEN '批量兑换' END AS BusinessNameRemark");
+                strSqlCommune.Append("  FROM dbo.Dep_OperateLog A INNER JOIN dbo.WB B ON A.WBID=B.ID");
+                strSqlCommune.Append("  LEFT OUTER JOIN dbo.Users C ON A.UserID=C.ID");
+                strSqlCommune.Append("  where 1=1");
+                strSqlCommune.Append("   AND A.Dep_AccountNumber = '" + AccountNumber + "'");
+                
+               
+                if (Qdtstart.Trim() != "")
+                {
+                    strSqlCommune.Append("   AND A.dt_Trade> '" + Qdtstart.Trim() + "'");
+                }
+                if (Qdtend.Trim() != "")
+                {
+                    Qdtend = Convert.ToDateTime(Qdtend).AddDays(1).ToString();
+                    strSqlCommune.Append("   AND A.dt_Trade < '" + Qdtend.Trim() + "'");
+                }
+
+                strSqlCommune.Append("   order by A.dt_Trade desc");
+               
+
+                DataTable dtCommune = SQLHelper.ExecuteDataTable(strSqlCommune.ToString());
+
+                if (dtCommune == null || dtCommune.Rows.Count == 0)
+                {
+                    var res = new { state = "false", msg = "系统中没有该储户的操作记录" };
+                    context.Response.Write(JsonHelper.ToJson(res));
+                }
+                else {
+                    var res = new { state = "true", dep=JsonHelper.ToJson(dt), data = JsonHelper.ToJson(dtCommune) };
+                    context.Response.Write(JsonHelper.ToJson(res));
+                }
+
+            
         }
 
 

@@ -19,7 +19,7 @@ namespace Web.User.Exchange
         public void ProcessRequest(HttpContext context)
         {
             context.Response.ContentType = "text/plain";
-           
+
             common.IsLogin();
             if (context.Request.QueryString["type"] != null)
             {
@@ -60,7 +60,7 @@ namespace Web.User.Exchange
                     case "StoreToSell": StoreToSell(context); break;//存转销
                     case "GetSellApplyByAN": GetSellApplyByAN(context); break;//存转销
                     case "StorageShopping": StorageShopping(context); break;//存转销
-                        
+
                 }
             }
 
@@ -72,13 +72,14 @@ namespace Web.User.Exchange
             var res = new { ID = 1, Name = "name1" };
             string strName = res.Name;
             string str1 = context.Request.Form["stu"].ToString();
-            
-           DataTable dt= JsonHelper.JsonToDataTable(str1);
+
+            DataTable dt = JsonHelper.JsonToDataTable(str1);
             context.Response.Write("Error");
         }
 
 
-        object getValue() {
+        object getValue()
+        {
             var res = new { ID = 1, Name = "name1" };
             return res;
         }
@@ -91,7 +92,7 @@ namespace Web.User.Exchange
         {
             string AccountNumber = context.Request.Form["AccountNumber"].ToString();
 
-            string sql = string.Format(" SELECT TOP 1  * FROM dbo.Dep_Integral WHERE AccountNumber='{0}' ORDER BY dt_Add DESC",AccountNumber);
+            string sql = string.Format(" SELECT TOP 1  * FROM dbo.Dep_Integral WHERE AccountNumber='{0}' ORDER BY dt_Add DESC", AccountNumber);
 
             DataTable dt = SQLHelper.ExecuteDataTable(sql);
             if (dt != null && dt.Rows.Count != 0)
@@ -101,7 +102,7 @@ namespace Web.User.Exchange
             }
             else
             {
-               
+
                 context.Response.Write("Error");
                 return;
             }
@@ -120,7 +121,7 @@ namespace Web.User.Exchange
             string WBID = context.Session["WB_ID"].ToString();//当前网点ID
             string AccountNumber = context.Request.Form["AccountNumber"].ToString();
             string Password = context.Request.Form["Password"].ToString();
-          
+
             StringBuilder strSql = new StringBuilder();
             strSql.Append("  select A.ID,WBID,A.AccountNumber,strPassword, CunID as BD_Address_CunID,A.strAddress,A.strName,PhoneNO,ISSendMessage,BankCardNO,A.dt_Update,  ");
             strSql.Append("     numState,A.dt_Add,   CASE (IDCard) WHEN '' THEN '未填写' ELSE '******' END as IDCard,");
@@ -169,7 +170,7 @@ namespace Web.User.Exchange
 
                 }
                 //储户存粮记录
-                var dep = JsonHelper.ToJson(dt);          
+                var dep = JsonHelper.ToJson(dt);
                 state = true;
                 msg = "查询库存记录成功!";
                 var resValue = new { state = state, msg = msg, dep = dep };
@@ -198,13 +199,13 @@ namespace Web.User.Exchange
             string WB_SerialNumber = common.GetWBInfoByID(Convert.ToInt32(WBID))["SerialNumber"].ToString();
             string AccountNumber = WB_SerialNumber + "0000000";
 
-            DataTable dt_Depositor = SQLHelper.ExecuteDataTable(string.Format(" SELECT * FROM dbo.Depositor WHERE AccountNumber='{0}'",AccountNumber));
+            DataTable dt_Depositor = SQLHelper.ExecuteDataTable(string.Format(" SELECT * FROM dbo.Depositor WHERE AccountNumber='{0}'", AccountNumber));
             if (dt_Depositor == null || dt_Depositor.Rows.Count == 0)
             {
                 StringBuilder sql_insert = new StringBuilder();
                 sql_insert.Append(" INSERT INTO dbo.Depositor");
                 sql_insert.Append(" ( WBID,AccountNumber,strPassword,strAddress,XianID,XiangID,CunID ,strName , IDCard ,PhoneNO , ISSendMessage , BankCardNO ,numState ,dt_Add , dt_Update , ISClosing )");
-                sql_insert.Append(string.Format(" VALUES  ( {0} , N'{1}' , N'******' , N'******' ,  0 , 0 , 0 , N'模拟储户' ,N'***' , N'***' , 0 ,  N'***' ,  0 , GETDATE() , GETDATE(), 1)",WBID,AccountNumber));
+                sql_insert.Append(string.Format(" VALUES  ( {0} , N'{1}' , N'******' , N'******' ,  0 , 0 , 0 , N'模拟储户' ,N'***' , N'***' , 0 ,  N'***' ,  0 , GETDATE() , GETDATE(), 1)", WBID, AccountNumber));
                 SQLHelper.ExecuteNonQuery(sql_insert.ToString());
 
                 dt_Depositor = SQLHelper.ExecuteDataTable(string.Format(" SELECT * FROM dbo.Depositor WHERE AccountNumber='{0}'", AccountNumber));
@@ -223,7 +224,7 @@ namespace Web.User.Exchange
         {
             var state = false;
             var msg = "";
-            
+
             string WBID = context.Session["WB_ID"].ToString();//当前网点ID
             string AccountNumber = context.Request.Form["AccountNumber"].ToString();
             string Password = context.Request.Form["Password"].ToString();
@@ -233,7 +234,8 @@ namespace Web.User.Exchange
                 ISVirtual = context.Request.Form["ISVirtual"].ToString();
             }
             string ApplyID = "";//存转销审核页面使用参数
-            if (context.Request.Form["ApplyID"] != null) {//当前请求是经审核过的存转销
+            if (context.Request.Form["ApplyID"] != null)
+            {//当前请求是经审核过的存转销
                 ApplyID = context.Request.Form["ApplyID"].ToString();
             }
 
@@ -253,16 +255,17 @@ namespace Web.User.Exchange
             {
                 strSql.Append(" and WBID= " + WBID);
             }
-            else {
+            else
+            {
                 //当前登录的网店是模拟网点
-                if (Convert.ToBoolean(context.Session["ISSimulate"]) == true) 
+                if (Convert.ToBoolean(context.Session["ISSimulate"]) == true)
                 {
                     strSql.Append(" and WBID= " + WBID);
                 }
             }
 
-            strSql.Append(string.Format( " and AccountNumber='{0}'",AccountNumber));
-          
+            strSql.Append(string.Format(" and AccountNumber='{0}'", AccountNumber));
+
             DataTable dt = SQLHelper.ExecuteDataTable(strSql.ToString());
             if (dt != null && dt.Rows.Count != 0)
             {
@@ -274,8 +277,8 @@ namespace Web.User.Exchange
                         var res = new { state = false, msg = "当前储户属于模拟网点的账号，不可以异地操作！" };
                         context.Response.Write(JsonHelper.ToJson(res));
                         return;
-                    }              
-                   
+                    }
+
                 }
 
                 if (ApplyID == "")
@@ -313,20 +316,22 @@ namespace Web.User.Exchange
                 strSqlStorage.Append("  FROM dbo.Dep_StorageInfo A INNER JOIN dbo.StorageVariety B ON A.VarietyID=B.ID");
                 strSqlStorage.Append("  INNER JOIN dbo.StorageTime C ON A.TimeID=C.ID");
                 strSqlStorage.Append("  LEFT JOIN dbo.BD_MeasuringUnit D ON B.MeasuringUnitID=D.ID");
-             
+
                 strSqlStorage.Append("  WHERE AccountNumber='" + AccountNumber + "'");
                 strSqlStorage.Append("  and A.StorageNumber>0");
 
-                if (ISVirtual != "") {
-                    strSqlStorage.Append("  and A.ISVirtual="+ISVirtual);
+                if (ISVirtual != "")
+                {
+                    strSqlStorage.Append("  and A.ISVirtual=" + ISVirtual);
                 }
 
-                if (ISError) {
-                   bool ISHQ = common.ISHQWB(context.Session["WB_ID"]);//是否是总部的网点
-                   if (!ISHQ) //非总部网点修改错误存粮
-                   {
-                       strSqlStorage.Append("  and  DATEDIFF(DAY,A.StorageDate,GETDATE())<1 ");//存储天数在一天之内的存粮
-                   }
+                if (ISError)
+                {
+                    bool ISHQ = common.ISHQWB(context.Session["WB_ID"]);//是否是总部的网点
+                    if (!ISHQ) //非总部网点修改错误存粮
+                    {
+                        strSqlStorage.Append("  and  DATEDIFF(DAY,A.StorageDate,GETDATE())<1 ");//存储天数在一天之内的存粮
+                    }
                 }
 
                 DataTable dtStorage = SQLHelper.ExecuteDataTable(strSqlStorage.ToString());
@@ -339,7 +344,8 @@ namespace Web.User.Exchange
                     context.Response.Write(JsonHelper.ToJson(res));
                     return;
                 }
-                else {
+                else
+                {
                     dtStorage.Columns.Add("SellApplyCount", typeof(double));//添加申请存转销重量字段
                     for (int i = 0; i < dtStorage.Rows.Count; i++)
                     {
@@ -356,11 +362,12 @@ namespace Web.User.Exchange
                         }
                     }
                 }
-                DataColumn dcstrlixi=new DataColumn("strlixi",typeof(string));
+                DataColumn dcstrlixi = new DataColumn("strlixi", typeof(string));
                 DataColumn dcnumlixi = new DataColumn("numlixi", typeof(string));
                 dtStorage.Columns.Add(dcstrlixi);
                 dtStorage.Columns.Add(dcnumlixi);
-                for (int i = 0; i < dtStorage.Rows.Count; i++) {
+                for (int i = 0; i < dtStorage.Rows.Count; i++)
+                {
                     Dictionary<string, string> dicLixi = common.GetLiXi_html(dtStorage.Rows[i]["ID"]);
                     string strlixi = dicLixi["strLixi"];
                     string numlixi = dicLixi["numLixi"];
@@ -372,9 +379,9 @@ namespace Web.User.Exchange
                 var storage = JsonHelper.ToJson(dtStorage);
                 state = true;
                 msg = "查询库存记录成功!";
-                var resValue = new { state = state, msg = msg,dep=dep,storage=storage };
+                var resValue = new { state = state, msg = msg, dep = dep, storage = storage };
                 context.Response.Write(JsonHelper.ToJson(resValue));
-               
+
             }
             else
             {
@@ -382,7 +389,7 @@ namespace Web.User.Exchange
                 msg = "您查询的储户不存在!";
                 var res = new { state = state, msg = msg };
                 context.Response.Write(JsonHelper.ToJson(res));
-                return; 
+                return;
             }
 
         }
@@ -409,7 +416,7 @@ namespace Web.User.Exchange
                 if (ISRegular && InterestType == 3)
                 { //按照定期取利息，并且按到期价取利息，确定是定期类型
 
-                   // strPolicy = common.GetExPolicy_DingQi(Dep_SID, numMoney, Exchange_trading);
+                    // strPolicy = common.GetExPolicy_DingQi(Dep_SID, numMoney, Exchange_trading);
                     Dictionary<string, string> dic = common.GetEP_DingQi(Dep_SID, numMoney, Exchange_trading);
                     string daoqi = dic["daoqi"];
                     string youhui = dic["youhui"];
@@ -423,8 +430,10 @@ namespace Web.User.Exchange
                     {
                         Price_DaoQi = dic["Price_DaoQi"];
                     }
-                    else {
-                        if (youhui == "true") {
+                    else
+                    {
+                        if (youhui == "true")
+                        {
                             Price_DaoQi = dic["Price_DaoQi"];
                             YouHui_Count = dic["YouHui_Count"];
                             SurPlue_Count = dic["SurPlue_Count"];
@@ -440,7 +449,7 @@ namespace Web.User.Exchange
                     var res = new { state = "success", ISRegular = false, strPolicy = strPolicy };
                     context.Response.Write(JsonHelper.ToJson(res));
                 }
-               
+
             }
             else
             {
@@ -451,15 +460,17 @@ namespace Web.User.Exchange
         }
 
         //每月商品兑换数量是否被限额
-        void ISExchangeLimit(HttpContext context) {
-            double GoodCount =Convert.ToDouble( context.Request.Form["GoodCount"]);
+        void ISExchangeLimit(HttpContext context)
+        {
+            double GoodCount = Convert.ToDouble(context.Request.Form["GoodCount"]);
             string GoodID = context.Request.Form["GoodID"].ToString();
             string AccountNumber = context.Request.Form["AccountNumber"].ToString();
 
             bool ISLimit = false;//是否被限额
             bool ISExchangeLimit = Convert.ToBoolean(common.GetWBAuthority()["ISExchangeLimit"]);
             double GoodExchangeLimit = 0;
-            double DepExchangeCount = 0;
+            double DepExchangeCount = 0;//本月已兑换商品数
+            double DepExchangeCount_Group = 0;//本月已分时批量兑换商品数
             if (!ISExchangeLimit) //不对兑换数量做限制
             {
                 ISLimit = false;
@@ -467,7 +478,7 @@ namespace Web.User.Exchange
             else
             {
                 //当前商品的兑换额度
-               
+
                 GoodExchangeLimit = Convert.ToDouble(SQLHelper.ExecuteScalar(" SELECT numExchangeLimit  FROM dbo.Good WHERE ID=" + GoodID));
                 if (GoodExchangeLimit <= 0)
                 {
@@ -479,9 +490,16 @@ namespace Web.User.Exchange
 
                     DateTime dtBegin = DateTime.Now.AddDays(1 - DateTime.Now.Day);//本月初日期
                     DateTime dtEnd = DateTime.Now.AddDays(1 - DateTime.Now.Day).AddMonths(1);//下月初日期
-                    string sqlDepExchangeCount = " SELECT SUM(GoodCount) FROM dbo.GoodExchange WHERE Dep_AccountNumber='" + AccountNumber + "' AND GoodID=" + GoodID + " AND dt_Exchange BETWEEN '" + dtBegin.ToString("yyyy-MM-dd") + "' AND '" + dtEnd.ToString("yyyy-MM-dd") + "'";
 
-                    object objExchangeCount = SQLHelper.ExecuteScalar(sqlDepExchangeCount);
+                    //本月已兑换数量
+                    StringBuilder sqlDepExchangeCount = new StringBuilder();
+                    sqlDepExchangeCount.Append(" SELECT   SUM( CASE ISReturn WHEN  0 THEN  GoodCount ELSE 0- GoodCount END) AS GoodCount");
+                    sqlDepExchangeCount.Append(" FROM dbo.GoodExchange ");
+                    sqlDepExchangeCount.Append(string.Format("  WHERE Dep_AccountNumber='{0}'", AccountNumber));
+                    sqlDepExchangeCount.Append(string.Format("  AND GoodID={0}", GoodID));
+                    sqlDepExchangeCount.Append(string.Format("  AND dt_Exchange BETWEEN '{0}' AND '{1}'", dtBegin.ToString("yyyy-MM-dd"), dtEnd.ToString("yyyy-MM-dd")));
+
+                    object objExchangeCount = SQLHelper.ExecuteScalar(sqlDepExchangeCount.ToString());
                     if (objExchangeCount == null || objExchangeCount.ToString() == "")
                     {
 
@@ -491,7 +509,28 @@ namespace Web.User.Exchange
                     {
                         DepExchangeCount = Convert.ToDouble(objExchangeCount);
                     }
-                    if (GoodCount + DepExchangeCount > GoodExchangeLimit)
+
+
+                    //本月已分时批量兑换数量
+                    StringBuilder sqlDepExchangeCount_Group = new StringBuilder();
+                    sqlDepExchangeCount_Group.Append("   SELECT SUM( CASE ISReturn WHEN  0 THEN  A.GoodCount ELSE 0- A.GoodCount END) AS GoodCount");
+                    sqlDepExchangeCount_Group.Append("   FROM dbo.GoodExchangeGroupDetail A INNER JOIN dbo.GoodExchangeGroup B ON A.EGID=B.strGUID");
+                    sqlDepExchangeCount_Group.Append(string.Format("   WHERE B.Dep_AccountNumber='{0}'", AccountNumber));
+                    sqlDepExchangeCount_Group.Append(string.Format("   AND A.GoodID={0}", GoodID));
+                    sqlDepExchangeCount_Group.Append(string.Format("  AND A.dt_Trade  BETWEEN '{0}' AND '{1}'", dtBegin.ToString("yyyy-MM-dd"), dtEnd.ToString("yyyy-MM-dd")));
+
+                    object objExchangeCount_Group = SQLHelper.ExecuteScalar(sqlDepExchangeCount_Group.ToString());
+                    if (objExchangeCount_Group == null || objExchangeCount_Group.ToString() == "")
+                    {
+
+                        DepExchangeCount_Group = 0;
+                    }
+                    else
+                    {
+                        DepExchangeCount_Group = Convert.ToDouble(objExchangeCount_Group);
+                    }
+
+                    if (GoodCount + DepExchangeCount + DepExchangeCount_Group > GoodExchangeLimit)
                     {
                         ISLimit = true;
                     }
@@ -504,7 +543,7 @@ namespace Web.User.Exchange
 
             var res = new { ISLimit = ISLimit, GoodExchangeLimit = GoodExchangeLimit, DepExchangeCount = DepExchangeCount };
             context.Response.Write(JsonHelper.ToJson(res));
-            
+
         }
 
         /// <summary>
@@ -516,7 +555,7 @@ namespace Web.User.Exchange
             double numMoney = Convert.ToDouble(context.Request.Form["numMoney"]);
             double Exchange_trading = Convert.ToDouble(context.Request.Form["Exchange_trading"]);//已经准备兑换的数量
             string Dep_SID = context.Request.Form["Dep_SID"].ToString();
-           
+
             StringBuilder strSql = new StringBuilder();
             strSql.Append(" select B.ISRegular,B.InterestType,A.StorageNumber,A.Price_ShiChang,A.StorageDate,B.numStorageDate");
             strSql.Append(" FROM dbo.Dep_StorageInfo A INNER JOIN dbo.StorageTime B ON A.TimeID=B.ID");
@@ -534,7 +573,7 @@ namespace Web.User.Exchange
                 double YouHui_Count = 0;//定期兑换优惠处理的存粮数量
                 if (ISRegular && InterestType == 3)
                 { //按照定期取利息，并且按到期价取利息，确定是定期类型
-                   // VarietyCount = common.GetExVarietyCount_DingQi(Dep_SID, numMoney, Exchange_trading);
+                    // VarietyCount = common.GetExVarietyCount_DingQi(Dep_SID, numMoney, Exchange_trading);
                     Dictionary<string, double> dicEV = common.GetExchangeVC_DingQi(Dep_SID, numMoney, Exchange_trading);
                     VarietyCount = dicEV["VarietyCount"];
                     Money_YouHui = dicEV["Ex_YouHui"];
@@ -548,10 +587,11 @@ namespace Web.User.Exchange
                     {
                         VarietyLiXi = dicEV["VarietyLiXi"];//付息类型计利息
                     }
-                    else {
+                    else
+                    {
                         Money_YouHui = dicEV["VarietyLiXi"];//分红和入股计优惠金额
                     }
-                   
+
                 }
 
 
@@ -911,10 +951,10 @@ namespace Web.User.Exchange
             double JieCun_Raw = StorageNumberRaw;
             double JieCun_Total = StorageNumberRaw - StorageNumber;//该存储信息已经发生的结存
 
-             double limitExChangeProp=1;
-             double VarietyCount_t = 0;//在兑换中发生的折合产品数总计
-             double VarietyCount_exchangemonth = common.GetMonthJieCun_Total(dsiID);//当月已经发生结存
-            DataRow rowStorageTime=commondb.getStorageTimeByID(dtStorage.Rows[0]["TimeID"].ToString());
+            double limitExChangeProp = 1;
+            double VarietyCount_t = 0;//在兑换中发生的折合产品数总计
+            double VarietyCount_exchangemonth = common.GetMonthJieCun_Total(dsiID);//当月已经发生结存
+            DataRow rowStorageTime = commondb.getStorageTimeByID(dtStorage.Rows[0]["TimeID"].ToString());
             if (rowStorageTime != null)
             {
                 limitExChangeProp = Convert.ToDouble(rowStorageTime["limitExChangeProp"]) / 100;
@@ -959,7 +999,7 @@ namespace Web.User.Exchange
                 JieCun_Total = JieCun_Total + VarietyCount;
 
                 VarietyCount_t += VarietyCount;
-               
+
 
                 //add 20170802
                 if (JieCun_Now < 0)//结存不足时，禁止兑换
@@ -975,25 +1015,25 @@ namespace Web.User.Exchange
                 sqlEx.Append("SerialNumber,strGUID,BusinessNO,Dep_SID,Dep_AccountNumber,Dep_Name,WBID,UserID,BusinessName,GoodID,GoodName,SpecName,UnitName,GoodCount,GoodPrice,VarietyCount,VarietyInterest,Money_DuiHuan,Money_YouHui,dt_Exchange,JieCun_Last,JieCun_Now,JieCun_Raw,JieCun_Total,ISReturn,WBWareHouseID)");
                 sqlEx.Append(" values (");
 
-                sqlEx.Append(string.Format("'{0}','{1}','{2}',{3},'{4}','{5}',{6},{7},'{8}',{9},'{10}','{11}','{12}',{13},{14},{15},{16},{17},{18},'{19}',{20},{21},{22},{23},{24},{25})", SerialNumber, strGUID, BusinessNO, dsiID, AccountNumber, Dep_Name, WBID, UserID, BusinessName, GoodID, GoodName, SpecName, UnitName, GoodCount, GoodPrice, VarietyCount, VarietyInterest, Money_DuiHuan, Money_YouHui, DateTime.Now, JieCun_Last, JieCun_Now, JieCun_Raw, JieCun_Total, 0,WBWareHouseID));
+                sqlEx.Append(string.Format("'{0}','{1}','{2}',{3},'{4}','{5}',{6},{7},'{8}',{9},'{10}','{11}','{12}',{13},{14},{15},{16},{17},{18},'{19}',{20},{21},{22},{23},{24},{25})", SerialNumber, strGUID, BusinessNO, dsiID, AccountNumber, Dep_Name, WBID, UserID, BusinessName, GoodID, GoodName, SpecName, UnitName, GoodCount, GoodPrice, VarietyCount, VarietyInterest, Money_DuiHuan, Money_YouHui, DateTime.Now, JieCun_Last, JieCun_Now, JieCun_Raw, JieCun_Total, 0, WBWareHouseID));
 
                 #endregion
                 JieCun_Last = JieCun_Now;//更新上一次结存
 
                 #region 日志记录
                 double Money_Trade = Convert.ToDouble(GoodPrice) * Convert.ToDouble(GoodCount);
-               
+
                 Count_Balance = Count_Balance - VarietyCount;
                 sqlO_Log.Append("  insert into [Dep_OperateLog] (");
                 sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
                 sqlO_Log.Append(" values (");
 
-                sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, VarietyID, UnitName, GoodPrice, GoodCount, VarietyCount, Money_Trade, Count_Balance, DateTime.Now.ToString(), GoodName, UnitName,dsiID));
+                sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, VarietyID, UnitName, GoodPrice, GoodCount, VarietyCount, Money_Trade, Count_Balance, DateTime.Now.ToString(), GoodName, UnitName, dsiID));
 
                 #endregion
 
                 //商品库存数变化
-                sqlGoodStorage.Append(string.Format("  UPDATE dbo.GoodStorage SET numStore=numStore-{0} WHERE GoodID={1} AND WBID={2} and WBWareHouseID={3}", GoodCount,GoodID, WBID,WBWareHouseID));
+                sqlGoodStorage.Append(string.Format("  UPDATE dbo.GoodStorage SET numStore=numStore-{0} WHERE GoodID={1} AND WBID={2} and WBWareHouseID={3}", GoodCount, GoodID, WBID, WBWareHouseID));
             }
             #endregion
 
@@ -1003,7 +1043,7 @@ namespace Web.User.Exchange
 
                 if (VarietyCount_t + VarietyCount_exchangemonth > limitExChangeProp * StorageNumberRaw) //兑换折合存粮超出每月兑换额度
                 {
-                    var res = new { state = "error", msg = "该产品每月最多兑换额度:" +Math.Round( (limitExChangeProp * 100),2) + "%，共" + Math.Round( limitExChangeProp * StorageNumberRaw ,2)+ "公斤,当月兑换已折合存粮:" +Math.Round(  VarietyCount_exchangemonth,2) + "公斤，本次折合存粮:"+Math.Round( VarietyCount_t,2)+"公斤，无法继续完成兑换!" };
+                    var res = new { state = "error", msg = "该产品每月最多兑换额度:" + Math.Round((limitExChangeProp * 100), 2) + "%，共" + Math.Round(limitExChangeProp * StorageNumberRaw, 2) + "公斤,当月兑换已折合存粮:" + Math.Round(VarietyCount_exchangemonth, 2) + "公斤，本次折合存粮:" + Math.Round(VarietyCount_t, 2) + "公斤，无法继续完成兑换!" };
                     context.Response.Write(JsonHelper.ToJson(res));
                     return;
                 }
@@ -1055,12 +1095,13 @@ namespace Web.User.Exchange
             int exchangeGroupPeriod = Convert.ToInt32(rowWBAuthority["exchangeGroupPeriod"]);
 
             string orderdate = "";
-             string orderdateDone = "";
-            int orderstate=1;
+            string orderdateDone = "";
+            int orderstate = 1;
             DateTime dt_order = DateTime.Now;
             orderdateDone = Fun.getDate_YM(dt_order);
-            for (int i = 0; i < exchangeGroupPeriod; i++) {
-                orderdate += Fun.getDate_YM(dt_order)+"|";
+            for (int i = 0; i < exchangeGroupPeriod; i++)
+            {
+                orderdate += Fun.getDate_YM(dt_order) + "|";
                 dt_order = dt_order.AddMonths(1);
             }
             orderdate = orderdate.Substring(0, orderdate.Length - 1);
@@ -1180,7 +1221,7 @@ namespace Web.User.Exchange
                 sqlEx.Append("SerialNumber,strGUID,BusinessNO,Dep_SID,Dep_AccountNumber,Dep_Name,WBID,UserID,BusinessName,GoodID,GoodName,SpecName,UnitName,GoodCount,GoodPrice,VarietyCount,VarietyInterest,Money_DuiHuan,Money_YouHui,dt_Exchange,JieCun_Last,JieCun_Now,JieCun_Raw,JieCun_Total,ISReturn,WBWareHouseID,exchangeGroupProp,exchangeGroupPeriod,orderdate,orderdateDone,orderstate)");
                 sqlEx.Append(" values (");
 
-                sqlEx.Append(string.Format("'{0}','{1}','{2}',{3},'{4}','{5}',{6},{7},'{8}',{9},'{10}','{11}','{12}',{13},{14},{15},{16},{17},{18},'{19}',{20},{21},{22},{23},{24},{25},{26},{27},'{28}','{29}','{30}')", SerialNumber, strGUID, BusinessNO, dsiID, AccountNumber, Dep_Name, WBID, UserID, BusinessName, GoodID, GoodName, SpecName, UnitName, GoodCount, GoodPrice_ex, VarietyCount, VarietyInterest, Money_DuiHuan, Money_YouHui, DateTime.Now, JieCun_Last, JieCun_Now, JieCun_Raw, JieCun_Total, 0, WBWareHouseID, exchangeGroupProp,exchangeGroupPeriod, orderdate, orderdateDone, orderstate));
+                sqlEx.Append(string.Format("'{0}','{1}','{2}',{3},'{4}','{5}',{6},{7},'{8}',{9},'{10}','{11}','{12}',{13},{14},{15},{16},{17},{18},'{19}',{20},{21},{22},{23},{24},{25},{26},{27},'{28}','{29}','{30}')", SerialNumber, strGUID, BusinessNO, dsiID, AccountNumber, Dep_Name, WBID, UserID, BusinessName, GoodID, GoodName, SpecName, UnitName, GoodCount, GoodPrice_ex, VarietyCount, VarietyInterest, Money_DuiHuan, Money_YouHui, DateTime.Now, JieCun_Last, JieCun_Now, JieCun_Raw, JieCun_Total, 0, WBWareHouseID, exchangeGroupProp, exchangeGroupPeriod, orderdate, orderdateDone, orderstate));
 
                 #endregion
 
@@ -1190,7 +1231,7 @@ namespace Web.User.Exchange
                 sqlExDetail.Append("EGID,GoodID,GoodCount,GoodPrice,exchangeGroupProp,dt_Trade,userID,orderdate,orderstate)");
                 sqlExDetail.Append(" values (");
 
-                sqlExDetail.Append(string.Format("'{0}',{1},{2},{3},{4},'{5}',{6},'{7}',{8})", strGUID, GoodID, GoodCount_ex, GoodPrice_ex, exchangeGroupProp, DateTime.Now.ToString(), UserID,orderdateDone, 1));
+                sqlExDetail.Append(string.Format("'{0}',{1},{2},{3},{4},'{5}',{6},'{7}',{8})", strGUID, GoodID, GoodCount_ex, GoodPrice_ex, exchangeGroupProp, DateTime.Now.ToString(), UserID, orderdateDone, 1));
 
                 #endregion
 
@@ -1275,21 +1316,23 @@ namespace Web.User.Exchange
             {
                 AccountNumber = context.Request.Form["AccountNumber"].ToString();
             }
-           
+
             StringBuilder strSql = new StringBuilder();
             strSql.Append("   SELECT A.ID,A.strGUID, B.AccountNumber,B.strName AS DepName,A.GoodName,A.UnitName,A.GoodCount,A.GoodPrice,A.GoodPrice*exchangeGroupProp/100 AS GoodPriceGroup,A.exchangeGroupPeriod,");
-             strSql.Append("    D.strName AS VarietyName,  A.VarietyCount, A.VarietyInterest,A.Money_YouHui,A.Money_DuiHuan,");
-             strSql.Append(string.Format("     CONVERT(VARCHAR(100),dt_Exchange,23) AS dt_Exchange, CHARINDEX('{0}',A.orderdateDone) AS isExchange", strDate));
-             strSql.Append("    FROM dbo.GoodExchangeGroup A INNER JOIN dbo.Depositor B ON A.Dep_AccountNumber=B.AccountNumber");
-             strSql.Append("     INNER JOIN dbo.Dep_StorageInfo C ON A.Dep_SID=C.ID");
-             strSql.Append("     LEFT OUTER JOIN dbo.StorageVariety D ON C.VarietyID=D.ID");
-             strSql.Append("   WHERE 1=1");
+            strSql.Append("    D.strName AS VarietyName,  A.VarietyCount, A.VarietyInterest,A.Money_YouHui,A.Money_DuiHuan,");
+            strSql.Append(string.Format("     CONVERT(VARCHAR(100),dt_Exchange,23) AS dt_Exchange, CHARINDEX('{0}',A.orderdateDone) AS isExchange", strDate));
+            strSql.Append("    FROM dbo.GoodExchangeGroup A INNER JOIN dbo.Depositor B ON A.Dep_AccountNumber=B.AccountNumber");
+            strSql.Append("     INNER JOIN dbo.Dep_StorageInfo C ON A.Dep_SID=C.ID");
+            strSql.Append("     LEFT OUTER JOIN dbo.StorageVariety D ON C.VarietyID=D.ID");
+            strSql.Append("   WHERE 1=1");
 
-            if(orderstate!=""){
-             strSql.Append(string.Format( "   and A.orderstate={0}",orderstate));
+            if (orderstate != "")
+            {
+                strSql.Append(string.Format("   and A.orderstate={0}", orderstate));
             }
-            if(AccountNumber!=""){
-             strSql.Append(string.Format( "   and B.AccountNumber='{0}'",AccountNumber));
+            if (AccountNumber != "")
+            {
+                strSql.Append(string.Format("   and B.AccountNumber='{0}'", AccountNumber));
             }
 
             DataTable dt = SQLHelper.ExecuteDataTable(strSql.ToString());
@@ -1303,7 +1346,7 @@ namespace Web.User.Exchange
                 var res = new { state = "true", data = JsonHelper.ToJson(dt) };
                 context.Response.Write(JsonHelper.ToJson(res));
             }
-                  
+
         }
 
 
@@ -1323,12 +1366,12 @@ namespace Web.User.Exchange
             string WBWareHouseID = rowGoodExchangeGroupByID["WBWareHouseID"].ToString();
             string strGUID = rowGoodExchangeGroupByID["strGUID"].ToString();
             string GoodID = rowGoodExchangeGroupByID["GoodID"].ToString();
-            double GoodCount = Convert.ToDouble(rowGoodExchangeGroupByID["GoodCount"]) /Convert.ToDouble(rowGoodExchangeGroupByID["exchangeGroupPeriod"]);//每次兑付的数量
+            double GoodCount = Convert.ToDouble(rowGoodExchangeGroupByID["GoodCount"]) / Convert.ToDouble(rowGoodExchangeGroupByID["exchangeGroupPeriod"]);//每次兑付的数量
             string GoodPrice = rowGoodExchangeGroupByID["GoodPrice"].ToString();//原兑换价格
             string exchangeGroupProp = rowGoodExchangeGroupByID["exchangeGroupProp"].ToString();
             string dt_Trade = DateTime.Now.ToString();
             string UserID = context.Session["ID"].ToString();
-           
+
 
             string orderdate = rowGoodExchangeGroupByID["orderdate"].ToString();
             string orderdateDone = rowGoodExchangeGroupByID["orderdateDone"].ToString();
@@ -1336,11 +1379,13 @@ namespace Web.User.Exchange
             {
                 orderdateDone += "|" + orderdateadd;
             }
-            else {
+            else
+            {
                 orderdateDone = orderdateadd;
             }
             int orderstate = 1;
-            if (Fun.compareArr(orderdate.Split('|'), orderdateDone.Split('|'))) {
+            if (Fun.compareArr(orderdate.Split('|'), orderdateDone.Split('|')))
+            {
                 orderstate = 2;//全部兑付完成
             }
 
@@ -1349,11 +1394,11 @@ namespace Web.User.Exchange
             sqlExDetail.Append("EGID,GoodID,GoodCount,GoodPrice,exchangeGroupProp,dt_Trade,userID,orderdate,orderstate)");
             sqlExDetail.Append(" values (");
 
-            sqlExDetail.Append(string.Format("'{0}',{1},{2},{3},{4},'{5}',{6},'{7}',{8})", strGUID, GoodID, GoodCount, GoodPrice, exchangeGroupProp, DateTime.Now.ToString(), UserID, orderdateadd,1));
+            sqlExDetail.Append(string.Format("'{0}',{1},{2},{3},{4},'{5}',{6},'{7}',{8})", strGUID, GoodID, GoodCount, GoodPrice, exchangeGroupProp, DateTime.Now.ToString(), UserID, orderdateadd, 1));
 
             StringBuilder sqlGroup = new StringBuilder();
             sqlGroup.Append("  UPDATE dbo.GoodExchangeGroup");
-            sqlGroup.Append(string.Format(" SET orderdateDone='{0}',",orderdateDone));
+            sqlGroup.Append(string.Format(" SET orderdateDone='{0}',", orderdateDone));
             sqlGroup.Append(string.Format(" orderstate={0}", orderstate));
             sqlGroup.Append(string.Format(" WHERE ID={0}", ID));
 
@@ -1361,7 +1406,7 @@ namespace Web.User.Exchange
             sqlGoodStorage.Append("  SELECT A.numStore,B.strName AS WareHouseName,C.strName AS GoodName");
             sqlGoodStorage.Append(" FROM dbo.GoodStorage A INNER JOIN dbo.WBWareHouse B ON A.WBWareHouseID=B.ID");
             sqlGoodStorage.Append(" INNER JOIN dbo.Good C ON A.GoodID=C.ID");
-            sqlGoodStorage.Append(string.Format("  WHERE A.WBID={0} AND WBWareHouseID={1} AND GoodID={2} ",WBID,WBWareHouseID,GoodID));
+            sqlGoodStorage.Append(string.Format("  WHERE A.WBID={0} AND WBWareHouseID={1} AND GoodID={2} ", WBID, WBWareHouseID, GoodID));
             DataTable dtGoodStorage = SQLHelper.ExecuteDataTable(sqlGoodStorage.ToString());
             if (dtGoodStorage == null || dtGoodStorage.Rows.Count == 0)
             {
@@ -1369,10 +1414,12 @@ namespace Web.User.Exchange
                 context.Response.Write(JsonHelper.ToJson(res));
                 return;
             }
-            else {
+            else
+            {
                 double numStore = Convert.ToDouble(dtGoodStorage.Rows[0]["numStore"]);
-                if (numStore < GoodCount) {
-                    var res = new { state = "false", msg = "仓库[" + dtGoodStorage.Rows[0]["WareHouseName"].ToString() + "]中，[" + dtGoodStorage.Rows[0]["GoodName"].ToString() + "]库存量剩余" + GoodCount + "，本次需兑付"+numStore+",无法完成兑付!" };
+                if (numStore < GoodCount)
+                {
+                    var res = new { state = "false", msg = "仓库[" + dtGoodStorage.Rows[0]["WareHouseName"].ToString() + "]中，[" + dtGoodStorage.Rows[0]["GoodName"].ToString() + "]库存量剩余" + GoodCount + "，本次需兑付" + numStore + ",无法完成兑付!" };
                     context.Response.Write(JsonHelper.ToJson(res));
                     return;
                 }
@@ -1453,14 +1500,16 @@ namespace Web.User.Exchange
 
             StringBuilder sqlExDetail = new StringBuilder();
             StringBuilder sqlGroup = new StringBuilder();
-            for (int i = 0; i < dt.Rows.Count; i++) {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
 
                 //string strDate = Fun.getDate_YM(DateTime.Now);
                 string orderdateadd = strDate;
                 DataRow rowGroup = dt.Rows[i];
                 string orderdate = rowGroup["orderdate"].ToString();
                 string orderdateDone = rowGroup["orderdateDone"].ToString();
-                if (orderdateDone.Contains(orderdateadd)) {
+                if (orderdateDone.Contains(orderdateadd))
+                {
                     continue;//当前兑换已经在本月兑付过，不需要重复兑付
                 }
                 string ID = rowGroup["ID"].ToString();
@@ -1475,7 +1524,7 @@ namespace Web.User.Exchange
                 string UserID = context.Session["ID"].ToString();
 
 
-               
+
                 if (orderdateDone != "")
                 {
                     orderdateDone += "|" + orderdateadd;
@@ -1490,14 +1539,14 @@ namespace Web.User.Exchange
                     orderstate = 2;//全部兑付完成
                 }
 
-                
+
                 sqlExDetail.Append("  insert into [GoodExchangeGroupDetail] (");
                 sqlExDetail.Append("EGID,GoodID,GoodCount,GoodPrice,exchangeGroupProp,dt_Trade,userID,orderdate,orderstate)");
                 sqlExDetail.Append(" values (");
 
                 sqlExDetail.Append(string.Format("'{0}',{1},{2},{3},{4},'{5}',{6},'{7}',{8})", strGUID, GoodID, GoodCount, GoodPrice, exchangeGroupProp, DateTime.Now.ToString(), UserID, orderdateadd, 1));
 
-               
+
                 sqlGroup.Append("  UPDATE dbo.GoodExchangeGroup");
                 sqlGroup.Append(string.Format(" SET orderdateDone='{0}',", orderdateDone));
                 sqlGroup.Append(string.Format(" orderstate={0}", orderstate));
@@ -1506,16 +1555,17 @@ namespace Web.User.Exchange
                 //库存变化量
                 AddWBStoreRow(ref dtWBStorage, WBID, GoodID, WBWareHouseID, GoodCount);
 
-               
+
             }
 
             //库存 更新记录
             StringBuilder updateGoodStorage = new StringBuilder();
-            for (int i = 0; i < dtWBStorage.Rows.Count; i++) {
+            for (int i = 0; i < dtWBStorage.Rows.Count; i++)
+            {
                 string WBID = dtWBStorage.Rows[i]["WBID"].ToString();
                 string WBWareHouseID = dtWBStorage.Rows[i]["WBWareHouseID"].ToString();
                 string GoodID = dtWBStorage.Rows[i]["GoodID"].ToString();
-                double GoodCount = Convert.ToDouble( dtWBStorage.Rows[i]["numStore"]);
+                double GoodCount = Convert.ToDouble(dtWBStorage.Rows[i]["numStore"]);
 
                 StringBuilder sqlGoodStorage = new StringBuilder();
                 sqlGoodStorage.Append("  SELECT A.numStore,B.strName AS WareHouseName,C.strName AS GoodName");
@@ -1540,53 +1590,57 @@ namespace Web.User.Exchange
                     }
                 }
 
-                
+
                 updateGoodStorage.Append(string.Format("  UPDATE dbo.GoodStorage SET numStore=numStore-{0} WHERE GoodID={1} AND WBID={2} and WBWareHouseID={3}", GoodCount, GoodID, WBID, WBWareHouseID));
             }
 
 
-                #region 数据处理
-                using (SqlTransaction tran = SQLHelper.BeginTransaction(SQLHelper.connectionString))
+            #region 数据处理
+            using (SqlTransaction tran = SQLHelper.BeginTransaction(SQLHelper.connectionString))
+            {
+                try
                 {
-                    try
-                    {
-                        //兑付条目
-                        SQLHelper.ExecuteNonQuery(tran, CommandType.Text, sqlExDetail.ToString());
-                        //更新兑换记录
-                        SQLHelper.ExecuteNonQuery(tran, CommandType.Text, sqlGroup.ToString());
+                    //兑付条目
+                    SQLHelper.ExecuteNonQuery(tran, CommandType.Text, sqlExDetail.ToString());
+                    //更新兑换记录
+                    SQLHelper.ExecuteNonQuery(tran, CommandType.Text, sqlGroup.ToString());
 
-                        //更新商品库存
-                        SQLHelper.ExecuteNonQuery(tran, CommandType.Text, updateGoodStorage.ToString());
+                    //更新商品库存
+                    SQLHelper.ExecuteNonQuery(tran, CommandType.Text, updateGoodStorage.ToString());
 
-                        tran.Commit();
-                        var res = new { state = "true", msg = "兑付成功!" };
-                        context.Response.Write(JsonHelper.ToJson(res));
-                    }
-                    catch
-                    {
-                        tran.Rollback();
-                        var res = new { state = "false", msg = "兑付失败!" };
-                        context.Response.Write(JsonHelper.ToJson(res));
-                    }
+                    tran.Commit();
+                    var res = new { state = "true", msg = "兑付成功!" };
+                    context.Response.Write(JsonHelper.ToJson(res));
                 }
+                catch
+                {
+                    tran.Rollback();
+                    var res = new { state = "false", msg = "兑付失败!" };
+                    context.Response.Write(JsonHelper.ToJson(res));
+                }
+            }
             #endregion
 
         }
 
-        void AddWBStoreRow(ref DataTable dt, string WBID, string GoodID, string WBWareHouseID, double numStore) {
-            if (dt == null || dt.Rows.Count == 0) {
+        void AddWBStoreRow(ref DataTable dt, string WBID, string GoodID, string WBWareHouseID, double numStore)
+        {
+            if (dt == null || dt.Rows.Count == 0)
+            {
                 dt.Rows.Add(WBID, WBWareHouseID, GoodID, numStore);
                 return;
             }
             bool exitrow = false;
-            for (int i = 0; i < dt.Rows.Count; i++) {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
                 if (dt.Rows[i]["WBID"].ToString() == WBID && dt.Rows[i]["GoodID"].ToString() == GoodID && dt.Rows[i]["WBWareHouseID"].ToString() == WBWareHouseID)
                 {
                     exitrow = true;
                     dt.Rows[i]["numStore"] = Convert.ToDouble(dt.Rows[i]["numStore"]) + numStore;
                 }
             }
-            if (!exitrow) {
+            if (!exitrow)
+            {
                 dt.Rows.Add(WBID, WBWareHouseID, GoodID, numStore);
             }
             return;
@@ -1599,19 +1653,19 @@ namespace Web.User.Exchange
         void Get_GoodExchangeGroupDetail(HttpContext context)
         {
             string EGID = context.Request.Form["EGID"].ToString();
-            DataRow rowGoodExchangeGroupByID = SQLHelper.ExecuteDataTable(" select * from  GoodExchangeGroup where strGUID='"+EGID+"'").Rows[0];
+            DataRow rowGoodExchangeGroupByID = SQLHelper.ExecuteDataTable(" select * from  GoodExchangeGroup where strGUID='" + EGID + "'").Rows[0];
 
             string orderdate = rowGoodExchangeGroupByID["orderdate"].ToString();
             string orderdateDone = rowGoodExchangeGroupByID["orderdateDone"].ToString();
             string orderstate = rowGoodExchangeGroupByID["orderstate"].ToString();
-           
+
 
             StringBuilder sqlDetail = new StringBuilder();
             sqlDetail.Append(" SELECT B.strName AS GoodName,A.GoodCount,A.GoodPrice,A.GoodPrice*exchangeGroupProp/100 AS GoodPriceGroup,");
             sqlDetail.Append(" CONVERT(VARCHAR(100),dt_Trade,23) AS dt_Trade,C.strRealName AS UserName,A.orderdate,A.orderstate");
             sqlDetail.Append(" FROM dbo.GoodExchangeGroupDetail A INNER JOIN dbo.Good B ON A.GoodID=B.ID");
             sqlDetail.Append(" LEFT OUTER JOIN dbo.Users C ON A.userID=C.ID");
-            sqlDetail.Append(" WHERE A.EGID='"+EGID+"'");
+            sqlDetail.Append(" WHERE A.EGID='" + EGID + "'");
             DataTable dtDetail = SQLHelper.ExecuteDataTable(sqlDetail.ToString());
 
             if (dtDetail == null)//还没有任何兑付
@@ -1644,11 +1698,12 @@ namespace Web.User.Exchange
                 var res = new { state = "true", msg = "没有查询到数据!" };
                 context.Response.Write(JsonHelper.ToJson(res));
             }
-            else {
-                var res = new { state = "true", data = JsonHelper.ToJson(dtDetail),exgroup=JsonHelper.ToJson(rowGoodExchangeGroupByID.Table) };
+            else
+            {
+                var res = new { state = "true", data = JsonHelper.ToJson(dtDetail), exgroup = JsonHelper.ToJson(rowGoodExchangeGroupByID.Table) };
                 context.Response.Write(JsonHelper.ToJson(res));
             }
-         
+
 
         }
 
@@ -1670,7 +1725,7 @@ namespace Web.User.Exchange
                 return;
             }
             string BusinessNO = common.GetNewBusinessNO_Dep(AccountNumber);//交易流水号
-          
+
             string WBID = context.Session["WB_ID"].ToString();//当前网点ID
             string UserID = context.Session["ID"].ToString();//当前营业员ID
             string BusinessName = "商品销售";//GoodExchange存储的兑换业务名称
@@ -1684,7 +1739,7 @@ namespace Web.User.Exchange
             StringBuilder sqlO_Log = new StringBuilder();//所有的日志sql
             StringBuilder sqlGoodStorage = new StringBuilder();//每次仓库商品数量发生的变化
 
-         
+
             for (int i = 0; i < dtexlist.Rows.Count; i++)
             {
                 if (i != 0)
@@ -1718,7 +1773,7 @@ namespace Web.User.Exchange
                 #endregion
 
                 #region 日志记录
-              
+
                 sqlO_Log.Append("  insert into [Dep_OperateLog] (");
                 sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
                 sqlO_Log.Append(" values (");
@@ -1743,7 +1798,7 @@ namespace Web.User.Exchange
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, sqlO_Log.ToString());
                     //商品库存数变化
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, sqlGoodStorage.ToString());
-                   
+
                     tran.Commit();
 
                     var res = new { state = "success", msg = "商品销售成功!", BNOList = Fun.ListToString(BNOList, '|') };
@@ -1785,7 +1840,7 @@ namespace Web.User.Exchange
 
 
             #region 循环处理所有记录
-          
+
             StringBuilder sqlEx = new StringBuilder();//所有的兑换sql
             StringBuilder sqlO_Log = new StringBuilder();//所有的日志sql
             StringBuilder sqlGoodStorage = new StringBuilder();//每次仓库商品数量发生的变化
@@ -1833,7 +1888,7 @@ namespace Web.User.Exchange
             sqlGoodStorage.Append(string.Format("  UPDATE dbo.GoodStorage SET numStore=numStore-{0} WHERE GoodID={1} AND WBID={2} and WBWareHouseID={3}", GoodCount, GoodID, WBID, WBWareHouseID));
 
             //用户积分数变化
-          
+
             #endregion
 
             #region 数据处理
@@ -1842,7 +1897,7 @@ namespace Web.User.Exchange
                 try
                 {
                     //兑换记录
-                  object objIntegralID=  SQLHelper.ExecuteScalar(tran, CommandType.Text, sqlEx.ToString());
+                    object objIntegralID = SQLHelper.ExecuteScalar(tran, CommandType.Text, sqlEx.ToString());
                     //日志记录
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, sqlO_Log.ToString());
                     //商品库存数变化
@@ -1877,12 +1932,12 @@ namespace Web.User.Exchange
         {
             string AccountNumber = context.Request.Form["AccountNumber"].ToString();
             string BNOList = context.Request.Form["BNOList"].ToString();
-           
+
             string BNListSurPlue = "";//剩余的需要打印的编号集合
             string[] BNArray = BNOList.Split('|');//需要打印的编号集合
 
             string BusinessNO = BNArray[0];//首个编号
-          
+
 
             string strReturnMsg = "";
 
@@ -2044,7 +2099,7 @@ namespace Web.User.Exchange
         /// <param name="context"></param>
         void PrintGoodExchangeList(HttpContext context)
         {
-            
+
             string model = context.Request.Form["model"].ToString();//需要打印的序列组合
             string BNOList = context.Request.Form["BNOList"].ToString();//需要打印的序列组合
 
@@ -2113,11 +2168,11 @@ namespace Web.User.Exchange
             strReturn.Append("  <table style='width: 640px; padding: 10px 0px;'>");
             if (model == "")
             {
-                strReturn.Append("   <tr><td align='center' style='font-size: 18px; font-weight: bolder; text-align: center;'><span>" + CompanyName + "  储户兑换凭证</span>"+printValue+"</td> </tr>");
+                strReturn.Append("   <tr><td align='center' style='font-size: 18px; font-weight: bolder; text-align: center;'><span>" + CompanyName + "  储户兑换凭证</span>" + printValue + "</td> </tr>");
             }
             else
             {
-                strReturn.Append("   <tr><td align='center' style='font-size: 18px; font-weight: bolder; text-align: center;'><span>" + CompanyName + "  储户(退还)兑换凭证</span>"+printValue+"</td> </tr>");
+                strReturn.Append("   <tr><td align='center' style='font-size: 18px; font-weight: bolder; text-align: center;'><span>" + CompanyName + "  储户(退还)兑换凭证</span>" + printValue + "</td> </tr>");
 
             }
             strReturn.Append("   <tr><td align='center' style='font-size: 12px;  text-align: center;'> <span>防伪码：" + strGUID + "</span>  &nbsp;&nbsp;<span>编号：" + SerialNumber + "</span> </td> </tr>");
@@ -2370,7 +2425,7 @@ namespace Web.User.Exchange
             double T_VarietyCount = 0;//折合产品数量
             double T_Money_DuiHuan = 0;//金额
             double T_Money_YouHui = 0;//优惠
-            double T_Group_YouHui=0;
+            double T_Group_YouHui = 0;
             for (int i = 0; i < BNArray.Length; i++)
             {
                 BusinessNO = BNArray[i];
@@ -2396,7 +2451,7 @@ namespace Web.User.Exchange
                 double GoodPrice_ex = Convert.ToDouble(dt.Rows[0]["GoodPrice"]);//商品价格
                 double GoodPrice = GoodPrice_ex * exchangeGroupProp;
                 double Group_YouHui = Math.Round(GoodCount * (GoodPrice_ex - GoodPrice), 2);
-              
+
                 double VarietyInterest = Convert.ToDouble(dt.Rows[0]["VarietyInterest"]);//利息
                 double VarietyCount = Convert.ToDouble(dt.Rows[0]["VarietyCount"]);//折合产品数量
                 double Money_DuiHuan = Convert.ToDouble(dt.Rows[0]["Money_DuiHuan"]);//金额
@@ -2444,7 +2499,7 @@ namespace Web.User.Exchange
             string WBName = SQLHelper.ExecuteScalar(" SELECT top 1 strName FROM dbo.WB WHERE ID=" + WBID).ToString();
             string UserName = SQLHelper.ExecuteScalar(" SELECT top 1 strLoginName   FROM dbo.Users WHERE ID=" + UserID).ToString();
             strReturn.Append("    <tr style='height: 25px;'>");
-            strReturn.Append("   <td > <span>利息合计：</span></td>  <td>  <span>￥" + Math.Round(T_VarietyInterest, 2) + Math.Round(T_Money_YouHui, 2)+"元</span>  </td>");
+            strReturn.Append("   <td > <span>利息合计：</span></td>  <td>  <span>￥" + Math.Round(T_VarietyInterest, 2) + Math.Round(T_Money_YouHui, 2) + "元</span>  </td>");
             strReturn.Append("   <td > <span>优惠合计：</span></td>  <td >  <span>￥" + Math.Round(T_Group_YouHui, 2) + "元</span>  </td>");
             strReturn.Append("   <td > <span>兑换日期：</span></td>  <td >  <span>" + dt_Exchange + "</span>  </td>");
             strReturn.Append("  </tr>");
@@ -2472,9 +2527,10 @@ namespace Web.User.Exchange
 
             string[] BNArray = BNOList.Split('|');//需要打印的编号集合
 
-      
+
             string BusinessNOList = "";
-            for (int i = 0; i < BNArray.Length; i++) {
+            for (int i = 0; i < BNArray.Length; i++)
+            {
                 BusinessNOList += "'" + BNArray[i] + "',";
             }
             BusinessNOList = BusinessNOList.Substring(0, BusinessNOList.Length - 1);
@@ -2495,7 +2551,7 @@ namespace Web.User.Exchange
             }
 
             //共有参数
-          
+
             string strGUID = dtLog.Rows[0]["strGUID"].ToString();//
             string SerialNumber = dtLog.Rows[0]["SerialNumber"].ToString();//
             string Dep_Name = dtLog.Rows[0]["Dep_Name"].ToString();//
@@ -2507,7 +2563,7 @@ namespace Web.User.Exchange
             string WBName = SQLHelper.ExecuteScalar(" SELECT top 1 strName FROM dbo.WB WHERE ID=" + WBID).ToString();
             string UserName = SQLHelper.ExecuteScalar(" SELECT top 1 strLoginName   FROM dbo.Users WHERE ID=" + UserID).ToString();
 
-           
+
             StringBuilder strReturn = new StringBuilder();
             //标题
             string CompanyName = common.GetCompanyInfo()["strName"].ToString();
@@ -2589,8 +2645,8 @@ namespace Web.User.Exchange
             strReturn.Append("   <td > <span>总价值:" + T_Jine + "元</span></td>");
             strReturn.Append("  </tr>");
 
-          
-           
+
+
 
             strReturn.Append("    <tr style='height: 25px;'>");
             strReturn.Append("   <td > <span>营业员：</span> <span>" + UserName + "</span>  </td>");
@@ -2609,14 +2665,14 @@ namespace Web.User.Exchange
         void PrintGoodExchangeIntegral(HttpContext context)
         {
 
-           // string model = context.Request.Form["model"].ToString();//需要打印的序列组合
+            // string model = context.Request.Form["model"].ToString();//需要打印的序列组合
             string BusinessNO = context.Request.Form["BusinessNO"].ToString();//需要打印的序列组合
             string AccountNumber = context.Request.Form["AccountNumber"].ToString();
             StringBuilder strSqlLog = new StringBuilder();
             strSqlLog.Append("  select   TOP 1 SerialNumber,strGUID,BusinessNO,Dep_AccountNumber,Dep_Name,WBID,UserID,BusinessName,GoodID,GoodName,SpecName,UnitName,GoodCount,GoodPrice,GoodValue,A.integral_Change,  ");
             strSqlLog.Append(" CONVERT(NVARCHAR(100),dt_Integral,23) AS dt_Integral,B.integral_Total ");
             strSqlLog.Append("  FROM dbo.GoodExchangeIntegral A INNER JOIN dbo.Dep_Integral B ON A.Dep_AccountNumber=B.AccountNumber");
-            
+
             strSqlLog.Append(" where BusinessNO ='" + BusinessNO + "' and  A.Dep_AccountNumber='" + AccountNumber + "'");
             strSqlLog.Append("  ORDER BY B.dt_Add DESC");
             DataTable dtLog = SQLHelper.ExecuteDataTable(strSqlLog.ToString());
@@ -2688,7 +2744,7 @@ namespace Web.User.Exchange
             double GoodCount = Convert.ToDouble(row["GoodCount"]);//商品数量
             double GoodPrice = Convert.ToDouble(row["GoodPrice"]);//商品价格
             double GoodValue = Convert.ToDouble(row["GoodValue"]);//商品价格
-           
+
 
             strReturn.Append("   <tr style='height: 20px;'>");
             strReturn.Append("    <td > <span>" + BusinessName + "</span></td>");
@@ -2879,7 +2935,7 @@ namespace Web.User.Exchange
         //void GetInterestState(HttpContext context)
         //{
 
-             
+
         //    string ID = context.Request.QueryString["ID"].ToString();
         //    int ISJiexi = 0;//是否允许仅结息操作
         //    double Interest = 0;
@@ -2926,7 +2982,7 @@ namespace Web.User.Exchange
         //                        if (Price_JieCun >= Price_ShiChang)//到期的结存价格比现在的市场价高
         //                        {
         //                            Interest = (Price_JieCun - Price_ShiChang) * StorageNumber * EarningRate / (double)100;
-                                  
+
         //                        }
         //                        else
         //                        {
@@ -2943,11 +2999,11 @@ namespace Web.User.Exchange
         //                else
         //                {
         //                    Interest = (Price_DaoQi - Price_ShiChang) * StorageNumber;
-                           
+
         //                }
         //                break;
         //        }
-               
+
         //    }
         //    Interest = Math.Round(Interest, 2);
         //    string strReturn="[{\"Interest\":\""+Interest+"\",\"ISJiexi\":\""+ISJiexi+"\"}]";
@@ -2980,7 +3036,7 @@ namespace Web.User.Exchange
                 TimeSpan tsStorage = DateTime.Now.Subtract(StorageDate);
                 TimeSpan tsInterest = DateTime.Now.Subtract(InterestDate);
                 int numStorageDate = Convert.ToInt32(dt.Rows[0]["numStorageDate"]);//约定存储时间
-              
+
                 switch (InterestType)
                 {
                     case 1://按月结息方式
@@ -3041,7 +3097,7 @@ namespace Web.User.Exchange
             strSql.Append("select A.ID,A.TypeID,A.VarietyID,A.VarietyLevelID,A.TimeID,A.StorageFee,A.BankRate,A.CurrentRate,A.EarningRate,");
             strSql.Append("A.Price_ShiChang,A.Price_DaoQi,A.Price_HeTong,A.Price_XiaoShou,B.ISRegular,B.InterestType,B.numStorageDate,B.PricePolicy");
             strSql.Append(" FROM dbo.StorageRate A INNER JOIN dbo.StorageTime B ON A.TimeID=B.ID ");
-        
+
             strSql.Append(" where A.TimeID=" + TimeID + " and  A.VarietyID=" + VarietyID);
 
             //获取存粮信息
@@ -3084,7 +3140,8 @@ namespace Web.User.Exchange
         }
 
 
-        void StoreToSell2(HttpContext context) {
+        void StoreToSell2(HttpContext context)
+        {
             context.Response.Write("Error");
         }
 
@@ -3097,7 +3154,7 @@ namespace Web.User.Exchange
             //参数
             string ApplyID = context.Request.Form["ApplyID"];//存转销申请编号
             string dsiID = context.Request.Form["dsiID"].ToString();//兑换产品ID
-            double VarietyCount =Convert.ToDouble( context.Request.Form["VarietyCount"].ToString());
+            double VarietyCount = Convert.ToDouble(context.Request.Form["VarietyCount"].ToString());
             double VarietyMoney_input = Convert.ToDouble(context.Request.Form["VarietyMoney"].ToString());
             string calcType = context.Request.Form["calcType"].ToString();//计算类型，1：计算，2：反算
 
@@ -3135,10 +3192,11 @@ namespace Web.User.Exchange
             Dictionary<string, string> dicSell = common.FunJiSuan(context, dsiID, VarietyCount);
 
             double VarietyMoney = Convert.ToDouble(dicSell["Money"]);//存转销金额
-          
+
             //获取当前营业员的存转销限额
             double limitAmount = Convert.ToDouble(context.Request.Form["limitMount"]);
-            if (VarietyMoney > limitAmount) {
+            if (VarietyMoney > limitAmount)
+            {
                 var res = new { state = "error", msg = "存转销金额已大于当前营业员的操作限额，无法完成操作!" };
                 context.Response.Write(JsonHelper.ToJson(res));
                 return;
@@ -3161,7 +3219,7 @@ namespace Web.User.Exchange
             {
                 Money_Earn = VarietyMoney + VarietyInterest - StorageMoney;//总结算金额
             }
-            
+
             string dt_Sell = DateTime.Now.ToString();
 
             double StorageNumber = Convert.ToDouble(dtStorage.Rows[0]["StorageNumber"]);//该产品上一次的剩余结存
@@ -3174,7 +3232,7 @@ namespace Web.User.Exchange
             double StorageNumberRaw = Convert.ToDouble(dtStorage.Rows[0]["StorageNumberRaw"]);//该产品原始结
             double JieCun_Last = StorageNumber;//上次结存
             double JieCun_Now = StorageNumber - VarietyCount;//现在结存
-            if (JieCun_Now <0)
+            if (JieCun_Now < 0)
             {
                 var res = new { state = "error", msg = "该笔存储剩余结存不足，无法完成操作!" };
                 context.Response.Write(JsonHelper.ToJson(res));
@@ -3182,7 +3240,7 @@ namespace Web.User.Exchange
             }
             double Count_Balance = common.GetDep_StorageNumber(AccountNumber, VarietyID);//储户总结存
             Count_Balance = Count_Balance - VarietyCount;
-          
+
             #region 写入存转销记录
             StringBuilder strSqlInsert = new StringBuilder();
             strSqlInsert.Append("insert into [StorageSell] (");
@@ -3305,7 +3363,7 @@ namespace Web.User.Exchange
                     if (ApplyID != "")
                     {
                         //string strSqldelete = " DELETE FROM dbo.StorageSellApply WHERE ID=" + ApplyID.ToString();
-                        string strSqldelete =string.Format( " update StorageSellApply  set ApplyState={0}  WHERE ID={1}",3,  ApplyID.ToString());//改变存转销申请的状态 
+                        string strSqldelete = string.Format(" update StorageSellApply  set ApplyState={0}  WHERE ID={1}", 3, ApplyID.ToString());//改变存转销申请的状态 
                         SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqldelete.ToString());
                     }
 
@@ -3329,7 +3387,7 @@ namespace Web.User.Exchange
 
         void GetSellApplyByAN(HttpContext context)
         {
-          
+
             string AccountNumber = context.Request.Form["AccountNumber"].ToString();
             //获取存粮信息
             StringBuilder strSql = new StringBuilder();
@@ -3337,7 +3395,7 @@ namespace Web.User.Exchange
             strSql.Append("  CONVERT(varchar(100), ApplyDate, 111) AS ApplyDate ,  CASE (ApplyState) WHEN 0 THEN '待审核' WHEN 1 THEN '审核通过' WHEN 2 THEN '审核不通过' ELSE '已结算' END AS strApplyState,ApplyState");
             strSql.Append("  FROM dbo.StorageSellApply WHERE 1=1");
 
-           
+
             if (AccountNumber != "")
             {
                 strSql.Append("   AND Dep_AccountNumber='" + AccountNumber + "'");
@@ -3346,11 +3404,12 @@ namespace Web.User.Exchange
             DataTable dt = SQLHelper.ExecuteDataTable(strSql.ToString());
             if (dt == null || dt.Rows.Count == 0)
             {
-                var res=new {state="error",msg="没有查询到该储户的存转销申请记录!"};
-                 context.Response.Write(JsonHelper.ToJson(res));
+                var res = new { state = "error", msg = "没有查询到该储户的存转销申请记录!" };
+                context.Response.Write(JsonHelper.ToJson(res));
             }
-            else {
-                var res = new { state = "success", msg = "查询成功!",data=JsonHelper.ToJson(dt) };
+            else
+            {
+                var res = new { state = "success", msg = "查询成功!", data = JsonHelper.ToJson(dt) };
                 context.Response.Write(JsonHelper.ToJson(res));
             }
         }
@@ -3400,16 +3459,16 @@ namespace Web.User.Exchange
             string Price_ShiChang = dtStorage.Rows[0]["Price_ShiChang"].ToString();//商品存入价格
             string CurrentRate = dtStorage.Rows[0]["CurrentRate"].ToString();//活期利率
             string StorageFee = dtStorage.Rows[0]["StorageFee"].ToString();//保管费率
-          
+
             double VarietyMoney = Convert.ToDouble(context.Request.Form["VarietyMoney"]);//商品价值金额
             double VarietyCount = Convert.ToDouble(context.Request.Form["VarietyCount"]);//折合产品的数量
             double Interest = Convert.ToDouble(context.Request.Form["txtLiXi"]);//利息
             double MoneyFee = Convert.ToDouble(context.Request.Form["txtBGF"]);//保管费
-        
+
             double Money_Earn = VarietyMoney + Interest - MoneyFee;
             double EarningRate = Interest / VarietyMoney;//盈利率
-         
-           //获取此产品的上一次的结存信息
+
+            //获取此产品的上一次的结存信息
             double StorageNumber = Convert.ToDouble(dtStorage.Rows[0]["StorageNumber"]);//该产品上一次的剩余结存
             double StorageNumberRaw = Convert.ToDouble(dtStorage.Rows[0]["StorageNumberRaw"]);//该产品原始结
             double JieCun_Last = StorageNumber;//上次结存
@@ -3481,7 +3540,7 @@ namespace Web.User.Exchange
 
 
             #region 换购日志记录
-           
+
             StringBuilder strSqlOperateLog = new StringBuilder();
             strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
             strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
