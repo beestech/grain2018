@@ -6,7 +6,7 @@ using System.Text;
 using System.Data.SqlClient;
 using System.Data;
 using System.Web.SessionState;
-using System.Web.Mvc;
+
 namespace Web.User.Exchange
 {
     /// <summary>

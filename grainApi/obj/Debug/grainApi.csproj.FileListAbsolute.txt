@@ -1,5 +1,0 @@
-E:\grain\grainApi\bin\grainApi.dll.config
-E:\grain\grainApi\bin\grainApi.dll
-E:\grain\grainApi\bin\grainApi.pdb
-E:\grain\grainApi\obj\Debug\grainApi.dll
-E:\grain\grainApi\obj\Debug\grainApi.pdb
