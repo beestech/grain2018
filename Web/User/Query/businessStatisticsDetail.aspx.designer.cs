@@ -10,16 +10,7 @@
 namespace Web.User.Query {
     
     
-    public partial class DepositorInfo {
-        
-        /// <summary>
-        /// Head1 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlHead Head1;
+    public partial class businessStatisticsDetail {
         
         /// <summary>
         /// form1 控件。
@@ -31,13 +22,13 @@ namespace Web.User.Query {
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
         
         /// <summary>
-        /// QAccountNumber 控件。
+        /// ddlVariety 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputText QAccountNumber;
+        protected global::System.Web.UI.WebControls.DropDownList ddlVariety;
         
         /// <summary>
         /// ImageButton1 控件。
@@ -148,6 +139,24 @@ namespace Web.User.Query {
         protected global::System.Web.UI.WebControls.Repeater R_exchange;
         
         /// <summary>
+        /// goodExchangeGroup 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl goodExchangeGroup;
+        
+        /// <summary>
+        /// R_goodExchangeGroup 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater R_goodExchangeGroup;
+        
+        /// <summary>
         /// SellList 控件。
         /// </summary>
         /// <remarks>
@@ -182,5 +191,41 @@ namespace Web.User.Query {
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater R_Shopping;
+        
+        /// <summary>
+        /// sv_updateStorage 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl sv_updateStorage;
+        
+        /// <summary>
+        /// r_updateStorage 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater r_updateStorage;
+        
+        /// <summary>
+        /// sv_returnStorage 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl sv_returnStorage;
+        
+        /// <summary>
+        /// R_ReturnStorage 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater R_ReturnStorage;
     }
 }

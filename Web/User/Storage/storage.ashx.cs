@@ -338,7 +338,7 @@ namespace Web.User.Storage
             string AccountNumber = context.Request.QueryString["AccountNumber"].ToString();
 
             StringBuilder strSqlCommume = new StringBuilder();
-            strSqlCommume.Append("SELECT A.AccountNumber,A.strName,A.strAddress,A.IDCard,B.strName AS WBID,'密码' AS OperateWay, PhoneNO, CONVERT(NVARCHAR(100),A.dt_Add,23) AS dt_Add");
+            strSqlCommume.Append("SELECT A.AccountNumber,A.strName,A.strAddress,A.IDCard,B.strName AS WBID,'密码' AS OperateWay, PhoneNO,A.IsPoor, CONVERT(NVARCHAR(100),A.dt_Add,23) AS dt_Add");
             strSqlCommume.Append(" FROM dbo.Depositor A INNER JOIN dbo.WB B ON A.WBID=B.ID");
             strSqlCommume.Append(" WHERE A.AccountNumber='"+AccountNumber+"'");
            
@@ -357,6 +357,7 @@ namespace Web.User.Storage
             string PhoneNO = dtCommune.Rows[0]["PhoneNO"].ToString();
             string dt_Commune = dtCommune.Rows[0]["dt_Add"].ToString();
             string OperateWay = dtCommune.Rows[0]["OperateWay"].ToString();
+            bool isPoor =(bool)dtCommune.Rows[0]["IsPoor"];
 
             if (Convert.ToBoolean(rowWBWBAuthority["ISPrintIDCard"]) == false)
             {
@@ -407,7 +408,13 @@ namespace Web.User.Storage
                 strReturn.Append("  <table style='height:" + (Convert.ToInt32(HomeR2C1Y) - Convert.ToInt32(HomeR1C1Y)).ToString() + "px'><tr>");
                 strReturn.Append("   <td style='width:" + HomeR1C1X + "px;'></td>");
                 strReturn.Append("   <td style='font-size:20px; font-weight:bolder; width:" + (Convert.ToInt32(HomeR1C2X) - Convert.ToInt32(HomeR1C1X)).ToString() + "px;'>" + AccountNumber + "</td>");
-                strReturn.Append("   <td style='font-size:20px; font-weight:bolder;'>" + strName + "</td>");
+                if (isPoor) {
+                    strReturn.Append("   <td style='font-size:20px; font-weight:bolder;'>" + strName + "&nbsp;&nbsp;<span style='font-size:15px'>[贫困户]</span></td>");
+                }
+                else
+                {
+                    strReturn.Append("   <td style='font-size:20px; font-weight:bolder;'>" + strName + "</td>");
+                }                
                 strReturn.Append("   </tr></table>");
 
                 strReturn.Append("  <table style='height:" + (Convert.ToInt32(HomeR3C1Y) - Convert.ToInt32(HomeR2C1Y)).ToString() + "px'><tr>");
@@ -1225,7 +1232,7 @@ namespace Web.User.Storage
 
              string AccountNumber = dtStorage.Rows[0]["AccountNumber"].ToString();
              string BusinessNO = common.GetNewBusinessNO_Dep(AccountNumber);
-
+            double StorageNumberRaw = Convert.ToDouble(dtStorage.Rows[0]["StorageNumberRaw"]);
             string editType = context.Request.Form["editType"].ToString();
             string WeighNo = context.Request.Form["WeighNO"].ToString();
             string StorageNumber = context.Request.Form["StorageNumber"].ToString();
@@ -1243,7 +1250,9 @@ namespace Web.User.Storage
             double num_balance = StorageNumber_Start + numStorage;
             string VarietyID = dtStorage.Rows[0]["VarietyID"].ToString();
             string VarietyLevelID = dtStorage.Rows[0]["VarietyLevelID"].ToString();
-           
+
+
+        
 
             //添加交易记录
 
@@ -1262,6 +1271,26 @@ namespace Web.User.Storage
             {
                 UnitID = objUnitID.ToString();
             }
+
+            //添加修改存粮记录
+
+            #region MyRegion
+            StringBuilder updateRecordSql = new StringBuilder();
+            updateRecordSql.Append(@"insert into SV_UpdateRecord (Dep_StorageInfo_ID,AccountNumber,VarietyID,VarietyName,StorageNumberRaw,StorageNumber,StorageNumberChange,createDate,WBID,UserID)
+values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumberRaw,@StorageNumber,@StorageNumberChange,@createDate,@WBID,@UserID)");
+            SqlParameter[] paras = {
+                    new SqlParameter("@Dep_StorageInfo_ID", ID),
+                    new SqlParameter("@AccountNumber", AccountNumber),
+                    new SqlParameter("@VarietyID", VarietyID),
+                    new SqlParameter("@VarietyName",VarietyName),
+                    new SqlParameter("@StorageNumberRaw", StorageNumberRaw),
+                    new SqlParameter("@StorageNumber", StorageNumber),
+                    new SqlParameter("@StorageNumberChange", num_balance),
+                    new SqlParameter("@createDate", DateTime.Now),
+                    new SqlParameter("@WBID", WBID),
+                    new SqlParameter("@UserID", UserID)
+            }; 
+            #endregion
 
             StringBuilder strSqlOperateLog = new StringBuilder();
             strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
@@ -1336,6 +1365,7 @@ namespace Web.User.Storage
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlEdit.ToString());//更新储户存储信息
 
                     //SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlEditLog.ToString());//更新储户存储信息记录
+                    SQLHelper.ExecuteNonQuery(tran, CommandType.Text, updateRecordSql.ToString(),paras);//修改存粮记录
                     
                    object objID= SQLHelper.ExecuteScalar(tran, CommandType.Text, strSqlOperateLog.ToString(), parametersOperateLog);
 
@@ -1357,7 +1387,7 @@ namespace Web.User.Storage
                     var res = new { state = "true", msg = "更新数据成功!", BusinessNO = BusinessNO };
                     context.Response.Write(JsonHelper.ToJson(res));
                 }
-                catch
+                catch(Exception ex)
                 {
                     tran.Rollback();
                     var res = new { state = "false", msg = "更新数据失败!" };
@@ -1539,6 +1569,8 @@ namespace Web.User.Storage
             string VarietyID = dtStorage.Rows[0]["VarietyID"].ToString();
             string VarietyLevelID = dtStorage.Rows[0]["VarietyLevelID"].ToString();
             string AccountNumber = dtStorage.Rows[0]["AccountNumber"].ToString();
+            double StorageNumberRaw = Convert.ToDouble(dtStorage.Rows[0]["StorageNumberRaw"]);
+
 
             //添加交易记录
             //string WBID = context.Session["WB_ID"].ToString();
@@ -1554,6 +1586,26 @@ namespace Web.User.Storage
             {
                 UnitID = objUnitID.ToString();
             }
+
+            #region 添加退还粮食记录
+            StringBuilder addReturnRecordSql = new StringBuilder();
+            addReturnRecordSql.Append(@"insert into SV_ReturnRecord (Dep_StorageInfo_ID,AccountNumber,VarietyID,VarietyName,StorageNumberRaw,StorageNumber,returnNumber,
+            createDate,WBID,UserID)values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumberRaw,@StorageNumber,@returnNumber,@createDate,@WBID,@UserID)");
+            SqlParameter[] paras = {
+                    new SqlParameter("@Dep_StorageInfo_ID", ID),
+                    new SqlParameter("@AccountNumber", AccountNumber),
+                    new SqlParameter("@VarietyID", VarietyID),
+                    new SqlParameter("@VarietyName",VarietyName),
+                    new SqlParameter("@StorageNumberRaw", StorageNumberRaw),
+                    new SqlParameter("@StorageNumber", StorageNumber),
+                    new SqlParameter("@returnNumber", StorageNumber),
+                    new SqlParameter("@createDate", DateTime.Now),
+                    new SqlParameter("@WBID", WBID),
+                    new SqlParameter("@UserID", UserID)
+            };
+
+
+            #endregion
 
             StringBuilder strSqlOperateLog = new StringBuilder();
             strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
@@ -1623,7 +1675,9 @@ namespace Web.User.Storage
             //修改该产品在网点中的库存
             string strSqlUpdate = " UPDATE dbo.SA_VarietyStorage SET numStorage=" + numStorage + " WHERE WBID=" + WBID + " AND VarietyID=" + VarietyID+" and VarietyLevelID="+VarietyLevelID;
 
-         
+           
+
+
             //添加事务处理
             using (SqlTransaction tran = SQLHelper.BeginTransaction(SQLHelper.connectionString))
             {
@@ -1634,7 +1688,7 @@ namespace Web.User.Storage
 
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlUpdate_Dep.ToString());//将储户存粮置0
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlUpdate.ToString());//修改网点库存
-
+                    SQLHelper.ExecuteNonQuery(tran, CommandType.Text, addReturnRecordSql.ToString(),paras);//添加退粮记录
 
                     //添加存粮操作日志
                     StringBuilder sqlVS = new StringBuilder();

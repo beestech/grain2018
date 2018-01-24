@@ -175,7 +175,6 @@
         </div>
 
         <div id="exchangeList" runat="server" style="margin: 10px 0px;">
-
             <asp:Repeater ID="R_exchange" runat="server">
                 <HeaderTemplate>
                     <table class="tabData"  style="max-width:750px;">

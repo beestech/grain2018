@@ -743,7 +743,9 @@
                         </td>
                         <td>
                             <input name="PhoneNO" type="text"  />
-                            <span class="spanwarning" id="span_PhoneNO">请输入储户手机号</span>
+                            <span class="spanwarning" id="span_PhoneNO">请输入储户手机号</span>                        
+                            <span>是否贫困户:</span>                       
+                            <input name="IsPoor"  type="radio" value="1" />是<input type="radio" name="IsPoor" checked value="0" />否
                         </td>
                     </tr>
                     <tr>
@@ -755,6 +757,7 @@
                             <select name="XiangID" ></select>
                             <select name="CunID" ></select>
                             <a id="a_Cun" href="#" onclick="BDCun_Show()">添加村名</a>
+                            
                         </td>
                     </tr>
                     <tr id="tr_Integral">

@@ -217,7 +217,13 @@ namespace Web.User.Query
                 ISSendMessage = true;
             }
             string strAddress = context.Request.Form["strAddress"].ToString();
-
+            //添加是否贫困户字段；
+            bool flag = false;
+            string isPoor = context.Request.Form["IsPoor"].ToString();
+            if (isPoor.Equals("1"))
+            {
+                flag = true;
+            }
             //检验账号唯一性
             string strSameAccount = "  SELECT  COUNT(ID)  FROM dbo.Depositor WHERE AccountNumber='" + AccountNumber + "'";
             if (SQLHelper.ExecuteScalar(strSameAccount).ToString() != "0")
@@ -245,9 +251,9 @@ namespace Web.User.Query
             //}
             StringBuilder strSql = new StringBuilder();
             strSql.Append("insert into [Depositor] (");
-            strSql.Append("WBID,AccountNumber,strPassword,strAddress,XianID,XiangID,CunID,strName,IDCard,PhoneNO,ISSendMessage,BankCardNO,numState,dt_Add,dt_Update)");
+            strSql.Append("WBID,AccountNumber,strPassword,strAddress,XianID,XiangID,CunID,strName,IDCard,PhoneNO,ISSendMessage,BankCardNO,numState,dt_Add,dt_Update,IsPoor)");
             strSql.Append(" values (");
-            strSql.Append("@WBID,@AccountNumber,@strPassword,@strAddress,@XianID,@XiangID,@CunID,@strName,@IDCard,@PhoneNO,@ISSendMessage,@BankCardNO,@numState,@dt_Add,@dt_Update)");
+            strSql.Append("@WBID,@AccountNumber,@strPassword,@strAddress,@XianID,@XiangID,@CunID,@strName,@IDCard,@PhoneNO,@ISSendMessage,@BankCardNO,@numState,@dt_Add,@dt_Update,@IsPoor)");
             strSql.Append(";select @@IDENTITY");
             SqlParameter[] parameters = {
 					new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -264,7 +270,9 @@ namespace Web.User.Query
 					new SqlParameter("@BankCardNO", SqlDbType.NVarChar,50),
 					new SqlParameter("@numState", SqlDbType.Int,4),
 					new SqlParameter("@dt_Add", SqlDbType.DateTime),
-					new SqlParameter("@dt_Update", SqlDbType.DateTime)};
+					new SqlParameter("@dt_Update", SqlDbType.DateTime),
+                    new SqlParameter("@IsPoor", SqlDbType.Bit,1)
+            };
             parameters[0].Value = WBID;
             parameters[1].Value = AccountNumber;
             parameters[2].Value = strPassword;
@@ -280,6 +288,7 @@ namespace Web.User.Query
             parameters[12].Value = 1;
             parameters[13].Value = DateTime.Now;
             parameters[14].Value = DateTime.Now;
+            parameters[15].Value = flag;
 
             StringBuilder sqlIntegral = new StringBuilder();
             if (DepRecommend != "") {
