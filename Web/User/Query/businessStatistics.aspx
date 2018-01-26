@@ -128,13 +128,17 @@
                             </th>
                             <th style="width: 120px; text-align: center;">存储产品
                             </th>
-                            <th style="width: 60px; text-align: center;">存入数量
+                            <th style="width: 60px; text-align: center;">始存数量
                             </th>
                             <th style="width: 60px; text-align: center;">兑换
                             </th>
                             <th style="width: 60px; text-align: center;">存转销
                             </th>
                             <th style="width: 80px; text-align: center;">产品换购
+                            </th>
+                            <th style="width: 80px; text-align: center;">修改存粮数
+                            </th>
+                            <th style="width: 80px; text-align: center;">退还存粮数
                             </th>
                             <th style="width: 100px; text-align: center;">结余
                             </th>
@@ -167,6 +171,12 @@
                         </td>                        
                         <td>
                             <%#(Eval("StorageShoppingCount"))%>
+                        </td>
+                        <td>
+                            <%#(Eval("VarietyCount_error"))%>
+                        </td>
+                        <td>
+                            <%#(Eval("VarietyCount_return"))%>
                         </td>
                         <td>
                             <%#(Eval("StorageNumber"))%>

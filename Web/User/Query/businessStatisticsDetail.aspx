@@ -164,6 +164,135 @@
                 </FooterTemplate>
             </asp:Repeater>
         </div>
+         <!--修改记录-->
+        <div id="sv_updateStorage" runat="server" style="display: none;margin: 10px 0px;">
+            <asp:Repeater ID="r_updateStorage" runat="server">
+                <HeaderTemplate>
+                    <table class="tabData" style="max-width:750px;">
+                        <thead>
+                            <tr>
+                                <td colspan="8" align="center">储户存粮修改信息</td>
+                            </tr>
+                        </thead>
+
+                        <tr class="tr_head">
+                            <th style="width: 100px; height: 20px; text-align: center;">储户账号
+                            </th>
+                            <th style="width: 100px; text-align: center;">产品名称
+                            </th>                            
+                            <th style="width: 100px; text-align: center;">存入数量
+                            </th>
+                            <th style="width: 100px; text-align: center;">修改数量
+                            </th>
+                            <th style="width: 100px; text-align: center;">结存
+                            </th>
+                            <th style="width: 100px; text-align: center;">操作人</th>
+                            <th style="width: 100px; text-align: center;">网点</th>
+                            <th style="width: 100px; text-align: center;">日期</th>
+                        </tr>
+                </HeaderTemplate>
+                <ItemTemplate>
+                    <tr onmouseover="change_colorOver(this)" onmouseout="change_colorOut(this)">
+                        <td style="height: 25px;">
+                            <%#Eval("AccountNumber")%>
+                        </td>
+                        <td>
+                            <%#Eval("VarietyName")%>
+                        </td>
+                        <td>
+                            <%#Eval("StorageNumberRaw")%>
+                        </td>
+                        <td>
+                            <%#Eval("StorageNumberChange")%>
+                        </td>
+                        <td>
+                            <%#Eval("StorageNumber")%>
+                        </td>
+                        <td>
+                            <%#Eval("strLoginName")%>
+                        </td>
+                        <td>
+                            <%#Eval("strName")%>
+                        </td>
+                        <td>
+                            <%# Convert.ToDateTime(Eval("createDate")).ToShortDateString()%>
+                        </td>
+
+                    </tr>
+                </ItemTemplate>
+                <FooterTemplate>
+
+                    <!--底部模板-->
+                    </table>
+                    <!--表格结束部分-->
+                </FooterTemplate>
+            </asp:Repeater>
+        </div>
+        <!--退还记录-->
+        <div id="sv_returnStorage" runat="server" style="display: none;margin: 10px 0px;">
+            <asp:Repeater ID="R_ReturnStorage" runat="server">
+                <HeaderTemplate>
+                    <table class="tabData" style="max-width:750px;">
+                        <thead>
+                            <tr>
+                                <td colspan="7" align="center">储户存粮退还信息</td>
+                            </tr>
+                        </thead>
+
+                        <tr class="tr_head">
+                            <th style="width: 100px; height: 20px; text-align: center;">储户账号
+                            </th>
+                            <th style="width: 100px; text-align: center;">产品名称
+                            </th>                            
+                            <th style="width: 100px; text-align: center;">存入数量
+                            </th>
+                            <th style="width: 100px; text-align: center;">退还数量
+                            </th>
+                            <th style="width: 100px; text-align: center;">结存数量
+                            </th>
+                            </th>
+                            <th style="width: 100px; text-align: center;">操作人</th>
+                            <th style="width: 100px; text-align: center;">网点</th>
+                            <th style="width: 100px; text-align: center;">日期</th>
+                        </tr>
+                </HeaderTemplate>
+                <ItemTemplate>
+                    <tr onmouseover="change_colorOver(this)" onmouseout="change_colorOut(this)">
+                        <td style="height: 25px;">
+                            <%#Eval("AccountNumber")%>
+                        </td>
+                        <td>
+                            <%#Eval("VarietyName")%>
+                        </td>
+                        <td>
+                            <%#Eval("StorageNumberRaw")%>
+                        </td>
+                        <td>
+                            <%#Eval("returnNumber")%>
+                        </td>
+                        <td>
+                            <%#Eval("StorageNumber")%>
+                        </td>
+                        <td>
+                            <%#Eval("strLoginName")%>
+                        </td>
+                        <td>
+                            <%#Eval("strName")%>
+                        </td>
+                        <td>
+                            <%# Convert.ToDateTime(Eval("createDate")).ToShortDateString()%>
+                        </td>
+
+                    </tr>
+                </ItemTemplate>
+                <FooterTemplate>
+
+                    <!--底部模板-->
+                    </table>
+                    <!--表格结束部分-->
+                </FooterTemplate>
+            </asp:Repeater>
+        </div>
         <!--兑换-->
         <div id="exchangeList" runat="server" style="display: none;margin: 10px 0px;">
             <asp:Repeater ID="R_exchange" runat="server">
@@ -434,130 +563,7 @@
                 </FooterTemplate>
             </asp:Repeater>
         </div>
-        <!--修改记录-->
-        <div id="sv_updateStorage" runat="server" style="display: none;margin: 10px 0px;">
-            <asp:Repeater ID="r_updateStorage" runat="server">
-                <HeaderTemplate>
-                    <table class="tabData" style="max-width:750px;">
-                        <thead>
-                            <tr>
-                                <td colspan="8" align="center">储户业务修改记录</td>
-                            </tr>
-                        </thead>
-
-                        <tr class="tr_head">
-                            <th style="width: 100px; height: 20px; text-align: center;">储户账号
-                            </th>
-                            <th style="width: 100px; text-align: center;">产品名称
-                            </th>                            
-                            <th style="width: 100px; text-align: center;">始存数量
-                            </th>
-                            <th style="width: 100px; text-align: center;">修改数量
-                            </th>
-                            <th style="width: 100px; text-align: center;">结存
-                            </th>
-                            <th style="width: 100px; text-align: center;">操作人</th>
-                            <th style="width: 100px; text-align: center;">网点</th>
-                            <th style="width: 100px; text-align: center;">日期</th>
-                        </tr>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <tr onmouseover="change_colorOver(this)" onmouseout="change_colorOut(this)">
-                        <td style="height: 25px;">
-                            <%#Eval("AccountNumber")%>
-                        </td>
-                        <td>
-                            <%#Eval("VarietyName")%>
-                        </td>
-                        <td>
-                            <%#Eval("StorageNumberRaw")%>
-                        </td>
-                        <td>
-                            <%#Eval("StorageNumber")%>
-                        </td>
-                        <td>
-                            <%#Eval("StorageNumberChange")%>
-                        </td>
-                        <td>
-                            <%#Eval("strLoginName")%>
-                        </td>
-                        <td>
-                            <%#Eval("strName")%>
-                        </td>
-                        <td>
-                            <%# Convert.ToDateTime(Eval("createDate")).ToShortDateString()%>
-                        </td>
-
-                    </tr>
-                </ItemTemplate>
-                <FooterTemplate>
-
-                    <!--底部模板-->
-                    </table>
-                    <!--表格结束部分-->
-                </FooterTemplate>
-            </asp:Repeater>
-        </div>
-        <!--退还记录-->
-        <div id="sv_returnStorage" runat="server" style="display: none;margin: 10px 0px;">
-            <asp:Repeater ID="R_ReturnStorage" runat="server">
-                <HeaderTemplate>
-                    <table class="tabData" style="max-width:750px;">
-                        <thead>
-                            <tr>
-                                <td colspan="7" align="center">储户存粮退还记录</td>
-                            </tr>
-                        </thead>
-
-                        <tr class="tr_head">
-                            <th style="width: 100px; height: 20px; text-align: center;">储户账号
-                            </th>
-                            <th style="width: 100px; text-align: center;">产品名称
-                            </th>                            
-                            <th style="width: 100px; text-align: center;">始存数量
-                            </th>
-                            <th style="width: 100px; text-align: center;">退还数量
-                            </th>                            
-                            </th>
-                            <th style="width: 100px; text-align: center;">操作人</th>
-                            <th style="width: 100px; text-align: center;">网点</th>
-                            <th style="width: 100px; text-align: center;">日期</th>
-                        </tr>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <tr onmouseover="change_colorOver(this)" onmouseout="change_colorOut(this)">
-                        <td style="height: 25px;">
-                            <%#Eval("AccountNumber")%>
-                        </td>
-                        <td>
-                            <%#Eval("VarietyName")%>
-                        </td>
-                        <td>
-                            <%#Eval("StorageNumberRaw")%>
-                        </td>
-                        <td>
-                            <%#Eval("returnNumber")%>
-                        </td>
-                        <td>
-                            <%#Eval("strLoginName")%>
-                        </td>
-                        <td>
-                            <%#Eval("strName")%>
-                        </td>
-                        <td>
-                            <%# Convert.ToDateTime(Eval("createDate")).ToShortDateString()%>
-                        </td>
-
-                    </tr>
-                </ItemTemplate>
-                <FooterTemplate>
-
-                    <!--底部模板-->
-                    </table>
-                    <!--表格结束部分-->
-                </FooterTemplate>
-            </asp:Repeater>
-        </div>
+       
 
         <div style="display: none;">
             <%--选择兑换的存储产品信息--%>

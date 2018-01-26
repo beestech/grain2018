@@ -407,14 +407,16 @@ namespace Web.User.Storage
                 strReturn.Append("  <table style='height:" + HomeR1C1Y + "px'><tr><td></td> </tr></table>");
                 strReturn.Append("  <table style='height:" + (Convert.ToInt32(HomeR2C1Y) - Convert.ToInt32(HomeR1C1Y)).ToString() + "px'><tr>");
                 strReturn.Append("   <td style='width:" + HomeR1C1X + "px;'></td>");
-                strReturn.Append("   <td style='font-size:20px; font-weight:bolder; width:" + (Convert.ToInt32(HomeR1C2X) - Convert.ToInt32(HomeR1C1X)).ToString() + "px;'>" + AccountNumber + "</td>");
-                if (isPoor) {
-                    strReturn.Append("   <td style='font-size:20px; font-weight:bolder;'>" + strName + "&nbsp;&nbsp;<span style='font-size:15px'>[贫困户]</span></td>");
+                if (isPoor)
+                {
+                    strReturn.Append("   <td style='font-size:20px; font-weight:bolder; width:" + (Convert.ToInt32(HomeR1C2X) - Convert.ToInt32(HomeR1C1X)).ToString() + "px;'>" + AccountNumber + "&nbsp;<span style='font-size:13px;font-weight:bold '>[贫困户]</td>");
                 }
                 else
                 {
+                    strReturn.Append("   <td style='font-size:20px; font-weight:bolder; width:" + (Convert.ToInt32(HomeR1C2X) - Convert.ToInt32(HomeR1C1X)).ToString() + "px;'>" + AccountNumber + "</td>");
+                }                                                 
                     strReturn.Append("   <td style='font-size:20px; font-weight:bolder;'>" + strName + "</td>");
-                }                
+                              
                 strReturn.Append("   </tr></table>");
 
                 strReturn.Append("  <table style='height:" + (Convert.ToInt32(HomeR3C1Y) - Convert.ToInt32(HomeR2C1Y)).ToString() + "px'><tr>");
@@ -1284,8 +1286,8 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
                     new SqlParameter("@VarietyID", VarietyID),
                     new SqlParameter("@VarietyName",VarietyName),
                     new SqlParameter("@StorageNumberRaw", StorageNumberRaw),
-                    new SqlParameter("@StorageNumber", StorageNumber),
-                    new SqlParameter("@StorageNumberChange", num_balance),
+                    new SqlParameter("@StorageNumber", num_balance),
+                    new SqlParameter("@StorageNumberChange",numStorage),//修改数量
                     new SqlParameter("@createDate", DateTime.Now),
                     new SqlParameter("@WBID", WBID),
                     new SqlParameter("@UserID", UserID)
@@ -1589,6 +1591,7 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
 
             #region 添加退还粮食记录
             StringBuilder addReturnRecordSql = new StringBuilder();
+            int jieYu = 0;
             addReturnRecordSql.Append(@"insert into SV_ReturnRecord (Dep_StorageInfo_ID,AccountNumber,VarietyID,VarietyName,StorageNumberRaw,StorageNumber,returnNumber,
             createDate,WBID,UserID)values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumberRaw,@StorageNumber,@returnNumber,@createDate,@WBID,@UserID)");
             SqlParameter[] paras = {
@@ -1597,7 +1600,7 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
                     new SqlParameter("@VarietyID", VarietyID),
                     new SqlParameter("@VarietyName",VarietyName),
                     new SqlParameter("@StorageNumberRaw", StorageNumberRaw),
-                    new SqlParameter("@StorageNumber", StorageNumber),
+                    new SqlParameter("@StorageNumber", jieYu),
                     new SqlParameter("@returnNumber", StorageNumber),
                     new SqlParameter("@createDate", DateTime.Now),
                     new SqlParameter("@WBID", WBID),

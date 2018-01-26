@@ -344,7 +344,6 @@ namespace Web.Ashx
             strReturn.Append("    <td style='width: 240px;'>  <span >网点：" + WBName + "</span> </td>");
             strReturn.Append("   </tr> </table>");
 
-
             //表格内容
             strReturn.Append("    <table class='tabPrint' style='padding: 5px 0px; font-size: 14px;'>");
             //添加表格样式

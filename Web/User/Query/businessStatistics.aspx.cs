@@ -74,7 +74,8 @@ namespace Web.User.Query
 
                     StringBuilder sql = new StringBuilder();
                     sql.Append(@"SELECT DISTINCT Dep_AccountNumber,P.strName AS DepName, b.strName AS VarietyName,b.ID,
-                                ( SELECT SUM( StorageNumberRaw)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID )
+                                ( SELECT SUM( StorageNumberRaw)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID )-
+                                ( SELECT SUM( Count_Trade)  FROM dbo.Dep_OperateLog m WHERE BusinessName ='5' AND m.Dep_AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID)
                                 AS StorageNumberRaw,
                                 ( SELECT SUM( StorageNumber)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID )
                                 AS StorageNumber,
@@ -116,10 +117,12 @@ namespace Web.User.Query
                 }
                 else
                 {
+                   
                     //网点
                     StringBuilder sql = new StringBuilder();
                     sql.Append(@"SELECT DISTINCT Dep_AccountNumber,P.strName AS DepName, b.strName AS VarietyName,b.ID,
-                                ( SELECT SUM( StorageNumberRaw)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID )
+                                ( SELECT SUM( StorageNumberRaw)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID )-
+                                ( SELECT SUM( Count_Trade)  FROM dbo.Dep_OperateLog m WHERE BusinessName ='5' AND m.Dep_AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID)
                                 AS StorageNumberRaw,
                                 ( SELECT SUM( StorageNumber)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID )
                                 AS StorageNumber,
@@ -143,7 +146,7 @@ namespace Web.User.Query
                     if (!string.IsNullOrWhiteSpace(wbid.ToString()))
                     {
 
-                        sql.Append(" AND (A.WBID=" + 16 + " OR P.WBID=" + 16 + ") ");
+                        sql.Append(" AND (A.WBID=" + wbid + " OR P.WBID=" + wbid + ") ");
 
                     }
                     if (!string.IsNullOrWhiteSpace(ddlName.SelectedValue))
@@ -178,6 +181,9 @@ namespace Web.User.Query
                 bm.VarietyName = dt.Rows[i]["VarietyName"].ToString();
                 bm.DepName = dt.Rows[i]["DepName"].ToString();
                 bm.VarietyID = dt.Rows[i]["ID"].ToString();
+                //VarietyCount_return
+                bm.VarietyCount_return = Convert.ToDouble(string.IsNullOrWhiteSpace(dt.Rows[i]["VarietyCount_return"].ToString()) ? 0 : dt.Rows[i]["VarietyCount_return"]);
+                bm.VarietyCount_error = Convert.ToDouble(string.IsNullOrWhiteSpace(dt.Rows[i]["VarietyCount_error"].ToString()) ? 0 : dt.Rows[i]["VarietyCount_error"]);
                 bm.StorageNumberRaw = Convert.ToDouble(string.IsNullOrWhiteSpace(dt.Rows[i]["StorageNumberRaw"].ToString()) ? 0 : dt.Rows[i]["StorageNumberRaw"]);
                 double exchangeCountGroup = 0;
                double exchangeCount = 0;
@@ -222,5 +228,8 @@ namespace Web.User.Query
         public double StorageSellCount { get; set; }
         public double StorageShoppingCount { get; set; }
         public double StorageNumber { get; set; }
+
+        public double VarietyCount_return { get; set; }
+        public double VarietyCount_error { get; set; }
     }
 }

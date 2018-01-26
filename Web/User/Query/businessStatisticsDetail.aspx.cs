@@ -95,7 +95,7 @@ namespace Web.User.Query
    where AccountNumber='{0}'", AccountNumber);
             if (!string.IsNullOrWhiteSpace(vId))
             {
-                sql += string.Format(" and a.VarietyID={0}", vId);
+                sql += " and a.VarietyID=" + vId;
             }
             var dtStorage = SQLHelper.ExecuteDataTable(sql.ToString());
             DataColumn dcstrlixi = new DataColumn("strlixi", typeof(string));
@@ -118,6 +118,10 @@ namespace Web.User.Query
                 Repeater1.DataSource = dtStorage;
                 Repeater1.DataBind();
             }
+            else
+            {
+                StorageList.Style.Add("display", "none");
+            }
 
             //兑换
             string exchangeSql = string.Format(@"select g.BusinessName,s.strName,g.VarietyCount,g.GoodName,g.VarietyInterest,g.Money_DuiHuan,g.dt_Exchange,g.GoodPrice,g.GoodCount from GoodExchange as g 
@@ -127,7 +131,7 @@ namespace Web.User.Query
                                                 where g.Dep_AccountNumber='{0}'", AccountNumber);
             if (!string.IsNullOrWhiteSpace(vId))
             {
-                sql += string.Format(" and d.VarietyID={0}", vId);
+                exchangeSql += " and d.VarietyID=" + vId;
             }
             var dtExchange = SQLHelper.ExecuteDataTable(exchangeSql);
             if (dtExchange != null && dtExchange.Rows.Count > 0)
@@ -136,7 +140,10 @@ namespace Web.User.Query
                 R_exchange.DataSource = dtExchange;
                 R_exchange.DataBind();
             }
-
+            else
+            {
+                exchangeList.Style.Add("display", "none");
+            }
             //分时批量兑换
             string exchangeGroupSql = string.Format(@"SELECT BusinessName,s.strName,g.VarietyCount,g.GoodName,g.GoodPrice,g.GoodCount,g.VarietyInterest,g.Money_DuiHuan,dt_Exchange FROM dbo.GoodExchangeGroup as g 
                                                     inner join Dep_StorageInfo as d
@@ -145,7 +152,7 @@ namespace Web.User.Query
                                                     where g.Dep_AccountNumber='{0}'",AccountNumber);
             if (!string.IsNullOrWhiteSpace(vId))
             {
-                sql += string.Format(" and s.ID={0}", vId);
+                exchangeGroupSql += " and s.ID="+ vId;
             }
             var dtExchangeGroup = SQLHelper.ExecuteDataTable(exchangeGroupSql);
             if (dtExchangeGroup != null && dtExchangeGroup.Rows.Count > 0)
@@ -154,12 +161,16 @@ namespace Web.User.Query
                 R_goodExchangeGroup.DataSource = dtExchangeGroup;
                 R_goodExchangeGroup.DataBind();
             }
+            else
+            {
+                goodExchangeGroup.Style.Add("display", "none");
+            }
             //存转销
             string sqlStorageSell = string.Format(@"select s.BusinessName,VarietyName,s.VarietyCount,s.StorageDate,s.VarietyInterest,s.StorageMoney ,s.VarietyMoney ,s.dt_Sell from StorageSell as s
 where s.Dep_AccountNumber='{0}'", AccountNumber);
             if (!string.IsNullOrWhiteSpace(vId))
             {
-                sql += string.Format(" and VarietyID={0}", vId);
+                sqlStorageSell += " and VarietyID=" + vId;
             }
             var dtStorageSell = SQLHelper.ExecuteDataTable(sqlStorageSell);
             if (dtStorageSell != null && dtStorageSell.Rows.Count > 0)
@@ -168,13 +179,17 @@ where s.Dep_AccountNumber='{0}'", AccountNumber);
                 R_Sell.DataSource = dtStorageSell;
                 R_Sell.DataBind();
             }
+            else
+            {
+                SellList.Style.Add("display", "none");
+            }
 
             //产品换购
             string sqlStorageShopping = string.Format(@"select s.BusinessName,s.VarietyName,s.VarietyCount,s.StorageDate,s.VarietyInterest,s.VarietyMoney,s.dt_Sell from StorageShopping as s
 where Dep_AccountNumber={0}", AccountNumber);
             if (!string.IsNullOrWhiteSpace(vId))
             {
-                sql += string.Format(" and VarietyID={0}", vId);
+                sqlStorageShopping += " and VarietyID=" + vId;
             }
             var dtStorageShop = SQLHelper.ExecuteDataTable(sqlStorageShopping);
             if (dtStorageShop != null && dtStorageShop.Rows.Count > 0)
@@ -182,6 +197,10 @@ where Dep_AccountNumber={0}", AccountNumber);
                 ShoppingList.Style.Add("display", "block");
                 R_Shopping.DataSource = dtStorageShop;
                 R_Shopping.DataBind();
+            }
+            else
+            {
+                ShoppingList.Style.Add("display", "none");
             }
 
             //修改记录
@@ -192,7 +211,7 @@ where Dep_AccountNumber={0}", AccountNumber);
                                                     where s.AccountNumber={0}",AccountNumber);
             if (!string.IsNullOrWhiteSpace(vId))
             {
-                sql += string.Format(" and s.VarietyID={0}", vId);
+                sqlUpdateStorage += " and s.VarietyID=" + vId;
             }
             var dtUpdateStorage=SQLHelper.ExecuteDataTable(sqlUpdateStorage);
             if (dtUpdateStorage != null && dtUpdateStorage.Rows.Count > 0)
@@ -201,15 +220,19 @@ where Dep_AccountNumber={0}", AccountNumber);
                 r_updateStorage.DataSource = dtUpdateStorage;
                 r_updateStorage.DataBind();
             }
+            else
+            {
+                sv_updateStorage.Style.Add("display", "none");
+            }
             //退还记录
-            string sqlReturnStorage = string.Format(@"select s.VarietyName,s.AccountNumber,s.StorageNumberRaw,
+            string sqlReturnStorage = string.Format(@"select s.VarietyName,s.AccountNumber,s.StorageNumberRaw,s.StorageNumber,
                                                         s.returnNumber,w.strName,u.strLoginName,s.createDate from SV_ReturnRecord as s
                                                         inner join WB as w on w.ID=s.WBID
                                                         inner join Users as u on u.ID=s.UserID
-                                                        where s.AccountNumber='{0}' ",AccountNumber);
+                                                        where s.AccountNumber='{0}' ", AccountNumber);
             if (!string.IsNullOrWhiteSpace(vId))
             {
-                sql += string.Format(" and s.VarietyID={0}", vId);
+                sqlReturnStorage += " and s.VarietyID="+ vId;
             }
             var dtReturnStorage = SQLHelper.ExecuteDataTable(sqlReturnStorage);
             if (dtReturnStorage != null && dtReturnStorage.Rows.Count > 0)
@@ -217,6 +240,10 @@ where Dep_AccountNumber={0}", AccountNumber);
                 sv_returnStorage.Style.Add("display", "block");
                 R_ReturnStorage.DataSource = dtReturnStorage;
                 R_ReturnStorage.DataBind();
+            }
+            else
+            {
+                sv_returnStorage.Style.Add("display", "none");
             }
 
 
@@ -228,7 +255,6 @@ where Dep_AccountNumber={0}", AccountNumber);
             TimeSpan ts = DateTime.Now.Subtract(t1);
             int numday = Convert.ToInt32(Math.Floor((decimal)ts.TotalDays));
             return numday.ToString();
-
         }
 
         protected void ImageButton1_Click(object sender, ImageClickEventArgs e)
