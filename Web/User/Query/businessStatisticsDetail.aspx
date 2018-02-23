@@ -366,7 +366,7 @@
             </asp:Repeater>
         </div>
         <!--分时批量兑换-->
-        <div id="goodExchangeGroup" runat="server" style="display: none;margin: 10px 0px;">
+        <div id="goodExchangeGroup" runat="server" style="display: block;margin: 10px 0px;">
             <asp:Repeater ID="R_goodExchangeGroup" runat="server">
                 <HeaderTemplate>
                     <table class="tabData"  style="max-width:750px;">
