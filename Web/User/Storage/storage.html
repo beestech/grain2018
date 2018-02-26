@@ -8,7 +8,8 @@
     <script src="../../Scripts/Common.js" type="text/javascript"></script>
     <link href="../../Styles/Common.css" rel="stylesheet" type="text/css" />
     <link href="../../Styles/storage.css" rel="stylesheet" type="text/css" />
-    <script src="../../Lodop6.198/LodopFuncs.js" type="text/javascript"></script>
+    <!--<script src="../../Lodop6.198/LodopFuncs.js" type="text/javascript"></script>-->
+    <script src="../../Lodop6.198/test_lodop/LodopFuncs.js"></script>
     <script src="../../Scripts/LodopPrint.js"></script>
     <script src="../../Scripts/codeKeyboard.js"></script>
     <script src="../../Scripts/storage.js"></script>
@@ -444,9 +445,8 @@
         }
 
         function PrintCunZhe() {
-
             $.ajax({
-                url: '/Ashx/storage.ashx?type=PrintDep_OperateLog&BusinessNO=' + BusinessNO + '&AccountNumber=' + $('#QAccountNumber').val(),
+                url: '/Ashx/storage.ashx?type=PrintDep_OperateLog&BusinessNO=' + BusinessNO + '&AccountNumber=' + $('#QAccountNumber').val()+'&IsVirtual='+ $('input[name=ISVirtual]').val(),
                 type: 'post',
                 data: '',
                 dataType: 'text',

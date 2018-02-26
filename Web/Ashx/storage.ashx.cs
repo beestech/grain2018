@@ -153,6 +153,12 @@ namespace Web.Ashx
         /// <param name="context"></param>
         void PrintDep_OperateLog(HttpContext context)
         {
+            string strISVirtual = string.Empty;
+            if (context.Request.QueryString["IsVirtual"] != null)
+            {
+                strISVirtual = context.Request.QueryString["IsVirtual"].ToString();
+            }
+           
             string BusinessNO = context.Request.QueryString["BusinessNO"].ToString();
             string AccountNumber = context.Request.QueryString["AccountNumber"].ToString();
             StringBuilder strSqlLog = new StringBuilder();
@@ -170,7 +176,16 @@ namespace Web.Ashx
             string numBusinessName = dtLog.Rows[0]["BusinessName"].ToString();
             string BusinessName = "";
             switch (numBusinessName) {
-                case "1": BusinessName = "存入"; break;
+                case "1":
+                    if (strISVirtual.Equals("1"))
+                    {
+                        BusinessName = "预存";
+                    }
+                    else
+                    {
+                        BusinessName = "存入";
+                    }
+                    break;
                 case "2": BusinessName = "兑换"; break;
                 case "3": BusinessName = "存转销"; break;
                 case "4": BusinessName = "提取原粮"; break;

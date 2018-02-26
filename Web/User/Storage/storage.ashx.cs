@@ -94,7 +94,7 @@ namespace Web.User.Storage
             string TimeID = context.Request.Form["txtTimeID"].ToString();//存期
 
             StringBuilder strSqlStorage = new StringBuilder();
-            strSqlStorage.Append("    SELECT top 1  A.ID,A.AccountNumber,A.TypeID,A.TimeID,B.strName AS Dep_Name, VarietyID,VarietyLevelID,StorageNumber, StorageNumberRaw,Price_ShiChang,Price_DaoQi");
+            strSqlStorage.Append("    SELECT top 1  A.WeighNo,A.ID,A.AccountNumber,A.TypeID,A.TimeID,B.strName AS Dep_Name, VarietyID,VarietyLevelID,StorageNumber, StorageNumberRaw,Price_ShiChang,Price_DaoQi");
             strSqlStorage.Append("    ,A.InterestDate,A.CurrentRate, A.StorageDate,DATEDIFF( Day, A.StorageDate,GETDATE())AS daycount,C.strName AS VarietyName,D.strName AS UnitName");
             strSqlStorage.Append("    ,E.InterestType,E.numStorageDate");
             strSqlStorage.Append("   FROM dbo.Dep_StorageInfo A INNER JOIN dbo.Depositor B ON A.AccountNumber=B.AccountNumber");
@@ -109,6 +109,7 @@ namespace Web.User.Storage
                 context.Response.Write(JsonHelper.ToJson(res));
                 return;
             }
+            string weightNo = dtStorage.Rows[0]["WeighNo"].ToString();//磅单号
             string AccountNumber = dtStorage.Rows[0]["AccountNumber"].ToString();//储户账号
             string Dep_Name = dtStorage.Rows[0]["Dep_Name"].ToString();//储户账号
             string BusinessNO = common.GetNewBusinessNO_Dep(AccountNumber);//交易流水号
@@ -163,15 +164,15 @@ namespace Web.User.Storage
             else if (JiexiType == "2") {
                 strSqlUpdate.Append("   UPDATE dbo.Dep_StorageInfo SET");
                 strSqlUpdate.Append("   InterestDate='" + InterestDate_new + "',");
-                strSqlUpdate.Append("   StorageNumber=0");
+                strSqlUpdate.Append("   StorageNumber=0,StorageNumberRaw=0  ");                
                 strSqlUpdate.Append("  WHERE ID=" + dsiID);
             }
 
             //添加新的存储记录
             strSql_newStorage.Append("insert into [Dep_StorageInfo] (");
-            strSql_newStorage.Append("BusinessNO,AccountNumber,StorageRateID,VarietyID,VarietyLevelID,TypeID,TimeID,InterestDate,StorageDate,WeighNo,StorageNumber,StorageNumberRaw,StorageFee,CurrentRate,Price_ShiChang,Price_DaoQi,Price_HeTong,UserID,WBID)");
+            strSql_newStorage.Append("BusinessNO,AccountNumber,StorageRateID,VarietyID,VarietyLevelID,TypeID,TimeID,InterestDate,StorageDate,WeighNo,StorageNumber,StorageNumberRaw,StorageFee,CurrentRate,Price_ShiChang,Price_DaoQi,Price_HeTong,UserID,WBID,ISVirtual)");
             strSql_newStorage.Append(" values (");
-            strSql_newStorage.Append("@BusinessNO,@AccountNumber,@StorageRateID,@VarietyID,@VarietyLevelID,@TypeID,@TimeID,@InterestDate,@StorageDate,@WeighNo,@StorageNumber,@StorageNumberRaw,@StorageFee,@CurrentRate,@Price_ShiChang,@Price_DaoQi,@Price_HeTong,@UserID,@WBID)");
+            strSql_newStorage.Append("@BusinessNO,@AccountNumber,@StorageRateID,@VarietyID,@VarietyLevelID,@TypeID,@TimeID,@InterestDate,@StorageDate,@WeighNo,@StorageNumber,@StorageNumberRaw,@StorageFee,@CurrentRate,@Price_ShiChang,@Price_DaoQi,@Price_HeTong,@UserID,@WBID,@ISVirtual)");
             strSql_newStorage.Append(";select @@IDENTITY");
             SqlParameter[] parameters_newStorage = {
 					new SqlParameter("@BusinessNO", SqlDbType.NVarChar,50),
@@ -192,7 +193,9 @@ namespace Web.User.Storage
 					new SqlParameter("@Price_DaoQi", SqlDbType.Decimal,9),
 					new SqlParameter("@Price_HeTong", SqlDbType.Decimal,9),
 					new SqlParameter("@UserID", SqlDbType.Int,4),
-                    new SqlParameter("@WBID", SqlDbType.Int,4)};
+                    new SqlParameter("@WBID", SqlDbType.Int,4),
+                    new SqlParameter("@ISVirtual", SqlDbType.Int,4)
+            };
             parameters_newStorage[0].Value = BusinessNO;
             parameters_newStorage[1].Value = AccountNumber;
             parameters_newStorage[2].Value = StorageRateID;
@@ -202,7 +205,7 @@ namespace Web.User.Storage
             parameters_newStorage[6].Value = TimeID;
             parameters_newStorage[7].Value = DateTime.Now;
             parameters_newStorage[8].Value = DateTime.Now;
-            parameters_newStorage[9].Value = "";//结息的过磅号为‘’
+            parameters_newStorage[9].Value = weightNo;//结息的过磅号为‘’
             parameters_newStorage[10].Value = StorageNumber;
             parameters_newStorage[11].Value = StorageNumber;
             parameters_newStorage[12].Value = StorageFee_new;
@@ -213,6 +216,7 @@ namespace Web.User.Storage
             parameters_newStorage[16].Value = Price_HeTong_new;
             parameters_newStorage[17].Value = UserID;
             parameters_newStorage[18].Value = WBID;
+            parameters_newStorage[19].Value = 0;
 
 
 
