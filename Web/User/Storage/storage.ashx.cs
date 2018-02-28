@@ -39,6 +39,7 @@ namespace Web.User.Storage
 
                     case "Add_Dep_Storage": Add_Dep_Storage(context); break;
                     case "Update_Dep_Storage": Update_Dep_Storage(context); break;
+                    case "Update_Dep_Storage_yijia": Update_Dep_Storage_yijia(context); break;
                     case "StorageTypeChange": StorageTypeChange(context); break;//存粮转存
                     case "Delete_Dep_Storage": Delete_Dep_Storage(context); break;
                         
@@ -1220,6 +1221,65 @@ namespace Web.User.Storage
                     context.Response.Write(JsonHelper.ToJson(res));
                 }
             }
+        }
+
+        void Update_Dep_Storage_yijia(HttpContext context)
+        {
+            //string BusinessNO = context.Request.Form["BusinessNO"].ToString();//交易号
+
+            string dsiID = context.Request.Form["ID"].ToString();
+            string Price_DaoQi = context.Request.Form["Price_DaoQi"].ToString();
+            string strRemark = context.Request.Form["strRemark"].ToString();
+            DataRow rowdsi = commondb.getDep_StorageInfoByID(dsiID);
+            string Price_Shichang = rowdsi["Price_Shichang"].ToString();
+            string StorageDate = rowdsi["StorageDate"].ToString();
+
+            string sqlupdate = string.Format(" UPDATE dbo.Dep_StorageInfo SET Price_DaoQi={0} WHERE ID={1}");
+
+            StringBuilder sqladd = new StringBuilder();
+
+            sqladd.Append(" INSERT INTO dbo.Dep_Storage_YijiaLog");
+            sqladd.Append("    ( dsiID , Price_Shichang , Price_DaoQi , StorageDate ,YijiaDate ,strRemark )");
+            sqladd.Append(" VALUES  ( @dsiID , @Price_Shichang , @Price_DaoQi , @StorageDate ,@YijiaDate ,@strRemark)");
+           
+            SqlParameter[] parameters = {
+					new SqlParameter("@dsiID", SqlDbType.Int,4),
+                    new SqlParameter("@Price_Shichang", SqlDbType.Decimal,18),
+                    new SqlParameter("@Price_DaoQi", SqlDbType.Decimal,18),
+                    new SqlParameter("@StorageDate", SqlDbType.DateTime,8),
+                    new SqlParameter("@YijiaDate", SqlDbType.DateTime,8),
+                    new SqlParameter("@strRemark", SqlDbType.NVarChar,500),};
+            parameters[0].Value = dsiID;
+            parameters[1].Value = Price_Shichang;
+            parameters[2].Value = Price_DaoQi;
+            parameters[3].Value = StorageDate;
+            parameters[4].Value = DateTime.Now.ToString();
+            parameters[5].Value = strRemark;
+           
+            //添加事务处理
+            using (SqlTransaction tran = SQLHelper.BeginTransaction(SQLHelper.connectionString))
+            {
+                try
+                {
+
+                    SQLHelper.ExecuteNonQuery(tran, CommandType.Text, sqlupdate.ToString());//更新储户存储信息
+
+                    SQLHelper.ExecuteNonQuery(tran, CommandType.Text, sqladd.ToString(), parameters);//修改记录
+
+                 
+
+                    tran.Commit();
+                    var res = new { state = "true", msg = "更新数据成功!" };
+                    context.Response.Write(JsonHelper.ToJson(res));
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    var res = new { state = "false", msg = "更新数据失败!" };
+                    context.Response.Write(JsonHelper.ToJson(res));
+                }
+            }
+
         }
        
         void Update_Dep_Storage(HttpContext context)
