@@ -889,9 +889,10 @@ namespace Web.User.Storage
             parameters[17].Value = UserID;
             parameters[18].Value = WBID;
             parameters[19].Value = ISVirtual;
-          
 
-         
+
+
+
 
             //添加交易记录     
             string Price = Price_ShiChang;//价格
@@ -951,11 +952,49 @@ namespace Web.User.Storage
                         string sqlDep_SIDUpdate = string.Format("  UPDATE dbo.Dep_StorageInfo SET StorageNumber=StorageNumber+{0},StorageNumberRaw=StorageNumberRaw+{1}  WHERE ID={2}", StorageNumber, StorageNumber, objDep_SIDExit);
                         SQLHelper.ExecuteNonQuery(sqlDep_SIDUpdate);
 
+                        //修改预存转实存初始预存数量
+                        string Update_Dep_StorageSwitchSql = string.Format(" UPDATE dbo.Dep_StorageSwitch set StorageNumberRaw =StorageNumberRaw+{0} where Dep_StorageInfo_ID ={1}", StorageNumber, objDep_SID);
+                        SQLHelper.ExecuteNonQuery(Update_Dep_StorageSwitchSql);
                         //string sql_BusinessNO=string.Format(" select BusinessNO from Dep_StorageInfo where ID={0}",objDep_SIDExit);
                         //BusinessNO = SQLHelper.ExecuteScalar(sql_BusinessNO).ToString();//使用之前存粮的序列号 
                     }
                     else {
                          objDep_SID = SQLHelper.ExecuteScalar(tran, CommandType.Text, strSql.ToString(), parameters);
+                        string sqlScalar = string.Format("select ID from Dep_StorageSwitch where Dep_StorageInfo_ID ='{0}'",objDep_SID);
+                        var obj= SQLHelper.ExecuteScalar(sqlScalar);
+                        if (obj == null)
+                        {
+                            //添加预存转实存记录
+
+                            #region 添加预存转实存记录sql
+                            string insertSql = @"insert into Dep_StorageSwitch(WBID,UserID,Dep_StorageInfo_ID,StorageNumberRaw,
+                          StorageNumberSwitch,VarietyID,VarietyLevelID,StorageDate,ISSwitch)
+                          values(@WBID,@UserID,@Dep_StorageInfo_ID,@StorageNumberRaw,
+                          @StorageNumberSwitch,@VarietyID,@VarietyLevelID,@StorageDate,@ISSwitch)";
+                            SqlParameter[] paras = new SqlParameter[]
+                            {
+                                new SqlParameter("@WBID",WBID),
+                                new SqlParameter("@UserID",UserID),
+                                new SqlParameter("@Dep_StorageInfo_ID",objDep_SID),
+                                new SqlParameter("@StorageNumberRaw",StorageNumber),
+                                new SqlParameter("@StorageNumberSwitch",0),
+                                new SqlParameter("@VarietyID",VarietyID),
+                                new SqlParameter("@VarietyLevelID",VarietyLevelID),
+                                new SqlParameter("@StorageDate",DateTime.Now),
+                                new SqlParameter("@ISSwitch",false)
+                            };
+                            #endregion
+
+                            SQLHelper.ExecuteNonQuery(tran,CommandType.Text,insertSql, paras);
+
+                        }
+                        else
+                        {
+                            //修改
+                            string Update_Dep_StorageSwitchSql = string.Format(" UPDATE dbo.Dep_StorageSwitch set StorageNumberRaw =StorageNumberRaw+{0} where Dep_StorageInfo_ID ={1}", StorageNumber, objDep_SID);
+                            SQLHelper.ExecuteNonQuery(tran, CommandType.Text, Update_Dep_StorageSwitchSql);
+                        }
+
                     }
                  
 
@@ -1250,9 +1289,19 @@ namespace Web.User.Storage
                 numStorage = Convert.ToDouble(StorageNumber);
                 strSqlEdit = "UPDATE dbo.Dep_StorageInfo SET WeighNo='" + WeighNo + "',StorageNumber=StorageNumber+" + StorageNumber + ",StorageNumberRaw= StorageNumberRaw+" + StorageNumber + " WHERE ID=" + ID;
             }
+            #region MyRegion
+            //预存转实存记录表中是否存在记录
+            string sqlScalar = string.Format("select ID from Dep_StorageSwitch where Dep_StorageInfo_ID ='{0}'", ID);
+            var obj = SQLHelper.ExecuteScalar(sqlScalar);
+            string update_Dep_StorageSwitchSql = string.Empty;
+            if (obj != null)
+            {
+                update_Dep_StorageSwitchSql= string.Format(" UPDATE dbo.Dep_StorageSwitch set StorageNumberRaw =StorageNumberRaw+{0} where Dep_StorageInfo_ID ={1}", numStorage, ID);
+                //SQLHelper.ExecuteNonQuery(update_Dep_StorageSwitchSql);
+            }
+                #endregion
 
-          
-            double StorageNumber_Start = Convert.ToDouble(dtStorage.Rows[0]["StorageNumber"]);
+                double StorageNumber_Start = Convert.ToDouble(dtStorage.Rows[0]["StorageNumber"]);
             double num_balance = StorageNumber_Start + numStorage;
             string VarietyID = dtStorage.Rows[0]["VarietyID"].ToString();
             string VarietyLevelID = dtStorage.Rows[0]["VarietyLevelID"].ToString();
@@ -1369,7 +1418,7 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
                 {
 
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlEdit.ToString());//更新储户存储信息
-
+                    SQLHelper.ExecuteNonQuery(tran, CommandType.Text, update_Dep_StorageSwitchSql);//更新预存转实际存数据
                     //SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlEditLog.ToString());//更新储户存储信息记录
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, updateRecordSql.ToString(),paras);//修改存粮记录
                     
@@ -1755,8 +1804,7 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
         {
             string ID = context.Request.Form["ID"].ToString();
             string WeighNO = context.Request.Form["WeighNO"].ToString();
-            string sqlupdate = string.Format("  UPDATE dbo.Dep_StorageInfo SET WeighNo='{0}' ,  ISVirtual=0 WHERE ID={1} ",WeighNO,ID);
-
+            string sqlupdate = string.Format("  UPDATE dbo.Dep_StorageInfo SET WeighNo='{0}' ,  ISVirtual=0 WHERE ID={1} ",WeighNO,ID);            
             DataTable dt = SQLHelper.ExecuteDataTable(" select * from Dep_StorageInfo where ID=" + ID);
             DataRow row = dt.Rows[0];
             string WBID = row["WBID"].ToString();
@@ -1786,13 +1834,14 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
             numStorageIn = numStorageIn + numStorageChange;//改变存入数量
             // numStorageOut = numStorageOut + numStorageChange;
             numStorage = numStorage + numStorageChange;
-
+            //修改预存转实存记录表
+            string sqlUpdate_Dep_StorageSwitch = string.Format("  UPDATE Dep_StorageSwitch set StorageNumberSwitch={0},SwitchDate='{1}',ISSwitch={2}", numStorageChange, DateTime.Now, 1);
             using (SqlTransaction tran = SQLHelper.BeginTransaction(SQLHelper.connectionString))
             {
                 try
                 {
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, sqlupdate);//更新存粮状态
-
+                    SQLHelper.ExecuteNonQuery(tran, CommandType.Text, sqlUpdate_Dep_StorageSwitch);//修改预存转实存记录
                     #region  网点库存和库存日志
                     //添加网点的产品库存记录
                     string VarietyStorageExit = " SELECT COUNT(ID)   FROM dbo.SA_VarietyStorage WHERE WBID=" + WBID + " AND VarietyID=" + VarietyID + " and VarietyLevelID=" + VarietyLevelID;
@@ -1844,7 +1893,7 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
 
                     context.Response.Write(JsonHelper.ToJson(res));
                 }
-                catch {
+                catch(Exception ex) {
                     tran.Rollback();
                     var res = new { state = "false", msg = "保存失败！" };
 
