@@ -88,6 +88,18 @@ function Map() {
     };
 }
 
+
+function readonly(obj) {
+    obj.attr('readonly', 'readonly');
+    obj.css('background','#ccc');
+}
+
+function readonly_remove(obj) {
+    obj.removeAttr('readonly');
+    obj.css('background', '#fff');
+}
+
+
 //字符串长度
 String.prototype.length = function () {
     var len = 0;

@@ -245,6 +245,12 @@ namespace Web.User.Exchange
                 ISError = true;
             }
 
+            string InterestType = "";//"":不限制，“21”：只获取议价分红型存粮
+            if (context.Request.Form["InterestType"] != null)
+            {//当前请求是经审核过的存转销
+                InterestType = context.Request.Form["InterestType"].ToString();
+            }
+
             StringBuilder strSql = new StringBuilder();
             strSql.Append("  select A.ID,WBID,AccountNumber,strPassword, CunID as BD_Address_CunID,A.strAddress,A.strName,PhoneNO,ISSendMessage,BankCardNO,A.dt_Update,   ");
             strSql.Append("     numState,A.dt_Add,   CASE (IDCard) WHEN '' THEN '未填写' ELSE '******' END as IDCard,");
@@ -332,6 +338,11 @@ namespace Web.User.Exchange
                     {
                         strSqlStorage.Append("  and  DATEDIFF(DAY,A.StorageDate,GETDATE())<1 ");//存储天数在一天之内的存粮
                     }
+                }
+
+                if (InterestType != "")
+                {
+                    strSqlStorage.Append("  and C.InterestType=" + InterestType);
                 }
 
                 DataTable dtStorage = SQLHelper.ExecuteDataTable(strSqlStorage.ToString());

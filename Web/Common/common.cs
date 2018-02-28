@@ -530,6 +530,17 @@ namespace Web
                             strReturn = "<span style=\"font-size:12px;color:Red\">￥" + Math.Round(numLiXi, 2).ToString() + "(未到期)</span>";
                         }
                         break;
+                    case 21://按市场价结息方式
+                        numLiXi = GetLiXi_FenHong_yijia_html(obj.ToString(), StorageNumber);
+                        if (ts_Storage.TotalDays >= numStorageDate)
+                        {
+                            strReturn = "<span style=\"color:Blue;\">￥" + Math.Round(numLiXi, 2).ToString() + "</span>";
+                        }
+                        else
+                        {
+                            strReturn = "<span style=\"font-size:12px;color:Red\">￥" + Math.Round(numLiXi, 2).ToString() + "(未到期)</span>";
+                        }
+                        break;
                     case 3:
                         numLiXi = GetLiXi_DingQi_html(obj.ToString(), StorageNumber);
                         if (ts_Storage.TotalDays >= numStorageDate)
@@ -667,6 +678,68 @@ namespace Web
         /// <param name="Dep_SID">储户存储单编号</param>
         /// <param name="StorageNumber">用于计算利息的存储数量</param>
         /// <returns></returns>
+        public static double GetLiXi_FenHong_yijia(string Dep_SID, double StorageNumber)
+        {
+            double numLiXi = 0;
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append(" SELECT A.StorageDate,A.InterestDate,A.CurrentRate, A.Price_DaoQi, A.Price_ShiChang,B.numStorageDate");
+            strSql.Append(" FROM dbo.Dep_StorageInfo A INNER JOIN dbo.StorageTime B ON A.TimeID=B.ID");
+            strSql.Append(" WHERE A.ID=" + Dep_SID);
+            DataTable dt = SQLHelper.ExecuteDataTable(strSql.ToString());
+            if (dt != null && dt.Rows.Count != 0)
+            {
+
+
+                DateTime StorageDate = Convert.ToDateTime(dt.Rows[0]["StorageDate"]);//存入日期
+                DateTime InterestDate = Convert.ToDateTime(dt.Rows[0]["InterestDate"]);//上一次的取利息日期
+                int numStorageDate = Convert.ToInt32(dt.Rows[0]["numStorageDate"]);//约定存储时间
+                TimeSpan ts_Storage = DateTime.Now.Subtract(StorageDate);
+                TimeSpan ts_Interest = DateTime.Now.Subtract(InterestDate);
+                double CurrentRate = Convert.ToDouble(dt.Rows[0]["CurrentRate"]);//约定月利率
+                double Price_ShiChang = Convert.ToDouble(dt.Rows[0]["Price_ShiChang"]);//存入时的市场价
+                double Price_DaoQi = Convert.ToDouble(dt.Rows[0]["Price_DaoQi"]);//到期价
+
+
+                if (ts_Storage.TotalDays < numStorageDate)//分红类型未到约定的存期
+                {
+                    numLiXi = 0;
+                }
+                else
+                {
+                    //计算当前的市场价格
+                    StringBuilder strSqlShiChang = new StringBuilder();
+                    strSqlShiChang.Append(" SELECT B.Price_ShiChang,B.EarningRate,B.LossRate");
+                    strSqlShiChang.Append(" FROM dbo.Dep_StorageInfo A INNER JOIN dbo.StorageRate B ON A.StorageRateID=B.ID");
+                    strSqlShiChang.Append(" WHERE A.ID=" + Dep_SID);
+                    DataTable dtShiChang = SQLHelper.ExecuteDataTable(strSqlShiChang.ToString());
+
+                    double Price_JieCun = Convert.ToDouble(dtShiChang.Rows[0]["Price_ShiChang"]);
+                    if (Price_DaoQi > 0) {
+                        Price_JieCun = Price_DaoQi;
+                    }
+                    double EarningRate = Convert.ToDouble(dtShiChang.Rows[0]["EarningRate"]);
+                    double LossRate = Convert.ToDouble(dtShiChang.Rows[0]["LossRate"]);
+                    if (Price_JieCun >= Price_ShiChang)//到期的结存价格比现在的市场价高(存储产品盈利的时候 按照分红比例分红)
+                    {
+                        numLiXi = (Price_JieCun - Price_ShiChang) * StorageNumber * EarningRate / (double)100;
+                    }
+                    else//存储产品价格降低的时候由储户承担全部损耗
+                    {
+                        numLiXi = (Price_JieCun - Price_ShiChang) * StorageNumber * LossRate / (double)100;
+                    }
+                }
+                
+
+            }
+            return numLiXi;
+        }
+
+        /// <summary>
+        /// 计算利息 活期 分红类型
+        /// </summary>
+        /// <param name="Dep_SID">储户存储单编号</param>
+        /// <param name="StorageNumber">用于计算利息的存储数量</param>
+        /// <returns></returns>
         public static double GetLiXi_FenHong_html(string Dep_SID, double StorageNumber)
         {
             double numLiXi = 0;
@@ -705,6 +778,60 @@ namespace Web
                     {
                         numLiXi = (Price_JieCun - Price_ShiChang) * StorageNumber * LossRate / (double)100;
                     }
+                }
+            }
+            return numLiXi;
+        }
+
+
+        /// <summary>
+        /// 计算利息 活期 分红议价类型
+        /// </summary>
+        /// <param name="Dep_SID">储户存储单编号</param>
+        /// <param name="StorageNumber">用于计算利息的存储数量</param>
+        /// <returns></returns>
+        public static double GetLiXi_FenHong_yijia_html(string Dep_SID, double StorageNumber)
+        {
+            double numLiXi = 0;
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append(" SELECT A.StorageDate,A.InterestDate,A.CurrentRate, A.Price_DaoQi, A.Price_ShiChang,B.numStorageDate");
+            strSql.Append(" FROM dbo.Dep_StorageInfo A INNER JOIN dbo.StorageTime B ON A.TimeID=B.ID");
+            strSql.Append(" WHERE A.ID=" + Dep_SID);
+            DataTable dt = SQLHelper.ExecuteDataTable(strSql.ToString());
+            if (dt != null && dt.Rows.Count != 0)
+            {
+                DateTime StorageDate = Convert.ToDateTime(dt.Rows[0]["StorageDate"]);//存入日期
+                DateTime InterestDate = Convert.ToDateTime(dt.Rows[0]["InterestDate"]);//上一次的取利息日期
+                int numStorageDate = Convert.ToInt32(dt.Rows[0]["numStorageDate"]);//约定存储时间
+                TimeSpan ts_Storage = DateTime.Now.Subtract(StorageDate);
+                TimeSpan ts_Interest = DateTime.Now.Subtract(InterestDate);
+                double CurrentRate = Convert.ToDouble(dt.Rows[0]["CurrentRate"]);//约定月利率
+                double Price_ShiChang = Convert.ToDouble(dt.Rows[0]["Price_ShiChang"]);//存入时的市场价
+                double Price_DaoQi = Convert.ToDouble(dt.Rows[0]["Price_DaoQi"]);//到期价
+               
+
+                //计算当前的市场价格
+                StringBuilder strSqlShiChang = new StringBuilder();
+                strSqlShiChang.Append(" SELECT B.Price_ShiChang,B.EarningRate,B.LossRate");
+                strSqlShiChang.Append(" FROM dbo.Dep_StorageInfo A INNER JOIN dbo.StorageRate B ON A.StorageRateID=B.ID");
+                strSqlShiChang.Append(" WHERE A.ID=" + Dep_SID);
+                DataTable dtShiChang = SQLHelper.ExecuteDataTable(strSqlShiChang.ToString());
+                double Price_JieCun = Convert.ToDouble(dtShiChang.Rows[0]["Price_ShiChang"]);
+                if (Price_DaoQi > 0) //已经有商议好的结算价
+                {
+                    Price_JieCun = Price_DaoQi;
+                }
+                double EarningRate = Convert.ToDouble(dtShiChang.Rows[0]["EarningRate"]);
+                double LossRate = Convert.ToDouble(dtShiChang.Rows[0]["LossRate"]);
+
+
+                if (Price_JieCun >= Price_ShiChang)//到期的结存价格比现在的市场价高(存储产品盈利的时候 按照分红比例分红)
+                {
+                    numLiXi = (Price_JieCun - Price_ShiChang) * StorageNumber * EarningRate / (double)100;
+                }
+                else//存储产品价格降低的时候由储户承担全部损耗
+                {
+                    numLiXi = (Price_JieCun - Price_ShiChang) * StorageNumber * LossRate / (double)100;
                 }
             }
             return numLiXi;
@@ -949,6 +1076,9 @@ namespace Web
                     case 2://按市场价结息方式
                         numLiXi = GetLiXi_FenHong(objDep_SID.ToString(), StorageNumber);
                         break;
+                    case 21://按市场价结息方式
+                        numLiXi = GetLiXi_FenHong_yijia(objDep_SID.ToString(), StorageNumber);
+                        break;
                     case 3:
                         numLiXi = GetLiXi_DingQi(objDep_SID.ToString(), StorageNumber);
                         break;
@@ -999,6 +1129,9 @@ namespace Web
                         break;
                     case 2://按市场价结息方式
                         numLiXi = GetLiXi_FenHong(objDep_SID.ToString(), StorageNumber);
+                        break;
+                    case 21://按市场价结息方式
+                        numLiXi = GetLiXi_FenHong_yijia(objDep_SID.ToString(), StorageNumber);
                         break;
                     case 3:
                         numLiXi = GetLiXi_DingQi(objDep_SID.ToString(), StorageNumber);
@@ -1141,6 +1274,9 @@ namespace Web
                         break;
                     case 2://按市场价结息方式
                         numLiXi = GetLiXi_FenHong(obj.ToString(), StorageNumber);
+                        break;
+                    case 21://按市场价结息方式
+                        numLiXi = GetLiXi_FenHong_yijia(obj.ToString(), StorageNumber);
                         break;
                     case 3:
                         numLiXi = GetLiXi_DingQi(obj.ToString(), StorageNumber);
@@ -1527,6 +1663,7 @@ namespace Web
             {
                 //查询当前的密码与储户的密码是否符合
                 string strPassword = SQLHelper.ExecuteScalar(" SELECT strPassword FROM dbo.Depositor WHERE AccountNumber='" + AccountNumber + "'").ToString();
+                //if (Fun.GetMD5_32(Password) == strPassword || Password == strPassword)
                 if (Fun.GetMD5_32(Password) == strPassword)
                 {
                     flag = true;

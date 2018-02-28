@@ -1273,7 +1273,7 @@ namespace Web.User.Storage
             string Price_Shichang = rowdsi["Price_Shichang"].ToString();
             string StorageDate = rowdsi["StorageDate"].ToString();
 
-            string sqlupdate = string.Format(" UPDATE dbo.Dep_StorageInfo SET Price_DaoQi={0} WHERE ID={1}");
+            string sqlupdate = string.Format(" UPDATE dbo.Dep_StorageInfo SET Price_DaoQi={0} WHERE ID={1}",Price_DaoQi,dsiID);
 
             StringBuilder sqladd = new StringBuilder();
 

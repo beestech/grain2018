@@ -23,6 +23,7 @@
         /*--------窗体启动设置和基本设置--------*/
         var Authority_A = false;//新增权限
         var Authority_E = false;//编辑权限
+        var otype = 'A';//A:新增数据,U:编辑数据
         $(function () {
             GetMenuAuthority();//加载菜单权限
             //initDataInfo();
@@ -220,9 +221,21 @@
             $('.spanwarning_choose').hide();
             $('#tr_EarningRate').hide();
             $('#tr_LossRate').hide();
-            if (InterestType == 2) {//分红
+            readonly_remove($('input[name=Price_DaoQi]'));
+            readonly_remove($('input[name=Price_HeTong]'));
+            readonly_remove($('input[name=Price_XiaoShou]'));
+            if (InterestType == 2 || InterestType == 21) {//分红
                 $('#tr_EarningRate').show();
                 $('#tr_LossRate').show();
+                if (otype == 'A') {
+                    $('input[name=Price_DaoQi]').val('0');
+                    $('input[name=Price_HeTong]').val('0');
+                    $('input[name=Price_XiaoShou]').val('0');
+                }
+                readonly($('input[name=Price_DaoQi]'));
+                readonly($('input[name=Price_HeTong]'));
+                readonly($('input[name=Price_XiaoShou]'));
+
             } else if (InterestType == 3) {//定期
                 $('#span_Price_DaoQi').show();
             }
@@ -351,6 +364,7 @@
 
         //显示新增数据窗口
         function ShowFrm_Add(wbid) {
+            otype = 'A';
             $('#ISDefault-chkPrice_ShiChang').removeAttr('checked');
             $('#trAdd').fadeIn("fast");
             $('#trUpdate').fadeOut("fast");
@@ -363,10 +377,10 @@
             $('input[name=StorageFee]').val('0.000');
             $('input[name=BankRate]').val('0.0000');
             $('input[name=CurrentRate]').val('0.0100');
-            $('input[name=Price_ShiChang]').val('2.480');
-            $('input[name=Price_DaoQi]').val('2.480');
-            $('input[name=Price_HeTong]').val('2.480');
-            $('input[name=Price_XiaoShou]').val('2.480');
+            $('input[name=Price_ShiChang]').val('0');
+            $('input[name=Price_DaoQi]').val('0');
+            $('input[name=Price_HeTong]').val('0');
+            $('input[name=Price_XiaoShou]').val('0');
 
             InitTypeID();
             $("select[name=TypeID]").removeAttr("disabled");
@@ -379,6 +393,7 @@
         }
         //显示更新数据窗口
         function ShowFrm_Update(wbid) {
+            otype = 'U';
             $('#ISDefault-chkPrice_ShiChang').removeAttr('checked');
             $('#trAdd').fadeOut("fast");
             $('#trUpdate').fadeIn("fast");

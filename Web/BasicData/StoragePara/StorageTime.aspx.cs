@@ -25,7 +25,7 @@ namespace Web.BasicData.StoragePara
         {
             StringBuilder strSql = new StringBuilder();
             strSql.Append("   SELECT A.ID, B.strName AS TypeID,A.strName,A.numStorageDate,A.numExChangeProp,A.PricePolicy, ");
-            strSql.Append("   CASE A.InterestType WHEN 1 THEN '按活期利率计息' WHEN 2 THEN '按到时市场价计息' WHEN 3 THEN '按约定到期价计息' WHEN 4 THEN '按约定合同价计息' END AS InterestType   ");
+            strSql.Append("   CASE A.InterestType WHEN 1 THEN '按活期利率计息' WHEN 2 THEN '按到时市场价计息' WHEN 21 THEN '按照商议到期价分红' WHEN 3 THEN '按约定到期价计息' WHEN 4 THEN '按约定合同价计息' END AS InterestType   ");
             strSql.Append("   FROM dbo.StorageTime A INNER JOIN dbo.StorageType B  ON A.TypeID=B.ID  ");
 
             DataTable dt = SQLHelper.ExecuteDataTable(strSql.ToString());

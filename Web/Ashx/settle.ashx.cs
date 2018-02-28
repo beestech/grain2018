@@ -1502,7 +1502,7 @@ namespace Web.Ashx
                 string AccountNumber = dt.Rows[0]["AccountNumber"].ToString();
                 string VarietyID = dt.Rows[0]["VarietyID"].ToString();
                 string StorageDate = dt.Rows[0]["StorageDate"].ToString();
-                string sql = string.Format("   SELECT SUM(Count_Trade) FROM dbo.Dep_OperateLog  WHERE BusinessName IN ({0}) AND Dep_AccountNumber='{1}' AND VarietyID='{2}'  AND  DATEDIFF(day,'{3}',dt_Trade)<={4}", buslist, AccountNumber, VarietyID, StorageDate, numDay);
+                string sql = string.Format("   SELECT SUM(Count_Trade) FROM dbo.Dep_OperateLog  WHERE BusinessName IN ({0}) AND Dep_AccountNumber='{1}' AND Dep_SID={2}  AND  DATEDIFF(day,'{3}',dt_Trade)<={4}", buslist, AccountNumber, ID, StorageDate, numDay);
                 object obj_zhiqu = SQLHelper.ExecuteScalar(sql);
                 if (obj_zhiqu != null && obj_zhiqu.ToString() != "")
                 {
@@ -1624,7 +1624,7 @@ namespace Web.Ashx
                 string AccountNumber = dtInfo.Rows[0]["AccountNumber"].ToString();
                 string VarietyID = dtInfo.Rows[0]["VarietyID"].ToString();
                 string StorageDate_para = dtInfo.Rows[0]["StorageDate"].ToString();
-                string sql = string.Format("   SELECT SUM(Count_Trade) FROM dbo.Dep_OperateLog  WHERE BusinessName IN ({0}) AND Dep_AccountNumber='{1}' AND VarietyID='{2}'  AND  DATEDIFF(day,'{3}',dt_Trade)<={4}", buslist, AccountNumber, VarietyID, StorageDate_para, numDay);
+                string sql = string.Format("   SELECT SUM(Count_Trade) FROM dbo.Dep_OperateLog  WHERE BusinessName IN ({0}) AND Dep_AccountNumber='{1}' AND Dep_SID={2}  AND  DATEDIFF(day,'{3}',dt_Trade)<={4}", buslist, AccountNumber, Dep_SID, StorageDate_para, numDay);
                 object obj_zhiqu = SQLHelper.ExecuteScalar(sql);
                 if (obj_zhiqu != null && obj_zhiqu.ToString() != "")
                 {

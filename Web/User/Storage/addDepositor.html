@@ -9,18 +9,16 @@
     <!--<script src="../../Lodop6.198/LodopFuncs.js" type="text/javascript"></script>-->
     <script src="../../Lodop6.198/test_lodop/LodopFuncs.js"></script>
     <style type="text/css">
-
-
         #divfrm select {
             font-size: 18px;
             font-weight: bold;
             height: 30px;
             width: 100px;
-            color:#111;
+            color: #111;
         }
 
-       
-         input[type=text], input[type=password] {
+
+        input[type=text], input[type=password] {
             width: 200px;
             height: 30px;
             font-size: 18px;
@@ -35,32 +33,34 @@
             color: green;
         }
 
-        input[type=button]{
+        input[type=button] {
             width: 100px;
             height: 40px;
-            border-radius:20px;
+            border-radius: 20px;
             font-size: 18px;
             font-weight: bold;
-            background:#0081bc;
-            color:#fff;
+            background: #0081bc;
+            color: #fff;
         }
 
         #btnPrint {
             background: #aaa;
             color: #fff;
         }
-        
+
 
         .tabDep td {
-         padding:5px 5px;
+            padding: 5px 5px;
         }
+
         .tabDep span {
             font-size: 16px;
             font-weight: bold;
             color: #444;
         }
+
         .tabDep .spanwarning {
-            display:none;
+            display: none;
             font-size: 12px;
             color: #ff6347;
         }
@@ -91,7 +91,7 @@
             margin: 5px 0px 10px 0px;
         }
 
-        .datadetail .datadetail_head .spaninfo {
+            .datadetail .datadetail_head .spaninfo {
                 margin-left: 5px;
                 color: blue;
             }
@@ -137,7 +137,7 @@
                 $('#tr_Integral').hide();
             }
             GetNewAccountNumber();
-            interval_AN=  setInterval('GetNewAccountNumber()', 2000);
+            interval_AN = setInterval('GetNewAccountNumber()', 2000);
 
             GetAddressXian();
             GetAddressXian_A();
@@ -183,7 +183,7 @@
                 $('#span_strPassword').fadeOut();
             })
             $('input[name=strPassword]').blur(function () {
-                if ($.trim($('input[name=strPassword]').val()).length<4) {
+                if ($.trim($('input[name=strPassword]').val()).length < 4) {
                     $('#span_strPassword').fadeIn();
                 }
             })
@@ -192,7 +192,7 @@
                 $('#span_strPassword2').fadeOut();
             })
             $('input[name=strPassword2]').blur(function () {
-                if ($.trim($('input[name=strPassword2]').val()).length<4) {
+                if ($.trim($('input[name=strPassword2]').val()).length < 4) {
                     $('#span_strPassword2').html('请再次输入密码,且密码长度不小于4位!');
                     $('#span_strPassword2').fadeIn();
                 }
@@ -403,7 +403,7 @@
 
         function BDCun_Show() {
             showBodyCenter($('#divCun'));
-           // $('#divCun').fadeIn();
+            // $('#divCun').fadeIn();
         }
         function BDCun_Close() {
             $('#divCun').fadeOut();
@@ -420,7 +420,7 @@
                     var XiangID = $('select[name=AXiangID] option:selected').val();
                     var strName = $.trim($('input[name=ACun]').val());
                     $.ajax({
-                        url: '/BasicData/Data/addr.ashx?type=Add_Address_Cun&XiangID=' + XiangID+'&strName='+strName,
+                        url: '/BasicData/Data/addr.ashx?type=Add_Address_Cun&XiangID=' + XiangID + '&strName=' + strName,
                         type: 'post',
                         data: '',
                         dataType: 'text',
@@ -447,103 +447,103 @@
         }
 
 
-         /*--------数据增删改操作--------*/
-         //新增数据方法
+        /*--------数据增删改操作--------*/
+        //新增数据方法
         function FunAdd() {
-             if (!SubmitCheck()) {//检测输入内容
-                 return false;
-             }
-             var msg = '您确认已经仔细检查输入信息，并继续操作吗？';
-             showConfirm(msg, function (obj) {
-                 if (obj == 'yes') {
-                     var url = '/User/Query/depositor.ashx?type=Add_Depositor';
-                     if ($('#span_DepAccountNumber').html() != '') {
-                         url = '/User/Query/depositor.ashx?type=Add_Depositor&DepRecommend=' + $('#span_DepAccountNumber').html();
-                     }
-                     $.ajax({
-                         url: url,
-                         type: 'post',
-                         data: $('#form1').serialize(),
-                         dataType: 'json',
-                         success: function (r) {
-                             if (r.state == true) {
-                                 clearInterval(interval_AN);//清除获取新账号定时
-                                 showMsg("新增储户成功!");
-                                 AccountNumber_New = r.AccountNumber;//新的储户账号
-                                 $('#btnAdd').attr('disabled', 'disabled');
-                                 $('#btnAdd').css('background', '#aaa');
-                                 $('#btnPrint').removeAttr('disabled');
-                                 $('#btnPrint').css('background', '#0081bc');
+            if (!SubmitCheck()) {//检测输入内容
+                return false;
+            }
+            var msg = '您确认已经仔细检查输入信息，并继续操作吗？';
+            showConfirm(msg, function (obj) {
+                if (obj == 'yes') {
+                    var url = '/User/Query/depositor.ashx?type=Add_Depositor';
+                    if ($('#span_DepAccountNumber').html() != '') {
+                        url = '/User/Query/depositor.ashx?type=Add_Depositor&DepRecommend=' + $('#span_DepAccountNumber').html();
+                    }
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        data: $('#form1').serialize(),
+                        dataType: 'json',
+                        success: function (r) {
+                            if (r.state == true) {
+                                clearInterval(interval_AN);//清除获取新账号定时
+                                showMsg("新增储户成功!");
+                                AccountNumber_New = r.AccountNumber;//新的储户账号
+                                $('#btnAdd').attr('disabled', 'disabled');
+                                $('#btnAdd').css('background', '#aaa');
+                                $('#btnPrint').removeAttr('disabled');
+                                $('#btnPrint').css('background', '#0081bc');
 
-                             } else {
-                                 showMsg(r.msg);
-                             }
-                         }, error: function (r) {
-                             showMsg('添加储户失败 ！');
-                         }
-                     });
-                 } else {
-                     //console.log('你点击了取消！');
-                 }
+                            } else {
+                                showMsg(r.msg);
+                            }
+                        }, error: function (r) {
+                            showMsg('添加储户失败 ！');
+                        }
+                    });
+                } else {
+                    //console.log('你点击了取消！');
+                }
 
-             });
+            });
 
-         }
+        }
 
-            //提交检测
+        //提交检测
         function SubmitCheck() {
 
-                if (!CheckInput('strPassword', '密码', '4')) { return false; }
-                var strPassword = $.trim($('input[name=strPassword]').val());
-                var strPassword2 = $.trim($('input[name=strPassword2]').val());
+            if (!CheckInput('strPassword', '密码', '4')) { return false; }
+            var strPassword = $.trim($('input[name=strPassword]').val());
+            var strPassword2 = $.trim($('input[name=strPassword2]').val());
 
-                if (strPassword != strPassword2) {
-                    showMsg('两次输入的密码不一致，请重新输入！');
-                    $('input[name=strPassword]').focus();
-                    return false;
-                }
-                if ($('input[name=strName]').val() == '') {
-                    showMsg('请输入姓名！');
-                    $('input[name=strName]').focus();
-                    return false;
-                }
-                if (VerifyDepInfo) {
-                    if (!checkIdcard($('input[name=IDCard]').val())) {
-                        showMsg('身份证号格式不正确，请重新输入 ！');
-                        $('input[name=IDCard]').focus();
-                        return false;
-                    }
-                    if (!CheckInput('PhoneNO', '手机号', '-1')) {
-                        return false;
-                    };
-                    var flag1 = CheckMobile($('input[name=PhoneNO]').val());
-                    var flag2 = CheckPhone($('input[name=PhoneNO]').val());
-                    if (!flag1 && !flag2) {
-                        showMsg('手机号格式不正确，请重新输入 ！');
-                        $('input[name=PhoneNO]').focus();
-                        return false;
-                    }
-                }
-
-                if ($('select[name=XianID] option:selected').val() == "") {
-                    showMsg('县名不能为空 ！');
-                    return false;
-                }
-                if ($('select[name=XiangID] option:selected').text() == "") {
-                    showMsg('乡名不能为空 ！');
-                    return false;
-                }
-                if ($('select[name=CunID] option:selected').text() == "") {
-                    showMsg('村名不能为空 ！');
-                    return false;
-                }
-                return true;
+            if (strPassword != strPassword2) {
+                showMsg('两次输入的密码不一致，请重新输入！');
+                $('input[name=strPassword]').focus();
+                return false;
             }
+            if ($('input[name=strName]').val() == '') {
+                showMsg('请输入姓名！');
+                $('input[name=strName]').focus();
+                return false;
+            }
+            if (VerifyDepInfo) {
+                if (!checkIdcard($('input[name=IDCard]').val())) {
+                    showMsg('身份证号格式不正确，请重新输入 ！');
+                    $('input[name=IDCard]').focus();
+                    return false;
+                }
+                if (!CheckInput('PhoneNO', '手机号', '-1')) {
+                    return false;
+                };
+                var flag1 = CheckMobile($('input[name=PhoneNO]').val());
+                var flag2 = CheckPhone($('input[name=PhoneNO]').val());
+                if (!flag1 && !flag2) {
+                    showMsg('手机号格式不正确，请重新输入 ！');
+                    $('input[name=PhoneNO]').focus();
+                    return false;
+                }
+            }
+
+            if ($('select[name=XianID] option:selected').val() == "") {
+                showMsg('县名不能为空 ！');
+                return false;
+            }
+            if ($('select[name=XiangID] option:selected').text() == "") {
+                showMsg('乡名不能为空 ！');
+                return false;
+            }
+            if ($('select[name=CunID] option:selected').text() == "") {
+                showMsg('村名不能为空 ！');
+                return false;
+            }
+            return true;
+        }
 
         //查找推荐人
         function FunQueryDep() {
-           
-            var strName =$.trim( $('#dep_Name').val());
+
+            var strName = $.trim($('#dep_Name').val());
             var PhoneNO = $.trim($('#dep_PhoneNo').val());
             if (strName == '' && PhoneNO == '') {
                 showMsg('请输入查询储户名或手机号!');
@@ -564,7 +564,7 @@
                     }
                     $('.datadetail #dataInfo_detail').show();
                     var strhtml = '';
-                    var jsondata =r;
+                    var jsondata = r;
                     var height = 110;
                     for (var i = 0; i < jsondata.length; i++) {
                         strhtml += '<tr class="trappend" >';
@@ -575,7 +575,7 @@
                         strhtml += ' <td>' + jsondata[i].strAddress + '</td>';
                         //strhtml += ' <td><a href="#" AccountNumber=' + jsondata[i].AccountNumber + '  strName=' + jsondata[i].strName + ' PhoneNO=' + jsondata[i].PhoneNO + ' onclick="FunDepChoose()"></a></td>';
                         strhtml += ' <td> <input type="button" value="选择" style="width:60px;height:25px;font-size:12px;" AccountNumber=' + jsondata[i].AccountNumber + '  strName=' + jsondata[i].strName + ' PhoneNO=' + jsondata[i].PhoneNO + ' onclick="FunDepChoose(this)"></input></td>';
-                       
+
                         strhtml += '</tr>';
                     }
 
@@ -611,8 +611,8 @@
             var AccountNumber = $(obj).attr('AccountNumber');
             var strName = $(obj).attr('strName');
             var PhoneNO = $(obj).attr('PhoneNO');
-            $('#span_DepName').html('已选择:' + strName+' 账号:');
-            $('#span_DepAccountNumber').html( AccountNumber);
+            $('#span_DepName').html('已选择:' + strName + ' 账号:');
+            $('#span_DepAccountNumber').html(AccountNumber);
             $('#divDep').hide();
         }
 
@@ -623,54 +623,54 @@
         function CloseQueryDep() {
             $('#divDep').hide();
         }
-            /*--------End 数据增删改操作--------*/
+        /*--------End 数据增删改操作--------*/
 
         var p_left = 0; var p_ltop = 0; var p_lwidth = 0; var p_lheight = 0;
         $(function () {
-                $.ajax({
-                    url: '/Ashx/wbinfo.ashx?type=GetPrintSetting_Dep',
-                    type: 'post',
-                    data: '',
-                    dataType: 'json',
-                    success: function (r) {
-                        p_lwidth = r[0].Width;
-                        p_lheight = r[0].Height;
-                        p_lleft = r[0].DriftRateX;
-                        p_ltop = r[0].DriftRateY;
-                    }, error: function (r) {
-                        showMsg('加载打印坐标时出现错误 ！');
-                    }
-                });
+            $.ajax({
+                url: '/Ashx/wbinfo.ashx?type=GetPrintSetting_Dep',
+                type: 'post',
+                data: '',
+                dataType: 'json',
+                success: function (r) {
+                    p_lwidth = r[0].Width;
+                    p_lheight = r[0].Height;
+                    p_lleft = r[0].DriftRateX;
+                    p_ltop = r[0].DriftRateY;
+                }, error: function (r) {
+                    showMsg('加载打印坐标时出现错误 ！');
+                }
             });
+        });
 
         function CreateOneFormPage() {
-                LODOP = getLodop();
-                LODOP.PRINT_INIT("存折打印");
-                LODOP.SET_PRINT_STYLE("FontSize", 18);
-                LODOP.SET_PRINT_STYLE("Bold", 1);
-                LODOP.ADD_PRINT_TEXT(0, 0, 0, 0, "打印页面部分内容");
-                LODOP.ADD_PRINT_HTM(p_ltop, p_lleft, p_lwidth, p_lheight, document.getElementById("divPrint").innerHTML);
+            LODOP = getLodop();
+            LODOP.PRINT_INIT("存折打印");
+            LODOP.SET_PRINT_STYLE("FontSize", 18);
+            LODOP.SET_PRINT_STYLE("Bold", 1);
+            LODOP.ADD_PRINT_TEXT(0, 0, 0, 0, "打印页面部分内容");
+            LODOP.ADD_PRINT_HTM(p_ltop, p_lleft, p_lwidth, p_lheight, document.getElementById("divPrint").innerHTML);
 
-            };
+        };
 
         function FunPrint() {
-                //查询社员信息
-                $.ajax({
-                    url: '/User/Storage/storage.ashx?type=GetDepositorPrint&AccountNumber=' + AccountNumber_New,
-                    type: 'post',
-                    data: '',
-                    dataType: 'text',
-                    success: function (r) {
-                        $('#divPrint').html('');
-                        $('#divPrint').append(r);
-                        CreateOneFormPage();
-                        LODOP.PREVIEW(); //打印存折
-                    }, error: function (r) {
-                        showMsg('加载打印坐标时出现错误 ！');
-                    }
-                });
+            //查询社员信息
+            $.ajax({
+                url: '/User/Storage/storage.ashx?type=GetDepositorPrint&AccountNumber=' + AccountNumber_New,
+                type: 'post',
+                data: '',
+                dataType: 'text',
+                success: function (r) {
+                    $('#divPrint').html('');
+                    $('#divPrint').append(r);
+                    CreateOneFormPage();
+                    LODOP.PREVIEW(); //打印存折
+                }, error: function (r) {
+                    showMsg('加载打印坐标时出现错误 ！');
+                }
+            });
 
-            }
+        }
 
     </script>
 </head>
@@ -706,7 +706,7 @@
                             <span>密码:</span>
                         </td>
                         <td>
-                            <input type="password" name="strPassword"  />
+                            <input type="password" name="strPassword" />
                             <span class="spanwarning" id="span_strPassword">请输入密码,且密码长度不小于4位</span>
                         </td>
                     </tr>
@@ -715,7 +715,7 @@
                             <span>重复密码:</span>
                         </td>
                         <td>
-                            <input type="password" name="strPassword2"  />
+                            <input type="password" name="strPassword2" />
                             <span class="spanwarning" id="span_strPassword2">请再次输入密码</span>
                         </td>
                     </tr>
@@ -724,7 +724,7 @@
                             <span>姓名:</span>
                         </td>
                         <td>
-                            <input name="strName" type="text"  />
+                            <input name="strName" type="text" />
                             <span class="spanwarning" id="span_strName">请输入储户姓名</span>
                         </td>
                     </tr>
@@ -733,7 +733,7 @@
                             <span>身份证号:</span>
                         </td>
                         <td>
-                            <input name="IDCard" type="text"  />
+                            <input name="IDCard" type="text" />
                             <span class="spanwarning" id="span_IDCard">请输入储户身份证号</span>
                         </td>
                     </tr>
@@ -742,10 +742,10 @@
                             <span>手机号:</span>
                         </td>
                         <td>
-                            <input name="PhoneNO" type="text"  />
-                            <span class="spanwarning" id="span_PhoneNO">请输入储户手机号</span>                        
-                            <span>是否贫困户:</span>                       
-                            <input name="IsPoor"  type="radio" value="1" />是<input type="radio" name="IsPoor" checked value="0" />否
+                            <input name="PhoneNO" type="text" />
+                            <span class="spanwarning" id="span_PhoneNO">请输入储户手机号</span>
+                            <span>是否贫困户:</span>
+                            <input name="IsPoor" type="radio" value="1" />是<input type="radio" name="IsPoor" checked value="0" />否
                         </td>
                     </tr>
                     <tr>
@@ -753,11 +753,11 @@
                             <span>住址:</span>
                         </td>
                         <td>
-                            <select name="XianID" ></select>
-                            <select name="XiangID" ></select>
-                            <select name="CunID" ></select>
+                            <select name="XianID"></select>
+                            <select name="XiangID"></select>
+                            <select name="CunID"></select>
                             <a id="a_Cun" href="#" onclick="BDCun_Show()">添加村名</a>
-                            
+
                         </td>
                     </tr>
                     <tr id="tr_Integral">
@@ -782,7 +782,7 @@
             </div>
         </div>
 
-        <div id="divCun" class="pageEidt" style="display:none;" >
+        <div id="divCun" class="pageEidt" style="display:none;">
             <div style="float: left; ">
                 <img class="imgclose" src="../../images/winClose.png" alt="关闭窗口" style="float: right; cursor: pointer;" onclick="BDCun_Close()">
 
@@ -807,14 +807,14 @@
                                     <input type="text" name="ACun" style="width:120px;height:25px;font-size:14px;">
                                 </td>
                             </tr>
-                           
-                            <tr >
+
+                            <tr>
                                 <td></td>
                                 <td>
                                     <input type="button" id="btnAdd" value="添加" style="width:100px;height:25px;font-size:14px; background:#0094ff" onclick="BDCun_Add()">
                                 </td>
                             </tr>
-                         
+
                         </tbody>
                     </table>
                 </div>
@@ -828,10 +828,10 @@
                     <span style="margin-left:5px;">手机号:</span><input type="text" id="dep_PhoneNo" style="width:100px;height:25px;font-size:14px;" />
                     <img id="imgQuery" src="/images/search_blue.png" style="width:20px;height:20px;" onclick="FunQueryDep()" />
                 </div>
-                <img class="imgclose" src="../../images/winClose.png"  alt="关闭窗口" style="float: right; cursor: pointer;" onclick="CloseQueryDep()" />
+                <img class="imgclose" src="../../images/winClose.png" alt="关闭窗口" style="float: right; cursor: pointer;" onclick="CloseQueryDep()" />
                 <!--<div class="div_close">
-                <input type="button" id="noticeclose" value="×">
-            </div>-->
+                    <input type="button" id="noticeclose" value="×">
+                </div>-->
 
                 <table class="tabData" id="dataInfo_detail" style="display:none;">
                     <tr class="tr_head">
@@ -863,6 +863,6 @@
             <input type="hidden" id="colorName" value="" />
         </div>
     </form>
-  
+
 </body>
 </html>

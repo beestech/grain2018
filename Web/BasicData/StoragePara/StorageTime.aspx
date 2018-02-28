@@ -171,6 +171,7 @@
                 //$('#tr-numStorageDate').hide();
                 $('#div-InterestType-1').show();
                 $('#div-InterestType-2').hide();
+                $('#div-InterestType-21').hide();
                 $('#div-InterestType-3').hide();
                 $('#div-InterestType-4').hide();
                 //$('#tr-numExChangeProp').hide();
@@ -180,6 +181,7 @@
                 //$('#tr-numStorageDate').show();
                 $('#div-InterestType-1').hide();
                 $('#div-InterestType-2').show();
+                $('#div-InterestType-21').show();
                 $('#div-InterestType-3').show();
                 $('#div-InterestType-4').show();
                 //$('#tr-numExChangeProp').show();
@@ -371,6 +373,8 @@
                                  </div>
                              <div id="div-InterestType-2" style="padding:2px 0px;">
                               <input type="radio" id="InterestType-2" name="InterestType" value="2" class="custom-radio"  /><label for="InterestType-2"></label><span style="margin:5px 0px 0px 5px">按照到时市场价计息</span><span style="font-size:12px;color:#666;">(分红)</span></div>
+                              <div id="div-InterestType-21" style="padding:2px 0px;">
+                              <input type="radio" id="InterestType-21" name="InterestType" value="21" class="custom-radio"  /><label for="InterestType-21"></label><span style="margin:5px 0px 0px 5px">按照商议到期价分红</span><span style="font-size:12px;color:#666;">(议价分红)</span></div>
                               <div id="div-InterestType-3" style="padding:2px 0px;">
                               <input type="radio" id="InterestType-3" name="InterestType" value="3" class="custom-radio"  /><label for="InterestType-3"></label><span style="margin:5px 0px 0px 5px">按照约定到期价格计息</span><span style="font-size:12px;color:#666;">(定期)</span></div>
                               <div id="div-InterestType-4" style="padding:2px 0px;">
