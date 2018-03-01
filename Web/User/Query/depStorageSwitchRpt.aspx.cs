@@ -21,7 +21,7 @@ namespace Web.User.Query
 
         private void BindDDL()
         {
-            string sql = @"select w.strName,w.ID from Dep_StorageSwitch as d inner join WB as w
+            string sql = @"select distinct w.strName,w.ID from Dep_StorageSwitch as d inner join WB as w
 on d.WBID=w.ID";
             var dt=SQLHelper.ExecuteDataTable(sql);
             if (dt.Rows.Count > 0)
@@ -64,7 +64,9 @@ on d.WBID=w.ID";
 
             if (rblIsSwitch.SelectedIndex != -1)//有选择
             {
-                sql.Append("  and d.ISSwitch=" + rblIsSwitch.SelectedValue);
+                if (!rblIsSwitch.SelectedValue.Equals("2")) {
+                    sql.Append("  and d.ISSwitch=" + rblIsSwitch.SelectedValue);
+                }
             }
 
             sql.Append("      order by d.StorageDate desc ");
@@ -77,7 +79,7 @@ on d.WBID=w.ID";
             {
                 Repeater1.DataSource = "";
                 Repeater1.DataBind();
-                ClientScript.RegisterClientScriptBlock(GetType(), "", "<script>alert('没有您要查询的数据！');</script>");
+                ClientScript.RegisterClientScriptBlock(GetType(), "", "<script>alert('没有您要查询的数据！');</script>"); 
             }
 
         }

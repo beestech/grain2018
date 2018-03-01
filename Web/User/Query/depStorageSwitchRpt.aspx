@@ -47,6 +47,7 @@
                         <asp:RadioButtonList runat="server" RepeatDirection="Horizontal" ID="rblIsSwitch">
                             <asp:ListItem Text="是" Value="1" />
                             <asp:ListItem Text="否" Value="0" />
+                            <asp:ListItem Text="全部" Value="2" />
                         </asp:RadioButtonList>
                     </td>
                     <td style="width: 60px">
