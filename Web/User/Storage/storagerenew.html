@@ -226,7 +226,7 @@
             }
             moneyTotal = changeTwoDecimal_f(moneyTotal);//折合现金
             var strzhehe = '';
-            strzhehe += '<tr class="tr_moneyTotal"> <td colspan="8" style="height:25px; text-align:center;color:#666;font-size:12px;">折合现金合计：￥' + moneyTotal + '</td></tr>';
+            strzhehe += '<tr class="tr_moneyTotal"> <td colspan="9" style="height:25px; text-align:center;color:#666;font-size:12px;">折合现金合计：￥' + moneyTotal + '</td></tr>';
             $('#tabdepositorStorageInfo').append(strzhehe);
 
 
@@ -245,7 +245,7 @@
 
             $('input[name=txtPrice_ShiChang]').val($(obj).attr('Price_ShiChang'));
             
-
+            
             GetInterestState(dsiID);
             InitTypeID();//加载存期类型
             ChangeType(0);
@@ -431,8 +431,9 @@
 
 
         function PrintPage() {
+            var numInterest = $('input[name=numInterest]').val();
             var url = '/Ashx/storage.ashx?type=PrintDep_StorageInfo';
-            var para = 'AccountNumber=' + $('#QAccountNumber').val() + '&BusinessNO=' + BusinessNO + '&OperateType=结息续存';
+            var para = 'AccountNumber=' + $('#QAccountNumber').val() + '&BusinessNO=' + BusinessNO + '&OperateType=结息续存&numInterest=' + numInterest;
             $.ajax({
                 url: url,
                 type: 'post',
@@ -640,8 +641,7 @@
             <input type="text" name="txtVarietyID" />
             <input type="text" name="txtVarietyLevelID" />
             <input type="text" name="txtTypeID" />
-            <input type="text" name="txtTimeID" />
-
+            <input type="text" name="txtTimeID" />            
             <!--粮食第一次的存入价格-->
             <input type="text" name="txtPrice_ShiChang" />
 

@@ -91,7 +91,7 @@
         <table class="tabData" id="taboperatelog">
             <thead>
                 <tr>
-                    <td colspan="11" style="border-bottom:1px solid #aaa; height:25px; text-align:center"><span style="font-size: 14px;  color:Green">储户业务记录</span></td>
+                    <td colspan="12" style="border-bottom:1px solid #aaa; height:25px; text-align:center"><span style="font-size: 14px;  color:Green">储户业务记录</span></td>
                 </tr>
                 <tr class="tr_head">
                     <th style="width: 100px; height:30px; text-align: center;">
@@ -120,6 +120,9 @@
                     </th>
                     <th style="width: 80px; text-align: center;">
                         交易时间
+                    </th>
+                    <th style="width: 60px; text-align: center;">
+                        利息
                     </th>
                     <th style="width: 80px; text-align: center;">
                         办理人
@@ -224,6 +227,7 @@
                 strhtml += ' <td>' + jsondata[i].Money_Trade + '</td>';
                 strhtml += ' <td>' + jsondata[i].Count_Balance + '</td>';
                 strhtml += ' <td>' + jsondata[i].dt_Trade + '</td>';
+                strhtml += ' <td>' + jsondata[i].numInterest + ' </td>';
                 strhtml += ' <td>' + jsondata[i].UserID + '</td>';
 
                 var operate = '';
@@ -234,7 +238,7 @@
                 }
 
                 if (jsondata[i].BusinessName != '5' && jsondata[i].BusinessName != '12' && jsondata[i].BusinessName != '16') {
-                    operate += '<a href="#" onclick="FunPrintPage(\'' + jsondata[i].BusinessNO + '\',\'' + jsondata[i].BusinessNameRemark + '\')">补打凭据</a>';
+                    operate += '<a href="#" onclick="FunPrintPage(\'' + jsondata[i].BusinessNO + '\',\'' + jsondata[i].BusinessNameRemark + '\',\'' + jsondata[i].numInterest + '\')">补打凭据</a>';
                 } else {
                     operate += '<a href="#" style="color:#999;" disabled>补打凭据</a>';
                 }
@@ -277,13 +281,13 @@
         }
         /*-------End 打印存折--------*/
 
-        function FunPrintPage(BusinessNO, BusinessName) {
+        function FunPrintPage(BusinessNO, BusinessName, numInterest) {
             if (BusinessName == "存入") {
-                PrintPageStorage(BusinessNO, '存粮');
+                PrintPageStorage(BusinessNO, '存粮',numInterest);
             }
 
             if (BusinessName == "结息") {
-                PrintPageStorage(BusinessNO, '计息续存');
+                PrintPageStorage(BusinessNO, '计息续存',numInterest);
             }
 
             if (BusinessName == "兑换") {
@@ -326,9 +330,10 @@
         }
 
         //打印存粮凭证
-        function PrintPageStorage(BusinessNO, OperateType) {
+        function PrintPageStorage(BusinessNO, OperateType, numInterest) {
             var url = '/Ashx/storage.ashx?type=PrintDep_StorageInfo';
-            var para = 'AccountNumber=' + AccountNumber + '&BusinessNO=' + BusinessNO + '&OperateType=' + OperateType;
+            
+            var para = 'AccountNumber=' + AccountNumber + '&BusinessNO=' + BusinessNO + '&OperateType=' + OperateType + '&numInterest=' + numInterest;
             $.ajax({
                 url: url,
                 type: 'post',

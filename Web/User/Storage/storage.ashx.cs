@@ -94,6 +94,26 @@ namespace Web.User.Storage
             string TypeID = context.Request.Form["txtTypeID"].ToString();//存储类型
             string TimeID = context.Request.Form["txtTimeID"].ToString();//存期
 
+            #region 获取储户存粮信息，以便插入结息记录表
+            //通过dsiID查询出之前存粮信息
+            string getStorageInfoSql = string.Format(@"select TypeID,TimeID,StorageDate,StorageNumber,Price_ShiChang,CurrentRate from Dep_StorageInfo where ID={0}", dsiID);
+            var dt = SQLHelper.ExecuteDataTable(getStorageInfoSql);
+            if (dt == null || dt.Rows.Count == 0)
+            {
+                var res = new { state = "error", msg = "获取储户的存储信息错误!" };
+                context.Response.Write(JsonHelper.ToJson(res));
+                return;
+            }
+            int oldTypeID = Convert.ToInt32(dt.Rows[0]["TypeID"]);//转存前存期类型
+            int oldTimeID = Convert.ToInt32(dt.Rows[0]["TimeID"]);//转存前存期
+            double currentRate = Convert.ToDouble(dt.Rows[0]["CurrentRate"]);//利率
+            double storageNumber = Convert.ToDouble(dt.Rows[0]["StorageNumber"]);//结存数量
+            string storageDate = dt.Rows[0]["StorageDate"].ToString();//存粮日期 
+            double price_ShiChang = Convert.ToDouble(dt.Rows[0]["Price_ShiChang"]);//价格
+
+         
+            #endregion
+      
             StringBuilder strSqlStorage = new StringBuilder();
             strSqlStorage.Append("    SELECT top 1  A.WeighNo,A.ID,A.AccountNumber,A.TypeID,A.TimeID,B.strName AS Dep_Name, VarietyID,VarietyLevelID,StorageNumber, StorageNumberRaw,Price_ShiChang,Price_DaoQi");
             strSqlStorage.Append("    ,A.InterestDate,A.CurrentRate, A.StorageDate,DATEDIFF( Day, A.StorageDate,GETDATE())AS daycount,C.strName AS VarietyName,D.strName AS UnitName");
@@ -168,6 +188,32 @@ namespace Web.User.Storage
                 strSqlUpdate.Append("   StorageNumber=0,StorageNumberRaw=0  ");                
                 strSqlUpdate.Append("  WHERE ID=" + dsiID);
             }
+
+            //添加结息记录           
+            #region 添加结息记录
+            string insertStorageJxRecord = @"insert into StorageJxRecord(WBID,UserId,AccountNumber,StorageDate,StorageJxDate,VarietyID,StorageNumber,OldTypeID,
+                                                                         OldTimeID,TypeID,TimeID,CurrentRate,Price_Shichang,Lixi,BusinessName)values(@WBID,@UserId,@AccountNumber,
+                                                                         @StorageDate,@StorageJxDate,@VarietyID,@StorageNumber,@OldTypeID,@OldTimeID,@TypeID,@TimeID,
+                                                                         @CurrentRate,@Price_Shichang,@Lixi,@BusinessName)";
+            SqlParameter[] insertJxParas = new SqlParameter[]
+            {
+                new SqlParameter("@WBID",WBID),
+                new SqlParameter("@UserId",UserID),
+                new SqlParameter("@AccountNumber",AccountNumber),
+                new SqlParameter("@StorageDate",storageDate),
+                new SqlParameter("@StorageJxDate",DateTime.Now),
+                new SqlParameter("@VarietyID",VarietyID),
+                new SqlParameter("@StorageNumber",storageNumber),
+                new SqlParameter("@OldTypeID",oldTypeID),
+                new SqlParameter("@OldTimeID",oldTimeID),
+                new SqlParameter("@TypeID",TypeID),
+                new SqlParameter("@TimeID",TimeID),
+                new SqlParameter("@CurrentRate",currentRate),
+                new SqlParameter("@Price_Shichang",price_ShiChang),
+                new SqlParameter("@Lixi",numInterest),
+                new SqlParameter("@BusinessName","结息续存结算")
+            }; 
+            #endregion
 
             //添加新的存储记录
             strSql_newStorage.Append("insert into [Dep_StorageInfo] (");
@@ -315,6 +361,8 @@ namespace Web.User.Storage
                     if (strSql_newStorage.ToString().Trim() != "") {
                         SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSql_newStorage.ToString(), parameters_newStorage);
                     }
+
+                    SQLHelper.ExecuteNonQuery(tran, CommandType.Text, insertStorageJxRecord, insertJxParas);
 
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlUpdate.ToString());
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlInterest.ToString(), parametersInterest);
