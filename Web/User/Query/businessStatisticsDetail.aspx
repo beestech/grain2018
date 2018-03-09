@@ -15,7 +15,7 @@
     <form id="form1" runat="server">
     <div class="pageHead">
             <a href="#" onclick="javascript :history.back(-1);"><img src="../../images/icon-back.png" /></a>
-            <b>储户基本信息查询</b><%--<span id="spanHelp" style="cursor: pointer">帮助</span>--%>
+            <b>储户业务统计详细</b><%--<span id="spanHelp" style="cursor: pointer">帮助</span>--%>
         </div>
         <div id="divHelp" style="border: 1px solid #333; border-radius: 5px; display: none;">
             <span>提示1：</span><br />

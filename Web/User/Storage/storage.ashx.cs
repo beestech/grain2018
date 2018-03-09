@@ -1526,7 +1526,10 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
                 {
 
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlEdit.ToString());//更新储户存储信息
-                    SQLHelper.ExecuteNonQuery(tran, CommandType.Text, update_Dep_StorageSwitchSql);//更新预存转实际存数据
+                    if (obj != null)
+                    {
+                        SQLHelper.ExecuteNonQuery(tran, CommandType.Text, update_Dep_StorageSwitchSql);//更新预存转实际存数据
+                    }
                     //SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlEditLog.ToString());//更新储户存储信息记录
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, updateRecordSql.ToString(),paras);//修改存粮记录
                     
