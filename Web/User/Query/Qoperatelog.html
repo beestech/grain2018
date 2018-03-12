@@ -231,13 +231,13 @@
                 strhtml += ' <td>' + jsondata[i].UserID + '</td>';
 
                 var operate = '';
-                if (jsondata[i].BusinessName != '13' && jsondata[i].BusinessName != '14' && jsondata[i].BusinessName != '15') {
+                if (jsondata[i].BusinessName != '13' && jsondata[i].BusinessName != '14' && jsondata[i].BusinessName != '15' && jsondata[i].BusinessName != '19') {
                     operate += '<a href="#" style="margin-right:10px;" onclick="FunPrint(\'' + jsondata[i].BusinessNO + '\',\'' + jsondata[i].BusinessNameRemark + '\')">补打存折</a>';
                 } else {
                     operate += '<a href="#" style="color:#999;margin-right:10px;" disabled>补打存折</a>';
                 }
 
-                if (jsondata[i].BusinessName != '5' && jsondata[i].BusinessName != '12' && jsondata[i].BusinessName != '16') {
+                if (jsondata[i].BusinessName != '5' && jsondata[i].BusinessName != '12' && jsondata[i].BusinessName != '16' && jsondata[i].BusinessName != '19') {
                     operate += '<a href="#" onclick="FunPrintPage(\'' + jsondata[i].BusinessNO + '\',\'' + jsondata[i].BusinessNameRemark + '\',\'' + jsondata[i].numInterest + '\')">补打凭据</a>';
                 } else {
                     operate += '<a href="#" style="color:#999;" disabled>补打凭据</a>';

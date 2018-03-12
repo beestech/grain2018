@@ -110,10 +110,10 @@ namespace Web.Ashx
             }
 
                 StringBuilder strSqlCommune = new StringBuilder();
-                strSqlCommune.Append("  SELECT i.numInterest,A.ID,B.ID as WBID, B.strName AS WBName,C.strRealName AS UserID,A.Price,A.Dep_AccountNumber,A.BusinessNO, A.VarietyName,A.UnitName,A.GoodCount,A.Count_Trade,A.Money_Trade,A.Count_Balance,CONVERT(NVARCHAR(100),A.dt_Trade,23) AS dt_Trade,A.BusinessName,");
-                strSqlCommune.Append("  CASE A.BusinessName WHEN '1' THEN '存入' WHEN '2' THEN '兑换' WHEN '3' THEN '存转销'  WHEN '5' THEN '修改错误存粮' WHEN '6' THEN '退还兑换' WHEN '7' THEN '退还存转销' WHEN '8' THEN '退还存粮' WHEN '9' THEN '产品换购' WHEN '10' THEN '退还产品换购' WHEN '11' THEN '结息' WHEN '12' THEN '换存折' WHEN '13' THEN '商品销售' WHEN '14' THEN '退还商品销售' WHEN '15' THEN '积分兑换商品' WHEN '16' THEN '存粮转存'  WHEN '17' THEN '批量兑换' END AS BusinessNameRemark");
+                strSqlCommune.Append("  SELECT A.numInterest,A.ID,B.ID as WBID, B.strName AS WBName,C.strRealName AS UserID,A.Price,A.Dep_AccountNumber,A.BusinessNO, A.VarietyName,A.UnitName,A.GoodCount,A.Count_Trade,A.Money_Trade,A.Count_Balance,CONVERT(NVARCHAR(100),A.dt_Trade,23) AS dt_Trade,A.BusinessName,");
+                strSqlCommune.Append("  CASE A.BusinessName WHEN '1' THEN '存入' WHEN '2' THEN '兑换' WHEN '3' THEN '存转销'  WHEN '5' THEN '修改错误存粮' WHEN '6' THEN '退还兑换' WHEN '7' THEN '退还存转销' WHEN '8' THEN '退还存粮' WHEN '9' THEN '产品换购' WHEN '10' THEN '退还产品换购' WHEN '11' THEN '结息' WHEN '12' THEN '换存折' WHEN '13' THEN '商品销售' WHEN '14' THEN '退还商品销售' WHEN '15' THEN '积分兑换商品' WHEN '16' THEN '存粮转存'  WHEN '17' THEN '批量兑换' WHEN '18' THEN '退还批量兑换' WHEN '19' THEN '存粮合并' END AS BusinessNameRemark");
                 strSqlCommune.Append("  FROM dbo.Dep_OperateLog A INNER JOIN dbo.WB B ON A.WBID=B.ID");
-                strSqlCommune.Append(" inner join StorageInterest as i on i.Dep_SID = A.Dep_SID");
+               // strSqlCommune.Append(" inner join StorageInterest as i on i.Dep_SID = A.Dep_SID");
                 strSqlCommune.Append("  LEFT OUTER JOIN dbo.Users C ON A.UserID=C.ID");
                 strSqlCommune.Append("  where 1=1");
                 strSqlCommune.Append("   AND A.Dep_AccountNumber = '" + AccountNumber + "'");

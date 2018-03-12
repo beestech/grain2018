@@ -1789,7 +1789,7 @@ namespace Web.User.Exchange
                 sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
                 sqlO_Log.Append(" values (");
 
-                sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, GoodID, UnitName, GoodPrice, GoodCount, 0, GoodValue, 0, DateTime.Now.ToString(), GoodName, UnitName, 0, numInterest));
+                sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, GoodID, UnitName, GoodPrice, GoodCount, 0, GoodValue, 0, DateTime.Now.ToString(), GoodName, UnitName, 0, 0));
 
                 #endregion
 
@@ -1891,7 +1891,7 @@ namespace Web.User.Exchange
             sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
             sqlO_Log.Append(" values (");
 
-            sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, GoodID, UnitName, GoodPrice, GoodCount, 0, GoodValue, 0, DateTime.Now.ToString(), GoodName, UnitName, 0, numInterest));
+            sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, GoodID, UnitName, GoodPrice, GoodCount, 0, GoodValue, 0, DateTime.Now.ToString(), GoodName, UnitName, 0, 0));
 
             #endregion
 
