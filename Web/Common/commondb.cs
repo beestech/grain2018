@@ -10,12 +10,37 @@ namespace Web
     //取数据表信息
     public class commondb
     {
+      
+
         public static DataRow getStorageTimeByID(string id)
         {
             string sql = "SELECT * FROM dbo.StorageTime WHERE ID=@ID";
             SqlParameter[] parameters = {
                     new SqlParameter("@ID", SqlDbType.Int,4)};
             parameters[0].Value = id;
+
+            DataTable dt = SQLHelper.ExecuteDataTable(sql, parameters);
+            if (dt == null || dt.Rows.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return dt.Rows[0];
+            }
+        }
+
+        /// <summary>
+        /// 查询存粮的存期信息
+        /// </summary>
+        /// <param name="depID"></param>
+        /// <returns></returns>
+        public static DataRow getStorageTimeByDepID(string depID)
+        {
+            string sql = "SELECT  * FROM dbo.StorageTime WHERE ID=(SELECT TimeID FROM dbo.Dep_StorageInfo WHERE ID=@ID)";
+            SqlParameter[] parameters = {
+                    new SqlParameter("@ID", SqlDbType.Int,4)};
+            parameters[0].Value = depID;
 
             DataTable dt = SQLHelper.ExecuteDataTable(sql, parameters);
             if (dt == null || dt.Rows.Count == 0)
@@ -43,6 +68,7 @@ namespace Web
                 return dt.Rows[0];
             }
         }
+
 
         public static DataRow getDep_StorageInfoByID(string id)
         {

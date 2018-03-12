@@ -487,6 +487,112 @@ namespace Web
             }
             return strReturn;
         }
+
+        /// <summary>
+        /// 根据存粮类型计算储户现在存储物品的结算价格
+        /// </summary>
+        /// <param name="depID"></param>
+        /// <returns></returns>
+        public static double getPriceSettle(int depID) {
+            DataRow row = commondb.getDep_StorageInfoByID(depID.ToString());
+            double price_ShiChange = Convert.ToDouble(row["Price_ShiChang"]);
+            double price_Settle = price_ShiChange;
+            DateTime dt_Begin = Convert.ToDateTime(row["StorageDate"]);//存入日期
+            int TimeID = Convert.ToInt32(row["TimeID"]);//存期
+            DataRow rowTime = commondb.getStorageTimeByID(TimeID.ToString());
+            if (rowTime == null) {
+                return price_Settle;
+            }
+            bool ISDaoqi = false;//存粮是否到期
+            if (DateTime.Now.Subtract(dt_Begin).TotalDays > Convert.ToInt32(rowTime["numStorageDate"])) {
+                ISDaoqi = true;
+            }
+            int InterestType = Convert.ToInt32(rowTime["InterestType"]);
+            switch (InterestType) {
+                case 1:
+                    price_Settle = price_ShiChange;
+                    break;
+                case 2:
+                    if (ISDaoqi)
+                    {
+                        DataRow rowRate = commondb.getStorageRateByID(row["StorageRateID"].ToString());
+                        if (rowRate != null)
+                        {
+                            price_Settle = Convert.ToDouble(rowRate["Price_ShiChang"]);
+                        }
+                    }
+                    break;
+                case 3:
+                    if (ISDaoqi)
+                    {
+                        price_Settle = Convert.ToDouble(row["Price_DaoQi"]);
+                    }
+                    break;
+                case 4:
+                    if (ISDaoqi)
+                    {
+                        price_Settle = Convert.ToDouble(row["Price_HeTong"]);
+                    }
+                    break;
+                case 21:
+                    if (Convert.ToDouble(row["Price_DaoQi"]) > 0)
+                    {
+                        price_Settle = Convert.ToDouble(row["Price_DaoQi"]);
+                    }
+                    else {
+                        if (ISDaoqi)
+                        {
+                            DataRow rowRate = commondb.getStorageRateByID(row["StorageRateID"].ToString());
+                            if (rowRate != null)
+                            {
+                                price_Settle = Convert.ToDouble(rowRate["Price_ShiChang"]);
+                            }
+                        }
+                    }
+                    break;
+            }
+            return price_Settle;
+        }
+
+
+        /// <summary>
+        /// 根据存粮是否到期
+        /// </summary>
+        /// <param name="depID"></param>
+        /// <returns></returns>
+        public static bool getISDaoQi(int depID, DateTime dt_Calc)
+        {
+            if (dt_Calc == null) {
+                dt_Calc = DateTime.Now;
+            }
+            DataRow row = commondb.getDep_StorageInfoByID(depID.ToString());
+            bool flag = false;
+            DateTime dt_Begin = Convert.ToDateTime(row["StorageDate"]);//存入日期
+            int TimeID = Convert.ToInt32(row["TimeID"]);//存期
+            DataRow rowTime = commondb.getStorageTimeByID(TimeID.ToString());
+            if (rowTime == null)
+            {
+                return flag;
+            }
+            bool ISDaoqi = false;//存粮是否到期
+            int InterestType = Convert.ToInt32(rowTime["InterestType"]);
+
+            if (InterestType == 1)
+            {
+                flag = false;
+            }
+            else {
+                if (dt_Calc.Subtract(dt_Begin).TotalDays > Convert.ToInt32(rowTime["numStorageDate"]))
+                {
+                    flag = true;
+                }
+                else {
+                    flag = false;
+                }
+            }
+
+            return flag;
+        }
         #endregion
 
         #region 页面显示的利息计算

@@ -3219,7 +3219,8 @@ namespace Web.User.Exchange
             double EarningRate = VarietyInterest / VarietyMoney;//盈利率
             string StorageFee = dtStorage.Rows[0]["StorageFee"].ToString();//保管费率
             double StorageMoney = Convert.ToDouble(dicSell["BGF"]);//保管费
-            string Price_JieSuan = dtStorage.Rows[0]["Price_ShiChang"].ToString();
+            string Price_CunRu = dtStorage.Rows[0]["Price_ShiChang"].ToString();
+            string Price_JieSuan = common.getPriceSettle(Convert.ToInt32(dsiID)).ToString();
             //double Money_Earn = VarietyInterest - StorageMoney;//总收益
             double Money_Earn = 0;
             if (calcType == "2")
@@ -3255,9 +3256,9 @@ namespace Web.User.Exchange
             #region 写入存转销记录
             StringBuilder strSqlInsert = new StringBuilder();
             strSqlInsert.Append("insert into [StorageSell] (");
-            strSqlInsert.Append("SerialNumber,strGUID,BusinessNO,Dep_SID,Dep_AccountNumber,Dep_Name,WBID,UserID,BusinessName,UnitName,VarietyID,VarietyName,VarietyCount,VarietyMoney,VarietyInterest,StorageDate,CurrentRate,EarningRate,StorageFee,StorageMoney,Price_JieSuan,Money_Earn,dt_Sell,JieCun_Last,JieCun_Now,ISReturn)");
+            strSqlInsert.Append("SerialNumber,strGUID,BusinessNO,Dep_SID,Dep_AccountNumber,Dep_Name,WBID,UserID,BusinessName,UnitName,VarietyID,VarietyName,VarietyCount,VarietyMoney,VarietyInterest,StorageDate,CurrentRate,EarningRate,StorageFee,StorageMoney,Price_CunRu,Price_JieSuan,Money_Earn,dt_Sell,JieCun_Last,JieCun_Now,ISReturn)");
             strSqlInsert.Append(" values (");
-            strSqlInsert.Append("@SerialNumber,@strGUID,@BusinessNO,@Dep_SID,@Dep_AccountNumber,@Dep_Name,@WBID,@UserID,@BusinessName,@UnitName,@VarietyID,@VarietyName,@VarietyCount,@VarietyMoney,@VarietyInterest,@StorageDate,@CurrentRate,@EarningRate,@StorageFee,@StorageMoney,@Price_JieSuan,@Money_Earn,@dt_Sell,@JieCun_Last,@JieCun_Now,@ISReturn)");
+            strSqlInsert.Append("@SerialNumber,@strGUID,@BusinessNO,@Dep_SID,@Dep_AccountNumber,@Dep_Name,@WBID,@UserID,@BusinessName,@UnitName,@VarietyID,@VarietyName,@VarietyCount,@VarietyMoney,@VarietyInterest,@StorageDate,@CurrentRate,@EarningRate,@StorageFee,@StorageMoney,@Price_CunRu,@Price_JieSuan,@Money_Earn,@dt_Sell,@JieCun_Last,@JieCun_Now,@ISReturn)");
             strSqlInsert.Append(";select @@IDENTITY");
             SqlParameter[] parameters = {
                     new SqlParameter("@SerialNumber", SqlDbType.NVarChar,50),
@@ -3280,6 +3281,7 @@ namespace Web.User.Exchange
                     new SqlParameter("@EarningRate", SqlDbType.Decimal,9),
                     new SqlParameter("@StorageFee", SqlDbType.Decimal,9),
                     new SqlParameter("@StorageMoney", SqlDbType.Decimal,9),
+                      new SqlParameter("@Price_CunRu", SqlDbType.Decimal,9),
                     new SqlParameter("@Price_JieSuan", SqlDbType.Decimal,9),
                     new SqlParameter("@Money_Earn", SqlDbType.Decimal,9),
                     new SqlParameter("@dt_Sell", SqlDbType.DateTime),
@@ -3306,12 +3308,13 @@ namespace Web.User.Exchange
             parameters[17].Value = Math.Round(EarningRate, 4);//盈利率(暂用)
             parameters[18].Value = StorageFee;
             parameters[19].Value = Math.Round(StorageMoney, 2);
-            parameters[20].Value = Price_JieSuan;
-            parameters[21].Value = Money_Earn;
-            parameters[22].Value = dt_Sell;
-            parameters[23].Value = JieCun_Last;
-            parameters[24].Value = JieCun_Now;
-            parameters[25].Value = 0;//是否退还
+            parameters[20].Value = Price_CunRu;
+            parameters[21].Value = Price_JieSuan;
+            parameters[22].Value = Money_Earn;
+            parameters[23].Value = dt_Sell;
+            parameters[24].Value = JieCun_Last;
+            parameters[25].Value = JieCun_Now;
+            parameters[26].Value = 0;//是否退还
             #endregion
 
             #region 存转销日志记录

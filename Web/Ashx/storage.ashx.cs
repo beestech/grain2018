@@ -621,7 +621,7 @@ namespace Web.Ashx
             }
 
             StringBuilder strSqlLog = new StringBuilder();
-            strSqlLog.Append("  select ID,SerialNumber,strGUID,BusinessNO,Dep_SID,Dep_AccountNumber,Dep_Name,WBID,UserID,BusinessName,UnitName,VarietyID,VarietyName,VarietyCount,VarietyMoney,VarietyInterest,StorageDate,CurrentRate,EarningRate,StorageFee,StorageMoney,Price_JieSuan,Money_Earn,dt_Sell,JieCun_Last,JieCun_Now,ISReturn ");
+            strSqlLog.Append("  select ID,SerialNumber,strGUID,BusinessNO,Dep_SID,Dep_AccountNumber,Dep_Name,WBID,UserID,BusinessName,UnitName,VarietyID,VarietyName,VarietyCount,VarietyMoney,VarietyInterest,StorageDate,CurrentRate,EarningRate,StorageFee,StorageMoney,Price_CunRu,Price_JieSuan,Money_Earn,dt_Sell,JieCun_Last,JieCun_Now,ISReturn ");
             strSqlLog.Append("  FROM dbo.StorageSell");
             strSqlLog.Append("  ");
             strSqlLog.Append(" where BusinessNO='" + BusinessNO + "' and  Dep_AccountNumber='" + AccountNumber + "'");
@@ -637,6 +637,7 @@ namespace Web.Ashx
             string SerialNumber = dtLog.Rows[0]["SerialNumber"].ToString();
             string strGUID = dtLog.Rows[0]["strGUID"].ToString();
             string Dep_AccountNumber = dtLog.Rows[0]["Dep_AccountNumber"].ToString();
+            string Dep_SID = dtLog.Rows[0]["Dep_SID"].ToString();//存粮ID
             string Dep_Name = dtLog.Rows[0]["Dep_Name"].ToString();
             string WBID = dtLog.Rows[0]["WBID"].ToString();
             string UserID = dtLog.Rows[0]["UserID"].ToString();
@@ -654,6 +655,7 @@ namespace Web.Ashx
             string StorageFee = dtLog.Rows[0]["StorageFee"].ToString();
             StorageFee = (Math.Round(Convert.ToDecimal(StorageFee), 2)).ToString() + "%";
             string StorageMoney = dtLog.Rows[0]["StorageMoney"].ToString();
+            string Price_CunRu = dtLog.Rows[0]["Price_CunRu"].ToString();
             string Price_JieSuan = dtLog.Rows[0]["Price_JieSuan"].ToString();
             string Money_Earn = dtLog.Rows[0]["Money_Earn"].ToString();
             string dt_Sell = dtLog.Rows[0]["dt_Sell"].ToString();
@@ -700,21 +702,41 @@ namespace Web.Ashx
             strReturn.Append("    <td style='width: 70px;'> <span>保值</span></td>");
             strReturn.Append("    <td style='width: 70px;'> <span>数量</span></td>");
             strReturn.Append("    <td align='center' style='width: 110px;'> <span>" + VarietyCount + "</span></td>");
-            strReturn.Append("    <td style='width: 70px;'> <span>结算价</span></td>");
-            strReturn.Append("    <td align='center' style='width: 110px;'> <span>" + Price_JieSuan + "</span></td>");
-            strReturn.Append("    <td style='width: 70px;'> <span>结算金额</span></td>");
+            strReturn.Append("    <td style='width: 70px;'> <span>存入价</span></td>");
+            strReturn.Append("    <td align='center' style='width: 110px;'> <span>" + Price_CunRu + "</span></td>");
+            strReturn.Append("    <td style='width: 70px;'> <span>价值金额</span></td>");
             strReturn.Append("    <td align='center' style='width: 120px;'> <span>￥" + VarietyMoney + "</span></td>");
             strReturn.Append("  </tr>");
+           // bool showLiLv = true;
+            if (common.getISDaoQi(Convert.ToInt32(Dep_SID), Convert.ToDateTime(dt_Sell)))
+            {
+                //显示结算价格信息
+                //showLiLv = false;
+                strReturn.Append("   <tr style='height: 20px;'>");
+                strReturn.Append("    <td > <span>利息</span></td>");
+                strReturn.Append("    <td > <span>实存天数</span></td>");
+                strReturn.Append("    <td align='center' > <span>" + StorageDate + "</span></td>");
+                strReturn.Append("    <td > <span>结算价</span></td>");
+                strReturn.Append("    <td align='center' > <span>" + Price_JieSuan + "</span></td>");
+                strReturn.Append("    <td > <span>收益金额</span></td>");
+                strReturn.Append("    <td align='center'> <span>￥" + VarietyInterest + "</span></td>");
+                strReturn.Append("  </tr>");
 
-            strReturn.Append("   <tr style='height: 20px;'>");
-            strReturn.Append("    <td > <span>利息</span></td>");
-            strReturn.Append("    <td > <span>实存天数</span></td>");
-            strReturn.Append("    <td align='center' > <span>" + StorageDate + "</span></td>");
-            strReturn.Append("    <td > <span>利率</span></td>");
-            strReturn.Append("    <td align='center' > <span>" + EarningRate +"</span></td>");
-            strReturn.Append("    <td > <span>利息金额</span></td>");
-            strReturn.Append("    <td align='center'> <span>￥" + VarietyInterest + "</span></td>");
-            strReturn.Append("  </tr>");
+            }
+            else {
+                //显示活期利率信息
+                strReturn.Append("   <tr style='height: 20px;'>");
+                strReturn.Append("    <td > <span>利息</span></td>");
+                strReturn.Append("    <td > <span>实存天数</span></td>");
+                strReturn.Append("    <td align='center' > <span>" + StorageDate + "</span></td>");
+                strReturn.Append("    <td > <span>利率</span></td>");
+                strReturn.Append("    <td align='center' > <span>" + EarningRate + "</span></td>");
+                strReturn.Append("    <td > <span>利息金额</span></td>");
+                strReturn.Append("    <td align='center'> <span>￥" + VarietyInterest + "</span></td>");
+                strReturn.Append("  </tr>");
+            }
+           
+          
 
             strReturn.Append("   <tr style='height: 20px;'>");
             strReturn.Append("    <td > <span>保管费</span></td>");
