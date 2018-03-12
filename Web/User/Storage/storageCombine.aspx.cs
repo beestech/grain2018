@@ -116,7 +116,7 @@ namespace Web.User.Storage
 
         private int HB(double num1,double num2,int idOne,int idTwo,string AccountNumber)
         {
-
+            int depsID_Operate = 0;
 
             string sqlUpdate = string.Empty;
             string sqlUpdateSm = string.Empty;//置零
@@ -124,6 +124,7 @@ namespace Web.User.Storage
             SqlParameter[] para2 = null;
             if (num1 > num2)
             {
+                depsID_Operate = idOne;
                 sqlUpdate="update Dep_StorageInfo set StorageNumber=StorageNumber+@NewNumber where ID=@ID";
                 sqlUpdateSm = "update Dep_StorageInfo set StorageNumber=0 where ID=@ID ";
                  para = new SqlParameter[]
@@ -138,6 +139,7 @@ namespace Web.User.Storage
             }
             else if (num1 == num2)
             {
+                depsID_Operate = idOne;
                 sqlUpdate = "update Dep_StorageInfo set StorageNumber=StorageNumber+@NewNumber where ID=@ID";
                 sqlUpdateSm = "update Dep_StorageInfo set StorageNumber=0 where ID=@ID ";
                 para = new SqlParameter[]
@@ -152,6 +154,7 @@ namespace Web.User.Storage
             }
             else
             {
+                depsID_Operate = idTwo;
                 sqlUpdate = "update Dep_StorageInfo set StorageNumber=StorageNumber+@NewNumber where ID=@ID";
                 sqlUpdateSm = "update Dep_StorageInfo set StorageNumber=0 where ID=@ID ";
                 para = new SqlParameter[]
@@ -164,6 +167,78 @@ namespace Web.User.Storage
                       new SqlParameter("@ID",idOne)
                };
             }
+            var wbId = Session["WB_ID"];//网点ID
+            var userId = Session["ID"];
+
+            #region 添加操作记录
+
+            //根据depID查询出存储信息
+            string depStorageInfoSql = @"select Price_ShiChang,VarietyID,s.strName as TimeName,v.strName as VarietyName from Dep_StorageInfo as d 
+                                                        left outer join StorageTime as s
+                                                        on s.ID=d.TimeID
+                                                        left outer join StorageVariety as v
+                                                        on v.ID=d.VarietyID
+                                                         where d.ID=" + depsID_Operate;
+             var dt = SQLHelper.ExecuteDataTable(depStorageInfoSql);
+
+            StringBuilder strSqlOperateLog = new StringBuilder();
+            SqlParameter[] parametersOperateLog = null;
+            if (dt.Rows.Count > 0)
+            {
+                double Price = Convert.ToDouble(dt.Rows[0]["Price_ShiChang"]);
+                string VarietyID = dt.Rows[0]["VarietyID"].ToString();
+                string TimeName = dt.Rows[0]["TimeName"].ToString();
+                string VarietyName = dt.Rows[0]["VarietyName"].ToString();
+                string UnitID = "公斤";
+                double Count_Trade = num1 + num2;
+                string BusinessNO = common.GetNewBusinessNO_Dep(AccountNumber);//交易流水号
+                string Money_Trade = "0";//存入的时候没有交易量
+                double Count_Balance = common.GetDep_StorageNumber(AccountNumber, VarietyID);//储户总结存
+                                                                                             //Count_Balance = Count_Balance + Convert.ToDouble(StorageNumber);
+               
+                strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
+                strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+                strSqlOperateLog.Append(" values (");
+                strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+                strSqlOperateLog.Append(";select @@IDENTITY");
+                 parametersOperateLog =new SqlParameter[] {
+                    new SqlParameter("@WBID", SqlDbType.Int,4),
+                    new SqlParameter("@UserID", SqlDbType.Int,4),
+                    new SqlParameter("@Dep_AccountNumber", SqlDbType.NVarChar,50),
+                    new SqlParameter("@BusinessNO", SqlDbType.NVarChar,50),
+                    new SqlParameter("@BusinessName", SqlDbType.NVarChar,50),
+                    new SqlParameter("@VarietyID", SqlDbType.NVarChar,50),
+                    new SqlParameter("@UnitID", SqlDbType.NVarChar,50),
+                    new SqlParameter("@Price", SqlDbType.Decimal,9),
+                    new SqlParameter("@GoodCount", SqlDbType.Decimal,9),
+                    new SqlParameter("@Count_Trade", SqlDbType.Decimal,9),
+                    new SqlParameter("@Money_Trade", SqlDbType.Decimal,9),
+                    new SqlParameter("@Count_Balance", SqlDbType.Decimal,9),
+                    new SqlParameter("@dt_Trade", SqlDbType.DateTime),
+                    new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
+                    new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
+                           new SqlParameter("@Dep_SID", SqlDbType.Int,4)                                   };
+                parametersOperateLog[0].Value = wbId;
+                parametersOperateLog[1].Value = userId;
+                parametersOperateLog[2].Value = AccountNumber;
+                parametersOperateLog[3].Value = BusinessNO;
+                parametersOperateLog[4].Value = "19";//1:存入 2：兑换  3:存转销 4: 提取
+                parametersOperateLog[5].Value = VarietyID;
+                parametersOperateLog[6].Value = UnitID;
+                parametersOperateLog[7].Value = Price;
+                parametersOperateLog[8].Value = Count_Trade;
+                parametersOperateLog[9].Value = Count_Trade;
+                parametersOperateLog[10].Value = Money_Trade;
+                parametersOperateLog[11].Value = Count_Balance;
+                parametersOperateLog[12].Value = DateTime.Now;
+                parametersOperateLog[13].Value = TimeName + VarietyName;
+                parametersOperateLog[14].Value = UnitID;
+                parametersOperateLog[15].Value = depsID_Operate;
+               
+            }
+
+            #endregion
+
             int result = 0;
             //添加事务处理
             using (SqlTransaction tran = SQLHelper.BeginTransaction(SQLHelper.connectionString))
@@ -177,8 +252,7 @@ namespace Web.User.Storage
                     if (result > 0)
                     {
                         //插入数据到合并记录表
-                        var wbId = Session["WB_ID"];//网点ID
-                        var userId = Session["ID"];
+                      
                         string insertStorageCombine = @"insert into StorageCombine(DepsIDOne,DepsIDTwo,UserID,WBID,dt_Create,AccountNumber)
                                                         values(@DepsIDOne,@DepsIDTwo,@UserID,@WBID,@dt_Create,@AccountNumber)";
                         SqlParameter[] paras = new SqlParameter[]
@@ -190,10 +264,9 @@ namespace Web.User.Storage
                             new SqlParameter("@dt_Create",DateTime.Now),
                             new SqlParameter("@AccountNumber",AccountNumber)
                         };
-
-
-
                         SQLHelper.ExecuteNonQuery(tran, CommandType.Text, insertStorageCombine, paras);
+                        SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlOperateLog.ToString(), parametersOperateLog);
+
                         tran.Commit();
 
                     }
