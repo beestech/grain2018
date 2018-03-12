@@ -1011,7 +1011,7 @@ namespace Web.User.Storage
                          objDep_SID = SQLHelper.ExecuteScalar(tran, CommandType.Text, strSql.ToString(), parameters);
                         string sqlScalar = string.Format("select ID from Dep_StorageSwitch where Dep_StorageInfo_ID ='{0}'",objDep_SID);
                         var obj= SQLHelper.ExecuteScalar(sqlScalar);
-                        if (obj == null)
+                        if (ISVirtual==true)
                         {
                             //添加预存转实存记录
 
@@ -1946,7 +1946,8 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
             // numStorageOut = numStorageOut + numStorageChange;
             numStorage = numStorage + numStorageChange;
             //修改预存转实存记录表
-            string sqlUpdate_Dep_StorageSwitch = string.Format("  UPDATE Dep_StorageSwitch set StorageNumberSwitch={0},SwitchDate='{1}',ISSwitch={2}", numStorageChange, DateTime.Now, 1);
+            string sqlUpdate_Dep_StorageSwitch = string.Format(@"  UPDATE Dep_StorageSwitch set StorageNumberSwitch={0},SwitchDate='{1}',ISSwitch={2} 
+where Dep_StorageInfo_ID={3}", numStorageChange, DateTime.Now, 1,ID);
             using (SqlTransaction tran = SQLHelper.BeginTransaction(SQLHelper.connectionString))
             {
                 try

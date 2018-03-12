@@ -38,20 +38,20 @@ namespace Web.Ashx
             string storageJxRecordID = context.Request.QueryString["ID"].ToString();
 
             StringBuilder strSql = new StringBuilder();
-            strSql.Append(@"select  s.ID,s.WBID,s.storageJxRecordID,s.strGUID,s.serialNumber,s.BusinessName,dt_Trade,d.strName as DepName,
+            strSql.Append(@"select  s.ID,s.WBID,s.storageJxRecordID,s.strGUID,s.serialNumber,s.BusinessName,CONVERT(NVARCHAR(100),dt_Trade,23) AS dt_Trade,d.strName as DepName,
                             w.strName as WBName,t.strName as TypeName,st.strName as TimeName,s.Unit,s.Accountant_Name,
                             v.strName as goodName,s.AccountNumber,CONVERT(nvarchar(100),StorageDate,23) as StorageDate,
                             s.CurrentRate,s.Lixi,s.numWeight,s.numPrice
                              from StorageJxCalculate as s
-                             inner join WB as w 
+                             left outer join WB as w 
                              on w.ID=s.WBID
-                             inner join StorageType as t
+                             left outer join StorageType as t
                              on t.ID=s.TypeID
-                             inner join StorageTime as st
+                             left outer join StorageTime as st
                              on st.ID=s.TimeID
-                             inner join StorageVariety as v
+                             left outer join StorageVariety as v
                              on v.ID=s.VarietyID
-                             inner join Depositor as d
+                             left outer join Depositor as d
                              on d.AccountNumber=s.AccountNumber
                              where 1=1 ");            
             strSql.Append(" and s.storageJxRecordID=@storageJxRecordID ");

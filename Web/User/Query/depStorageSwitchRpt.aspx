@@ -26,6 +26,7 @@
                     <td><span>网点:</span>
                     </td>
                     <td>
+                       <span style=" font-weight:bold;color:green"> <asp:Label ID="lblWb" runat="server" /></span>
                         <asp:DropDownList ID="ddlWB" runat="server" Width="100px" Height="30px" >
                             
                         </asp:DropDownList>
@@ -44,11 +45,12 @@
                     </td>
                      <td><span>是否转实存?</span></td>
                     <td>
-                        <asp:RadioButtonList runat="server" RepeatDirection="Horizontal" ID="rblIsSwitch">
+                        <asp:DropDownList runat="server" ID="ddlIsSwitch" Width="100px">
+                            <asp:ListItem Text="全部" Value="2" />
                             <asp:ListItem Text="是" Value="1" />
                             <asp:ListItem Text="否" Value="0" />
-                            <asp:ListItem Text="全部" Value="2" />
-                        </asp:RadioButtonList>
+                        </asp:DropDownList>
+                      
                     </td>
                     <td style="width: 60px">
                         <asp:ImageButton ID="ImageButton1" runat="server"
@@ -107,7 +109,7 @@
                         <%#Eval("StorageNumberSwitch")%>
                     </td>
                      <td>
-                     <%#Convert.ToDateTime(Eval("StorageDate")).ToShortDateString()%>
+                     <%# Eval("StorageDate")%>
                     </td>
                      <td>
                         <%#Eval("SwitchDate")%>

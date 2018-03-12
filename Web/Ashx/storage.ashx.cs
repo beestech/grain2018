@@ -315,7 +315,10 @@ namespace Web.Ashx
             string OperateType = context.Request.Form["OperateType"].ToString();//存粮、结息续存 
             string BusinessNO = context.Request.Form["BusinessNO"].ToString(); 
             string AccountNumber = context.Request.Form["AccountNumber"].ToString();
-            string numInterest = context.Request.Form["numInterest"].ToString();//利息
+            string numInterest = string.Empty;
+            if (context.Request.Form["numInterest"] != null) { 
+             numInterest = context.Request.Form["numInterest"].ToString();//利息
+            }
             StringBuilder sql = new StringBuilder();
             sql.Append("   SELECT W.strName AS WBName,U.strRealName AS UserName,D.strName AS DepName,CONVERT(varchar(100), A.dt_Trade, 23)AS dt_Trade,");
             sql.Append("   A.VarietyName,A.UnitName,A.Price,A.Count_Trade,A.Count_Balance,A.BusinessName");
