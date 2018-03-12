@@ -17,15 +17,17 @@
     <link href="../../Styles/fakeLoader.css" rel="stylesheet" />
     <script type="text/javascript">
         var BusinessNO = '';//存转销完成时生成的序列号
-
+        var ISvirtual = false;
         $(function () {
-            var virtual = getQueryString("virtual");
-            if (!isNull(virtual)) {//预存粮
+             virtualpara = getQueryString("virtual");
+             if (!isNull(virtualpara)) {//预存粮
+                 ISvirtual = true;
                 $('input[name=ISVirtual]').val('1');
                 $('#pageHeadTitle').html('预存粮');
                 $('input[name=WeighNO]').attr('readonly', 'readonly');
                
-            } else {
+             } else {
+                 ISvirtual = false;
                 $('input[name=ISVirtual]').val('0');
                 $('#pageHeadTitle').html('储户存粮');
                 $('input[name=WeighNO]').removeAttr('readonly');
@@ -463,8 +465,12 @@
 
 
         function PrintPage() {
+            var OperateType = '存粮';
+            if (ISvirtual) {
+                OperateType = '预存粮';
+            }
             var url = '/Ashx/storage.ashx?type=PrintDep_StorageInfo';
-            var para = 'AccountNumber=' + $('input[name=Dep_AccountNumber]').val() + '&BusinessNO=' + BusinessNO + '&OperateType=存粮';
+            var para = 'AccountNumber=' + $('input[name=Dep_AccountNumber]').val() + '&BusinessNO=' + BusinessNO + '&OperateType=' + OperateType;
             $.ajax({
                 url: url,
                 type: 'post',

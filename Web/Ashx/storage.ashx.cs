@@ -27,7 +27,7 @@ namespace Web.Ashx
                     case "PrintDep_StorageInfo": PrintDep_StorageInfo(context); break;//储户的存折内容打印
                     case "getDepOperateLogAll": getDepOperateLogAll(context); break;
                     case "PrintDep_OperateLog": PrintDep_OperateLog(context); break;//储户的存折内容打印
-                    case "PrintDep_OperateLogList": PrintDep_OperateLogList(context); break;//储户的存折内容打印
+                   // case "PrintDep_OperateLogList": PrintDep_OperateLogList(context); break;//储户的存折内容打印
 
                     case "PrintStorageSell": PrintStorageSell(context); break;//打印存转销凭据
                     case "PrintStorageShopping": PrintStorageShopping(context); break;//打印产品换购凭据
@@ -111,7 +111,7 @@ namespace Web.Ashx
 
                 StringBuilder strSqlCommune = new StringBuilder();
                 strSqlCommune.Append("  SELECT A.numInterest,A.ID,B.ID as WBID, B.strName AS WBName,C.strRealName AS UserID,A.Price,A.Dep_AccountNumber,A.BusinessNO, A.VarietyName,A.UnitName,A.GoodCount,A.Count_Trade,A.Money_Trade,A.Count_Balance,CONVERT(NVARCHAR(100),A.dt_Trade,23) AS dt_Trade,A.BusinessName,");
-                strSqlCommune.Append("  CASE A.BusinessName WHEN '1' THEN '存入' WHEN '2' THEN '兑换' WHEN '3' THEN '存转销'  WHEN '5' THEN '修改错误存粮' WHEN '6' THEN '退还兑换' WHEN '7' THEN '退还存转销' WHEN '8' THEN '退还存粮' WHEN '9' THEN '产品换购' WHEN '10' THEN '退还产品换购' WHEN '11' THEN '结息' WHEN '12' THEN '换存折' WHEN '13' THEN '商品销售' WHEN '14' THEN '退还商品销售' WHEN '15' THEN '积分兑换商品' WHEN '16' THEN '存粮转存'  WHEN '17' THEN '批量兑换' WHEN '18' THEN '退还批量兑换' WHEN '19' THEN '存粮合并' END AS BusinessNameRemark");
+                strSqlCommune.Append("  CASE A.BusinessName WHEN '1' THEN '存入' WHEN '2' THEN '兑换' WHEN '3' THEN '存转销'  WHEN '5' THEN '修改错误存粮' WHEN '6' THEN '退还兑换' WHEN '7' THEN '退还存转销' WHEN '8' THEN '退还存粮' WHEN '9' THEN '产品换购' WHEN '10' THEN '退还产品换购' WHEN '11' THEN '结息' WHEN '12' THEN '换存折' WHEN '13' THEN '商品销售' WHEN '14' THEN '退还商品销售' WHEN '15' THEN '积分兑换商品' WHEN '16' THEN '存粮转存'  WHEN '17' THEN '批量兑换' WHEN '18' THEN '退还批量兑换' WHEN '19' THEN '存粮合并' WHEN '101' THEN '预存粮' END AS BusinessNameRemark");
                 strSqlCommune.Append("  FROM dbo.Dep_OperateLog A INNER JOIN dbo.WB B ON A.WBID=B.ID");
                // strSqlCommune.Append(" inner join StorageInterest as i on i.Dep_SID = A.Dep_SID");
                 strSqlCommune.Append("  LEFT OUTER JOIN dbo.Users C ON A.UserID=C.ID");
@@ -202,6 +202,10 @@ namespace Web.Ashx
                 case "14": BusinessName = "商品销售退还"; break;
                 case "15": BusinessName = "积分兑换"; break;
                 case "16": BusinessName = "存粮转存"; break;
+                case "17": BusinessName = "批量兑换"; break;
+                case "18": BusinessName = "退还批量兑换"; break;
+                case "19": BusinessName = "合并存粮"; break;
+                case "101": BusinessName = "预存粮"; break;
 
             }
             string WBID = dtLog.Rows[0]["WBID"].ToString();
@@ -412,180 +416,180 @@ namespace Web.Ashx
             context.Response.Write(strReturn.ToString());
         }
 
-        /// <summary>
-        /// 储户的存折内容打印(打印多条存折的记录)
-        /// </summary>
-        /// <param name="context"></param>
-        void PrintDep_OperateLogList(HttpContext context)
-        {
-            string BNList = "";
-            if (context.Request.QueryString["Surplus"] != null)
-            {
-                BNList = context.Session["BNListSurPlue"].ToString();
-            }
-            else
-            {
-                BNList = context.Session["BNList"].ToString();
-            }
-            string BNListSurPlue = "";//剩余的需要打印的编号集合
-            string[] BNArray = BNList.Split('|');//需要打印的编号集合
+        ///// <summary>
+        ///// 储户的存折内容打印(打印多条存折的记录)
+        ///// </summary>
+        ///// <param name="context"></param>
+        //void PrintDep_OperateLogList(HttpContext context)
+        //{
+        //    string BNList = "";
+        //    if (context.Request.QueryString["Surplus"] != null)
+        //    {
+        //        BNList = context.Session["BNListSurPlue"].ToString();
+        //    }
+        //    else
+        //    {
+        //        BNList = context.Session["BNList"].ToString();
+        //    }
+        //    string BNListSurPlue = "";//剩余的需要打印的编号集合
+        //    string[] BNArray = BNList.Split('|');//需要打印的编号集合
 
-            string BusinessNO = BNArray[0];//首个编号
-            string AccountNumber = context.Request.QueryString["AccountNumber"].ToString();
+        //    string BusinessNO = BNArray[0];//首个编号
+        //    string AccountNumber = context.Request.QueryString["AccountNumber"].ToString();
 
-            string strReturnMsg = "";
-
-
-            string strWBID = context.Session["WB_ID"].ToString();
-            string strSql = " SELECT  ID,Width,Height,DriftRateX,DriftRateY,FontSize,HomeR1C1X,HomeR1C1Y,HomeR1C2X,HomeR1C2Y,HomeR2C1X,HomeR2C1Y,HomeR2C2X,HomeR2C2Y,HomeR3C1X,HomeR3C1Y,HomeR3C2X,HomeR3C2Y,HomeR4C1X,HomeR4C1Y,HomeR4C2X,HomeR4C2Y,HomeR5C1X,HomeR5C1Y,HomeR5C2X,HomeR5C2Y,RecordR1Y,RecordR2Y,RecordR3Y,RecordR4Y,RecordR5Y,RecordR6Y,RecordR7Y,RecordR8Y,RecordR9Y,RecordR10Y,RecordR11Y,RecordR12Y,RecordR13Y,RecordR14Y,RecordR15Y,RecordR16Y,RecordR17Y,RecordR18Y,RecordR19Y,RecordR20Y,RecordC1X,RecordC2X,RecordC3X,RecordC4X,RecordC5X,RecordC6X,RecordC7X,RecordC8X,RecordC9X ";
-            strSql += "   FROM [PrintSetting_Dep] ";
-            strSql += "  where 1=1 and WBID=" + strWBID;
-            DataTable dt = SQLHelper.ExecuteDataTable(strSql);
-            if (dt != null && dt.Rows.Count != 0)
-            {
-                int numBusinessNo = Convert.ToInt32(BusinessNO);
-                int numIndex = 0;//确定当前打印的行的索引
-                List<int> listUp = new List<int>();
-                List<int> listDown = new List<int>();
-                for (int i = 0; i < 50; i++)
-                {
-                    for (int j = 0; j < 10; j++)
-                    {
-                        if (i % 2 == 0)
-                        {
-                            listDown.Add(i * 10 + j + 1);
-                        }
-                        else
-                        {
-                            listUp.Add(i * 10 + j + 1);
-                        }
-                    }
-                }
-                if (listUp.Contains(numBusinessNo))
-                {
-                    if (numBusinessNo % 10 == 0)
-                    {
-                        numIndex = 10;
-                    }
-                    else
-                    {
-                        numIndex = Convert.ToInt32(BusinessNO.Substring(BusinessNO.Length - 1));
-                    }
-                }
-                else
-                {
-                    if (numBusinessNo % 10 == 0)
-                    {
-                        numIndex = 20;
-                    }
-                    else
-                    {
-                        numIndex = 10 + Convert.ToInt32(BusinessNO.Substring(BusinessNO.Length - 1));
-                    }
-                }
-
-                string strName = "RecordR" + numIndex.ToString() + "Y";
-                int RecordRY = Convert.ToInt32(dt.Rows[0][strName]);//当前行的Y坐标位置
+        //    string strReturnMsg = "";
 
 
-                int FontSize = Convert.ToInt32(dt.Rows[0]["FontSize"]);
-                int RecordC1X = Convert.ToInt32(dt.Rows[0]["RecordC1X"]);
-                int RecordC2X = Convert.ToInt32(dt.Rows[0]["RecordC2X"]);
-                int RecordC3X = Convert.ToInt32(dt.Rows[0]["RecordC3X"]);
-                int RecordC4X = Convert.ToInt32(dt.Rows[0]["RecordC4X"]);
-                int RecordC5X = Convert.ToInt32(dt.Rows[0]["RecordC5X"]);
-                int RecordC6X = Convert.ToInt32(dt.Rows[0]["RecordC6X"]);
-                int RecordC7X = Convert.ToInt32(dt.Rows[0]["RecordC7X"]);
-                int RecordC8X = Convert.ToInt32(dt.Rows[0]["RecordC8X"]);
-                int RecordC9X = Convert.ToInt32(dt.Rows[0]["RecordC9X"]);
+        //    string strWBID = context.Session["WB_ID"].ToString();
+        //    string strSql = " SELECT  ID,Width,Height,DriftRateX,DriftRateY,FontSize,HomeR1C1X,HomeR1C1Y,HomeR1C2X,HomeR1C2Y,HomeR2C1X,HomeR2C1Y,HomeR2C2X,HomeR2C2Y,HomeR3C1X,HomeR3C1Y,HomeR3C2X,HomeR3C2Y,HomeR4C1X,HomeR4C1Y,HomeR4C2X,HomeR4C2Y,HomeR5C1X,HomeR5C1Y,HomeR5C2X,HomeR5C2Y,RecordR1Y,RecordR2Y,RecordR3Y,RecordR4Y,RecordR5Y,RecordR6Y,RecordR7Y,RecordR8Y,RecordR9Y,RecordR10Y,RecordR11Y,RecordR12Y,RecordR13Y,RecordR14Y,RecordR15Y,RecordR16Y,RecordR17Y,RecordR18Y,RecordR19Y,RecordR20Y,RecordC1X,RecordC2X,RecordC3X,RecordC4X,RecordC5X,RecordC6X,RecordC7X,RecordC8X,RecordC9X ";
+        //    strSql += "   FROM [PrintSetting_Dep] ";
+        //    strSql += "  where 1=1 and WBID=" + strWBID;
+        //    DataTable dt = SQLHelper.ExecuteDataTable(strSql);
+        //    if (dt != null && dt.Rows.Count != 0)
+        //    {
+        //        int numBusinessNo = Convert.ToInt32(BusinessNO);
+        //        int numIndex = 0;//确定当前打印的行的索引
+        //        List<int> listUp = new List<int>();
+        //        List<int> listDown = new List<int>();
+        //        for (int i = 0; i < 50; i++)
+        //        {
+        //            for (int j = 0; j < 10; j++)
+        //            {
+        //                if (i % 2 == 0)
+        //                {
+        //                    listDown.Add(i * 10 + j + 1);
+        //                }
+        //                else
+        //                {
+        //                    listUp.Add(i * 10 + j + 1);
+        //                }
+        //            }
+        //        }
+        //        if (listUp.Contains(numBusinessNo))
+        //        {
+        //            if (numBusinessNo % 10 == 0)
+        //            {
+        //                numIndex = 10;
+        //            }
+        //            else
+        //            {
+        //                numIndex = Convert.ToInt32(BusinessNO.Substring(BusinessNO.Length - 1));
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (numBusinessNo % 10 == 0)
+        //            {
+        //                numIndex = 20;
+        //            }
+        //            else
+        //            {
+        //                numIndex = 10 + Convert.ToInt32(BusinessNO.Substring(BusinessNO.Length - 1));
+        //            }
+        //        }
+
+        //        string strName = "RecordR" + numIndex.ToString() + "Y";
+        //        int RecordRY = Convert.ToInt32(dt.Rows[0][strName]);//当前行的Y坐标位置
 
 
-                StringBuilder strReturn = new StringBuilder();
-                for (int i = 0; i < BNArray.Length; i++)
-                {
-
-                    BusinessNO = BNArray[i];
-                    StringBuilder strSqlLog = new StringBuilder();
-                    strSqlLog.Append(" select A.ID, (CASE  A.BusinessName WHEN '1' THEN '存入' WHEN '2' THEN '兑换' WHEN '3' THEN '存转销'  WHEN '4' THEN '提取' WHEN '5' THEN '修改' WHEN '6' THEN '退还兑换' WHEN '7' THEN '退还存转销' WHEN '8' THEN '退还存粮' WHEN '9' THEN '产品换购' WHEN '10' THEN '退还换购' WHEN '11' THEN '结息' WHEN '12' THEN '换存折' END ) AS BusinessName ");
-                    strSqlLog.Append("  , B.strName AS  WBID, VarietyID,UnitID,VarietyName,UnitName,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,CONVERT(NVARCHAR(100),dt_Trade,23) AS  dt_Trade");
-                    strSqlLog.Append("  FROM dbo.Dep_OperateLog A INNER JOIN dbo.WB B ON A.WBID=B.ID");
-                    strSqlLog.Append(" where BusinessNO='" + BusinessNO + "' and  Dep_AccountNumber='" + AccountNumber + "'");
-
-                    DataTable dtLog = SQLHelper.ExecuteDataTable(strSqlLog.ToString());
-                    if (dtLog == null || dtLog.Rows.Count == 0)
-                    {
-                        context.Response.Write("");
-                        return;
-                    }
-                    string WBID = dtLog.Rows[0]["WBID"].ToString();
-                    //string VarietyID = dtLog.Rows[0]["VarietyID"].ToString();                  
-                    //string UnitID = dtLog.Rows[0]["UnitID"].ToString();
-                    string VarietyID = dtLog.Rows[0]["VarietyName"].ToString();
-                    string UnitID = dtLog.Rows[0]["UnitName"].ToString();
-                    string BusinessName = dtLog.Rows[0]["BusinessName"].ToString();
-                    string Price = dtLog.Rows[0]["Price"].ToString();
-                    string Count_Trade = dtLog.Rows[0]["Count_Trade"].ToString();
-                    string Money_Trade = dtLog.Rows[0]["Money_Trade"].ToString();
-                    string Count_Balance = dtLog.Rows[0]["Count_Balance"].ToString();
-                    string dt_Trade = dtLog.Rows[0]["dt_Trade"].ToString();
-                    string[] dt_TradeArray = dt_Trade.Split('-');
-                    dt_Trade = dt_TradeArray[0] + dt_TradeArray[1] + dt_TradeArray[2];
+        //        int FontSize = Convert.ToInt32(dt.Rows[0]["FontSize"]);
+        //        int RecordC1X = Convert.ToInt32(dt.Rows[0]["RecordC1X"]);
+        //        int RecordC2X = Convert.ToInt32(dt.Rows[0]["RecordC2X"]);
+        //        int RecordC3X = Convert.ToInt32(dt.Rows[0]["RecordC3X"]);
+        //        int RecordC4X = Convert.ToInt32(dt.Rows[0]["RecordC4X"]);
+        //        int RecordC5X = Convert.ToInt32(dt.Rows[0]["RecordC5X"]);
+        //        int RecordC6X = Convert.ToInt32(dt.Rows[0]["RecordC6X"]);
+        //        int RecordC7X = Convert.ToInt32(dt.Rows[0]["RecordC7X"]);
+        //        int RecordC8X = Convert.ToInt32(dt.Rows[0]["RecordC8X"]);
+        //        int RecordC9X = Convert.ToInt32(dt.Rows[0]["RecordC9X"]);
 
 
+        //        StringBuilder strReturn = new StringBuilder();
+        //        for (int i = 0; i < BNArray.Length; i++)
+        //        {
 
-                    if (i == 0)//首行设置于存折最上方的间距
-                    {
-                        strReturn.Append("  <table style='width:100%; height:" + RecordRY + "px'><tr><td></td> </tr></table>");
-                    }
-                    strReturn.Append("   <table style='margin-left:" + RecordC1X + "px; font-size:" + FontSize + "px;'><tr>");
-                    strReturn.Append("   <td style='width:" + (RecordC2X - RecordC1X).ToString() + "px;height:25px;'>" + dt_Trade + " </td>");
-                    strReturn.Append("   <td style='width:" + (RecordC3X - RecordC2X).ToString() + "px;'>" + BusinessName + " </td>");
-                    strReturn.Append("   <td style='width:" + (RecordC4X - RecordC3X).ToString() + "px;'>" + VarietyID + " </td>");
-                    //strReturn.Append("   <td style='width:" + (RecordC5X - RecordC4X).ToString() + "px;'>" + Price + " </td>");
-                    //strReturn.Append("   <td style='width:" + (RecordC6X - RecordC5X).ToString() + "px;'>" + UnitID + " </td>");
+        //            BusinessNO = BNArray[i];
+        //            StringBuilder strSqlLog = new StringBuilder();
+        //            strSqlLog.Append(" select A.ID, (CASE  A.BusinessName WHEN '1' THEN '存入' WHEN '2' THEN '兑换' WHEN '3' THEN '存转销'  WHEN '4' THEN '提取' WHEN '5' THEN '修改' WHEN '6' THEN '退还兑换' WHEN '7' THEN '退还存转销' WHEN '8' THEN '退还存粮' WHEN '9' THEN '产品换购' WHEN '10' THEN '退还换购' WHEN '11' THEN '结息' WHEN '12' THEN '换存折' END ) AS BusinessName ");
+        //            strSqlLog.Append("  , B.strName AS  WBID, VarietyID,UnitID,VarietyName,UnitName,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,CONVERT(NVARCHAR(100),dt_Trade,23) AS  dt_Trade");
+        //            strSqlLog.Append("  FROM dbo.Dep_OperateLog A INNER JOIN dbo.WB B ON A.WBID=B.ID");
+        //            strSqlLog.Append(" where BusinessNO='" + BusinessNO + "' and  Dep_AccountNumber='" + AccountNumber + "'");
 
-                    strReturn.Append("   <td style='width:" + (RecordC6X - RecordC4X).ToString() + "px;'>" + Price + "元/" + UnitID + " </td>");
-                    double goodCount =Convert.ToDouble( Money_Trade) / Convert.ToDouble( Price);
-                    strReturn.Append("   <td style='width:" + (RecordC7X - RecordC6X).ToString() + "px;'>" + Math.Round(goodCount,2).ToString() + "</td>");
-                    strReturn.Append("   <td style='width:" + (RecordC8X - RecordC7X).ToString() + "px;'>" + Count_Trade + "</td>");
-                    strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" + Count_Balance + "</td>");
-                    strReturn.Append("   <td >" + WBID + " </td>");
+        //            DataTable dtLog = SQLHelper.ExecuteDataTable(strSqlLog.ToString());
+        //            if (dtLog == null || dtLog.Rows.Count == 0)
+        //            {
+        //                context.Response.Write("");
+        //                return;
+        //            }
+        //            string WBID = dtLog.Rows[0]["WBID"].ToString();
+        //            //string VarietyID = dtLog.Rows[0]["VarietyID"].ToString();                  
+        //            //string UnitID = dtLog.Rows[0]["UnitID"].ToString();
+        //            string VarietyID = dtLog.Rows[0]["VarietyName"].ToString();
+        //            string UnitID = dtLog.Rows[0]["UnitName"].ToString();
+        //            string BusinessName = dtLog.Rows[0]["BusinessName"].ToString();
+        //            string Price = dtLog.Rows[0]["Price"].ToString();
+        //            string Count_Trade = dtLog.Rows[0]["Count_Trade"].ToString();
+        //            string Money_Trade = dtLog.Rows[0]["Money_Trade"].ToString();
+        //            string Count_Balance = dtLog.Rows[0]["Count_Balance"].ToString();
+        //            string dt_Trade = dtLog.Rows[0]["dt_Trade"].ToString();
+        //            string[] dt_TradeArray = dt_Trade.Split('-');
+        //            dt_Trade = dt_TradeArray[0] + dt_TradeArray[1] + dt_TradeArray[2];
 
-                    strReturn.Append("   </tr></table>");
-                    numIndex += 1;//增加连续打印序列
-                    if (numIndex > 20)//如果是连续打印，并且超出了本页的范围
-                    {
-                        if (i < BNArray.Length - 1)//此条不是最后一个被打印的数据
-                        {
-                            for (int j = i+1; j < BNArray.Length; j++)
-                            {
-                                if (j == i+1)
-                                {
-                                    BNListSurPlue = BNArray[j];
-                                }
-                                else
-                                {
-                                    BNListSurPlue = BNListSurPlue + "|" + BNArray[j];
-                                }
-                            }
-                            context.Session["BNListSurPlue"] = BNListSurPlue;//缓存剩余打印项
-                            strReturnMsg = "{\"SurPlus\":\"" + BNListSurPlue + "\",\"Msg\":\"" + strReturn.ToString() + "\"}";
 
-                            context.Response.Write(strReturnMsg);
-                            return;
-                        }
-                    }
+
+        //            if (i == 0)//首行设置于存折最上方的间距
+        //            {
+        //                strReturn.Append("  <table style='width:100%; height:" + RecordRY + "px'><tr><td></td> </tr></table>");
+        //            }
+        //            strReturn.Append("   <table style='margin-left:" + RecordC1X + "px; font-size:" + FontSize + "px;'><tr>");
+        //            strReturn.Append("   <td style='width:" + (RecordC2X - RecordC1X).ToString() + "px;height:25px;'>" + dt_Trade + " </td>");
+        //            strReturn.Append("   <td style='width:" + (RecordC3X - RecordC2X).ToString() + "px;'>" + BusinessName + " </td>");
+        //            strReturn.Append("   <td style='width:" + (RecordC4X - RecordC3X).ToString() + "px;'>" + VarietyID + " </td>");
+        //            //strReturn.Append("   <td style='width:" + (RecordC5X - RecordC4X).ToString() + "px;'>" + Price + " </td>");
+        //            //strReturn.Append("   <td style='width:" + (RecordC6X - RecordC5X).ToString() + "px;'>" + UnitID + " </td>");
+
+        //            strReturn.Append("   <td style='width:" + (RecordC6X - RecordC4X).ToString() + "px;'>" + Price + "元/" + UnitID + " </td>");
+        //            double goodCount =Convert.ToDouble( Money_Trade) / Convert.ToDouble( Price);
+        //            strReturn.Append("   <td style='width:" + (RecordC7X - RecordC6X).ToString() + "px;'>" + Math.Round(goodCount,2).ToString() + "</td>");
+        //            strReturn.Append("   <td style='width:" + (RecordC8X - RecordC7X).ToString() + "px;'>" + Count_Trade + "</td>");
+        //            strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" + Count_Balance + "</td>");
+        //            strReturn.Append("   <td >" + WBID + " </td>");
+
+        //            strReturn.Append("   </tr></table>");
+        //            numIndex += 1;//增加连续打印序列
+        //            if (numIndex > 20)//如果是连续打印，并且超出了本页的范围
+        //            {
+        //                if (i < BNArray.Length - 1)//此条不是最后一个被打印的数据
+        //                {
+        //                    for (int j = i+1; j < BNArray.Length; j++)
+        //                    {
+        //                        if (j == i+1)
+        //                        {
+        //                            BNListSurPlue = BNArray[j];
+        //                        }
+        //                        else
+        //                        {
+        //                            BNListSurPlue = BNListSurPlue + "|" + BNArray[j];
+        //                        }
+        //                    }
+        //                    context.Session["BNListSurPlue"] = BNListSurPlue;//缓存剩余打印项
+        //                    strReturnMsg = "{\"SurPlus\":\"" + BNListSurPlue + "\",\"Msg\":\"" + strReturn.ToString() + "\"}";
+
+        //                    context.Response.Write(strReturnMsg);
+        //                    return;
+        //                }
+        //            }
 
                   
-                }
+        //        }
 
 
 
-                strReturnMsg = "{\"SurPlus\":\"" + BNListSurPlue + "\",\"Msg\":\"" + strReturn.ToString() + "\"}";
+        //        strReturnMsg = "{\"SurPlus\":\"" + BNListSurPlue + "\",\"Msg\":\"" + strReturn.ToString() + "\"}";
 
-                context.Response.Write(strReturnMsg);
-            }
-        }
+        //        context.Response.Write(strReturnMsg);
+        //    }
+        //}
 
 
         /// <summary>

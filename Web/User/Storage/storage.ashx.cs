@@ -862,7 +862,12 @@ namespace Web.User.Storage
             bool ISVirtual = false;
             if (strISVirtual == "1")
             {
-                ISVirtual = true;
+                ISVirtual = true;//预存粮
+            }
+
+            string BusinessName = "1";
+            if (ISVirtual) {
+                BusinessName = "101";
             }
 
             string CurrentRate = "";
@@ -1123,7 +1128,7 @@ namespace Web.User.Storage
                     parametersOperateLog[1].Value = UserID;
                     parametersOperateLog[2].Value = AccountNumber;
                     parametersOperateLog[3].Value = BusinessNO;
-                    parametersOperateLog[4].Value = "1";//1:存入 2：兑换  3:存转销 4: 提取
+                    parametersOperateLog[4].Value = BusinessName;
                     parametersOperateLog[5].Value = VarietyID;
                     parametersOperateLog[6].Value = UnitID;
                     parametersOperateLog[7].Value = Price;

@@ -197,9 +197,9 @@ namespace Web.User.Storage
                                                                                              //Count_Balance = Count_Balance + Convert.ToDouble(StorageNumber);
                
                 strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
-                strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+                strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
                 strSqlOperateLog.Append(" values (");
-                strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+                strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID,@numInterest)");
                 strSqlOperateLog.Append(";select @@IDENTITY");
                  parametersOperateLog =new SqlParameter[] {
                     new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -217,7 +217,8 @@ namespace Web.User.Storage
                     new SqlParameter("@dt_Trade", SqlDbType.DateTime),
                     new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
                     new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
-                           new SqlParameter("@Dep_SID", SqlDbType.Int,4)                                   };
+                           new SqlParameter("@Dep_SID", SqlDbType.Int,4),
+                           new SqlParameter("@numInterest", SqlDbType.Decimal,9)};
                 parametersOperateLog[0].Value = wbId;
                 parametersOperateLog[1].Value = userId;
                 parametersOperateLog[2].Value = AccountNumber;
@@ -234,7 +235,8 @@ namespace Web.User.Storage
                 parametersOperateLog[13].Value = TimeName + VarietyName;
                 parametersOperateLog[14].Value = UnitID;
                 parametersOperateLog[15].Value = depsID_Operate;
-               
+                parametersOperateLog[16].Value = 0;
+
             }
 
             #endregion
