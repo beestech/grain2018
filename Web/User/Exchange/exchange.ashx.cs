@@ -552,7 +552,7 @@ namespace Web.User.Exchange
                 }
             }
 
-            var res = new { ISLimit = ISLimit, GoodExchangeLimit = GoodExchangeLimit, DepExchangeCount = DepExchangeCount };
+            var res = new { ISLimit = ISLimit, GoodExchangeLimit = GoodExchangeLimit, DepExchangeCount = DepExchangeCount+ DepExchangeCount_Group };
             context.Response.Write(JsonHelper.ToJson(res));
 
         }
@@ -1036,10 +1036,10 @@ namespace Web.User.Exchange
 
                 Count_Balance = Count_Balance - VarietyCount;
                 sqlO_Log.Append("  insert into [Dep_OperateLog] (");
-                sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+                sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
                 sqlO_Log.Append(" values (");
 
-                sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, VarietyID, UnitName, GoodPrice, GoodCount, VarietyCount, Money_Trade, Count_Balance, DateTime.Now.ToString(), GoodName, UnitName, dsiID));
+                sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15},{16})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, VarietyID, UnitName, GoodPrice, GoodCount, VarietyCount, Money_Trade, Count_Balance, DateTime.Now.ToString(), GoodName, UnitName, dsiID, VarietyInterest));
 
                 #endregion
 
@@ -1254,15 +1254,15 @@ namespace Web.User.Exchange
 
                 Count_Balance = Count_Balance - VarietyCount;
                 sqlO_Log.Append("  insert into [Dep_OperateLog] (");
-                sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+                sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
                 sqlO_Log.Append(" values (");
 
-                sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, VarietyID, UnitName, GoodPrice, GoodCount, VarietyCount, Money_Trade, Count_Balance, DateTime.Now.ToString(), GoodName, UnitName, dsiID));
+                sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15},{16})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, VarietyID, UnitName, GoodPrice, GoodCount, VarietyCount, Money_Trade, Count_Balance, DateTime.Now.ToString(), GoodName, UnitName, dsiID,VarietyInterest));
 
                 #endregion
 
                 //商品库存数变化
-                sqlGoodStorage.Append(string.Format("  UPDATE dbo.GoodStorage SET numStore=numStore-{0} WHERE GoodID={1} AND WBID={2} and WBWareHouseID={3}", GoodCount, GoodID, WBID, WBWareHouseID));
+                sqlGoodStorage.Append(string.Format("  UPDATE dbo.GoodStorage SET numStore=numStore-{0} WHERE GoodID={1} AND WBID={2} and WBWareHouseID={3}", GoodCount/exchangeGroupPeriod, GoodID, WBID, WBWareHouseID));
             }
             #endregion
 
@@ -1786,10 +1786,10 @@ namespace Web.User.Exchange
                 #region 日志记录
 
                 sqlO_Log.Append("  insert into [Dep_OperateLog] (");
-                sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+                sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
                 sqlO_Log.Append(" values (");
 
-                sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, GoodID, UnitName, GoodPrice, GoodCount, 0, GoodValue, 0, DateTime.Now.ToString(), GoodName, UnitName, 0));
+                sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, GoodID, UnitName, GoodPrice, GoodCount, 0, GoodValue, 0, DateTime.Now.ToString(), GoodName, UnitName, 0, numInterest));
 
                 #endregion
 
@@ -1888,10 +1888,10 @@ namespace Web.User.Exchange
             #region 日志记录
 
             sqlO_Log.Append("  insert into [Dep_OperateLog] (");
-            sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+            sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
             sqlO_Log.Append(" values (");
 
-            sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, GoodID, UnitName, GoodPrice, GoodCount, 0, GoodValue, 0, DateTime.Now.ToString(), GoodName, UnitName, 0));
+            sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, GoodID, UnitName, GoodPrice, GoodCount, 0, GoodValue, 0, DateTime.Now.ToString(), GoodName, UnitName, 0, numInterest));
 
             #endregion
 
@@ -2023,7 +2023,7 @@ namespace Web.User.Exchange
 
                     BusinessNO = BNArray[i];
                     StringBuilder strSqlLog = new StringBuilder();
-                    strSqlLog.Append(" select A.ID, (CASE  A.BusinessName WHEN '1' THEN '存入' WHEN '2' THEN '兑换' WHEN '3' THEN '存转销'  WHEN '4' THEN '提取' WHEN '5' THEN '修改' WHEN '6' THEN '退还兑换' WHEN '7' THEN '退还存转销' WHEN '8' THEN '退还存粮' WHEN '9' THEN '产品换购' WHEN '10' THEN '退还换购' WHEN '11' THEN '结息' WHEN '12' THEN '换存折' END  ) AS BusinessName ");
+                    strSqlLog.Append(" select A.ID, (CASE  A.BusinessName WHEN '1' THEN '存入' WHEN '2' THEN '兑换' WHEN '3' THEN '存转销'  WHEN '4' THEN '提取' WHEN '5' THEN '修改' WHEN '6' THEN '退还兑换' WHEN '7' THEN '退还存转销' WHEN '8' THEN '退还存粮' WHEN '9' THEN '产品换购' WHEN '10' THEN '退还换购' WHEN '11' THEN '结息' WHEN '12' THEN '换存折' WHEN '13' THEN '商品销售' WHEN '14' THEN '商品销售退还' WHEN '15' THEN '积分兑换商品'  WHEN '16' THEN '存粮转存' WHEN '17' THEN '批量兑换' WHEN '18' THEN '退还批量兑换' WHEN '19' THEN '合并存粮' END  ) AS BusinessName ");
                     strSqlLog.Append("  , B.strName AS  WBID, VarietyID,UnitID,VarietyName,UnitName,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,CONVERT(NVARCHAR(100),dt_Trade,23) AS  dt_Trade");
                     strSqlLog.Append("  FROM dbo.Dep_OperateLog A INNER JOIN dbo.WB B ON A.WBID=B.ID");
                     strSqlLog.Append(" where BusinessNO='" + BusinessNO + "' and  Dep_AccountNumber='" + AccountNumber + "'");
@@ -3318,9 +3318,9 @@ namespace Web.User.Exchange
 
             StringBuilder strSqlOperateLog = new StringBuilder();
             strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
-            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
             strSqlOperateLog.Append(" values (");
-            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID,@numInterest)");
             strSqlOperateLog.Append(";select @@IDENTITY");
             SqlParameter[] parametersOperateLog = {
                     new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -3338,7 +3338,8 @@ namespace Web.User.Exchange
                     new SqlParameter("@dt_Trade", SqlDbType.DateTime),
                     new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
                     new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
-                    new SqlParameter("@Dep_SID", SqlDbType.Int,4)};
+                    new SqlParameter("@Dep_SID", SqlDbType.Int,4),
+                    new SqlParameter("@numInterest", SqlDbType.Decimal,9)};
             parametersOperateLog[0].Value = WBID;
             parametersOperateLog[1].Value = UserID;
             parametersOperateLog[2].Value = AccountNumber;
@@ -3355,6 +3356,7 @@ namespace Web.User.Exchange
             parametersOperateLog[13].Value = VarietyName;
             parametersOperateLog[14].Value = UnitName;
             parametersOperateLog[15].Value = dsiID;
+            parametersOperateLog[16].Value = VarietyInterest;
             #endregion
 
             #region 数据处理
@@ -3554,9 +3556,9 @@ namespace Web.User.Exchange
 
             StringBuilder strSqlOperateLog = new StringBuilder();
             strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
-            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
             strSqlOperateLog.Append(" values (");
-            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID,@numInterest)");
             strSqlOperateLog.Append(";select @@IDENTITY");
             SqlParameter[] parametersOperateLog = {
 					new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -3574,7 +3576,8 @@ namespace Web.User.Exchange
 					new SqlParameter("@dt_Trade", SqlDbType.DateTime),
 					new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
 					new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
-                    new SqlParameter("@Dep_SID", SqlDbType.Int,4)};
+                    new SqlParameter("@Dep_SID", SqlDbType.Int,4),
+                    new SqlParameter("@numInterest", SqlDbType.Decimal,9)};
             parametersOperateLog[0].Value = WBID;
             parametersOperateLog[1].Value = UserID;
             parametersOperateLog[2].Value = AccountNumber;
@@ -3591,6 +3594,7 @@ namespace Web.User.Exchange
             parametersOperateLog[13].Value = VarietyName;
             parametersOperateLog[14].Value = UnitName;
             parametersOperateLog[15].Value = dsiID;
+            parametersOperateLog[16].Value = Interest;
             #endregion
 
             #region 数据处理

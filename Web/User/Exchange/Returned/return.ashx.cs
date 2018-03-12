@@ -217,10 +217,10 @@ namespace Web.User.Exchange.Returned
 
                     #region 日志记录                  
                     sqlO_Log.Append("  insert into [Dep_OperateLog] (");
-                    sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+                    sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
                     sqlO_Log.Append(" values (");
 
-                    sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, GoodID, UnitName, GoodPrice, "-" + GoodCount, 0, "-" + GoodValue, 0, DateTime.Now.ToString(), GoodName, UnitName, 0));
+                    sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15},{16})", WBID, UserID, AccountNumber, BusinessNO, BusinessName_Log, GoodID, UnitName, GoodPrice, "-" + GoodCount, 0, "-" + GoodValue, 0, DateTime.Now.ToString(), GoodName, UnitName, 0,0));
                     #endregion
 
 
@@ -507,9 +507,9 @@ namespace Web.User.Exchange.Returned
                     #region 日志记录
                     StringBuilder strSqlOperateLog = new StringBuilder();
                     strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
-                    strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+                    strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
                     strSqlOperateLog.Append(" values (");
-                    strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+                    strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID,@numInterest)");
                     strSqlOperateLog.Append(";select @@IDENTITY");
                     SqlParameter[] parametersOperateLog = {
 					new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -527,7 +527,8 @@ namespace Web.User.Exchange.Returned
 					new SqlParameter("@dt_Trade", SqlDbType.DateTime),
 					new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
 					new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
-					new SqlParameter("@Dep_SID", SqlDbType.Int,4)};
+					new SqlParameter("@Dep_SID", SqlDbType.Int,4),
+                    new SqlParameter("@numInterest", SqlDbType.Decimal,9)};
                     parametersOperateLog[0].Value = WBID;
                     parametersOperateLog[1].Value = UserID;
                     parametersOperateLog[2].Value = Dep_AccountNumber;
@@ -562,6 +563,7 @@ namespace Web.User.Exchange.Returned
                     parametersOperateLog[13].Value = GoodName;
                     parametersOperateLog[14].Value = UnitName;
                     parametersOperateLog[15].Value = Dep_SID;
+                    parametersOperateLog[16].Value = VarietyInterest;
                     #endregion
 
                     #region 数据处理
@@ -830,9 +832,9 @@ namespace Web.User.Exchange.Returned
 
             StringBuilder strSqlOperateLog = new StringBuilder();
             strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
-            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
             strSqlOperateLog.Append(" values (");
-            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID,@numInterest)");
             strSqlOperateLog.Append(";select @@IDENTITY");
             SqlParameter[] parametersOperateLog = {
 					new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -850,7 +852,8 @@ namespace Web.User.Exchange.Returned
 					new SqlParameter("@dt_Trade", SqlDbType.DateTime),
 					new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
 					new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
-					new SqlParameter("@Dep_SID", SqlDbType.Int,4)};
+					new SqlParameter("@Dep_SID", SqlDbType.Int,4),
+                    new SqlParameter("@numInterest", SqlDbType.Decimal,9)};
             parametersOperateLog[0].Value = WBID;
             parametersOperateLog[1].Value = UserID;
             parametersOperateLog[2].Value = Dep_AccountNumber;
@@ -867,6 +870,7 @@ namespace Web.User.Exchange.Returned
             parametersOperateLog[13].Value = VarietyName;
             parametersOperateLog[14].Value = UnitID;
             parametersOperateLog[15].Value = Dep_SID;
+            parametersOperateLog[16].Value = VarietyInterest;
             #endregion
 
             #region 数据处理
@@ -1127,9 +1131,9 @@ namespace Web.User.Exchange.Returned
 
             StringBuilder strSqlOperateLog = new StringBuilder();
             strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
-            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest,)");
             strSqlOperateLog.Append(" values (");
-            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID,@numInterest)");
             strSqlOperateLog.Append(";select @@IDENTITY");
             SqlParameter[] parametersOperateLog = {
 					new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -1147,7 +1151,8 @@ namespace Web.User.Exchange.Returned
 					new SqlParameter("@dt_Trade", SqlDbType.DateTime),
 					new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
 					new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
-					new SqlParameter("@Dep_SID", SqlDbType.Int,4)};
+					new SqlParameter("@Dep_SID", SqlDbType.Int,4),
+                    new SqlParameter("@numInterest", SqlDbType.Decimal,9)};
             parametersOperateLog[0].Value = WBID;
             parametersOperateLog[1].Value = UserID;
             parametersOperateLog[2].Value = Dep_AccountNumber;
@@ -1164,6 +1169,7 @@ namespace Web.User.Exchange.Returned
             parametersOperateLog[13].Value = VarietyName;
             parametersOperateLog[14].Value = UnitID;
             parametersOperateLog[15].Value = Dep_SID;
+            parametersOperateLog[16].Value = VarietyInterest;
             #endregion
 
             #region 数据处理

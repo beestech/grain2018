@@ -139,6 +139,14 @@
             font-weight: bold;
             text-align: center;
         }
+
+        .homepage-header {
+        text-align:center;
+        color:red;
+        font-family:KaiTi;
+        font-size:20pt;
+        font-weight:bold;
+        }
     </style>
     <script type="text/javascript">
         var goodstockidlist = '';//网点进货订单列表
@@ -154,29 +162,29 @@
                 getApplyAdvice_Response();
                 getExpireStorageCount();
             }
-            $(".s-mod-item").each(function (i, e) {
-                var wrap = $(this).find(".s-mod-wrap");
-                var def = $(this).find(".s-mod-def");
-                var cur = $(this).find(".s-mod-cur");
+            //$(".s-mod-item").each(function (i, e) {
+            //    var wrap = $(this).find(".s-mod-wrap");
+            //    var def = $(this).find(".s-mod-def");
+            //    var cur = $(this).find(".s-mod-cur");
 
-                $(this).hover(function () {
-                    cur.stop().animate({ top: -120 }, 500)
-                }, function () {
-                    cur.stop().animate({ top: 0 }, 500)
-                });
-            });
+            //    $(this).hover(function () {
+            //        cur.stop().animate({ top: -120 }, 500)
+            //    }, function () {
+            //        cur.stop().animate({ top: 0 }, 500)
+            //    });
+            //});
 
-            $(".s-mod-item_menu").each(function (i, e) {
-                var wrap = $(this).find(".s-mod-wrap_menu");
-                var def = $(this).find(".s-mod-def_menu");
-                var cur = $(this).find(".s-mod-cur_menu");
+            //$(".s-mod-item_menu").each(function (i, e) {
+            //    var wrap = $(this).find(".s-mod-wrap_menu");
+            //    var def = $(this).find(".s-mod-def_menu");
+            //    var cur = $(this).find(".s-mod-cur_menu");
 
-                $(this).hover(function () {
-                    cur.stop().animate({ top: -40 }, 500)
-                }, function () {
-                    cur.stop().animate({ top: 0 }, 500)
-                });
-            });
+            //    $(this).hover(function () {
+            //        cur.stop().animate({ top: -40 }, 500)
+            //    }, function () {
+            //        cur.stop().animate({ top: 0 }, 500)
+            //    });
+            //});
           
         });
 
@@ -376,6 +384,7 @@
     </script>
 </head>
 <body>
+    <div class="homepage-header">欢迎使用粮安天下粮食银行管理系统</div>
     <div id="divWarning" class="divhidden divWarning">有新的存转销请求，等待<a href="/Admin/Approval/AToSell.aspx">审批</a>！</div>
     <div id="divRegularWarning" class="divhidden divWarning">今天有储户的定期存粮到期了，<a href="/User/Query/QueryRegularStorage.html?optionType=2">进入查看</a>！</div>
     <div id="StockWarn" class="divhidden divStockWarn">
@@ -450,7 +459,7 @@
     </div>
 
 
-    <div id="mod">
+    <!--<div id="mod">
         <ul>
             <li class="s-mod-item">
                 <div class="s-mod-wrap">
@@ -471,8 +480,10 @@
            
 
         </ul>
+    </div>-->
+    <div style="margin-top:20px;margin-left:50px;">
+        <img src="../images/mainback.jpg" />
     </div>
-    
    
 </body>
 </html>

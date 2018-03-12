@@ -315,9 +315,9 @@ namespace Web.User.Storage
          
             StringBuilder strSqlLog = new StringBuilder();
             strSqlLog.Append("insert into [Dep_OperateLog] (");
-            strSqlLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+            strSqlLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
             strSqlLog.Append(" values (");
-            strSqlLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+            strSqlLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID,@numInterest)");
             strSqlLog.Append(";select @@IDENTITY");
             SqlParameter[] parametersLog = {
 					new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -335,7 +335,8 @@ namespace Web.User.Storage
 					new SqlParameter("@dt_Trade", SqlDbType.DateTime),
 					new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
 					new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
-                    new SqlParameter("@Dep_SID", SqlDbType.Int,4)};
+                    new SqlParameter("@Dep_SID", SqlDbType.Int,4),
+                    new SqlParameter("@numInterest", SqlDbType.Decimal,9)};
             parametersLog[0].Value = WBID;
             parametersLog[1].Value = UserID;
             parametersLog[2].Value = AccountNumber;
@@ -353,6 +354,7 @@ namespace Web.User.Storage
             parametersLog[13].Value = VarietyName;
             parametersLog[14].Value = UnitName;
             parametersLog[15].Value = dsiID;
+            parametersLog[16].Value = numInterest;
             //添加事务处理
             using (SqlTransaction tran = SQLHelper.BeginTransaction(SQLHelper.connectionString))
             {
@@ -1011,7 +1013,7 @@ namespace Web.User.Storage
                          objDep_SID = SQLHelper.ExecuteScalar(tran, CommandType.Text, strSql.ToString(), parameters);
                         string sqlScalar = string.Format("select ID from Dep_StorageSwitch where Dep_StorageInfo_ID ='{0}'",objDep_SID);
                         var obj= SQLHelper.ExecuteScalar(sqlScalar);
-                        if (obj == null)
+                        if (obj == null&& ISVirtual)
                         {
                             //添加预存转实存记录
 
@@ -1040,8 +1042,8 @@ namespace Web.User.Storage
                         else
                         {
                             //修改
-                            string Update_Dep_StorageSwitchSql = string.Format(" UPDATE dbo.Dep_StorageSwitch set StorageNumberRaw =StorageNumberRaw+{0} where Dep_StorageInfo_ID ={1}", StorageNumber, objDep_SID);
-                            SQLHelper.ExecuteNonQuery(tran, CommandType.Text, Update_Dep_StorageSwitchSql);
+                           // string Update_Dep_StorageSwitchSql = string.Format(" UPDATE dbo.Dep_StorageSwitch set StorageNumberRaw =StorageNumberRaw+{0} where Dep_StorageInfo_ID ={1}", StorageNumber, objDep_SID);
+                           // SQLHelper.ExecuteNonQuery(tran, CommandType.Text, Update_Dep_StorageSwitchSql);
                         }
 
                     }
@@ -1096,9 +1098,9 @@ namespace Web.User.Storage
                     
                     StringBuilder strSqlOperateLog = new StringBuilder();
                     strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
-                    strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+                    strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
                     strSqlOperateLog.Append(" values (");
-                    strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+                    strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID,@numInterest)");
                     strSqlOperateLog.Append(";select @@IDENTITY");
                     SqlParameter[] parametersOperateLog = {
 					new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -1116,7 +1118,8 @@ namespace Web.User.Storage
 					new SqlParameter("@dt_Trade", SqlDbType.DateTime),
 					new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
 					new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
-                       	new SqlParameter("@Dep_SID", SqlDbType.Int,4)                                   };
+                    new SqlParameter("@Dep_SID", SqlDbType.Int,4)    ,
+                    new SqlParameter("@numInterest", SqlDbType.Decimal,9)                                  };
                     parametersOperateLog[0].Value = WBID;
                     parametersOperateLog[1].Value = UserID;
                     parametersOperateLog[2].Value = AccountNumber;
@@ -1133,7 +1136,7 @@ namespace Web.User.Storage
                     parametersOperateLog[13].Value = TimeName + VarietyName;
                     parametersOperateLog[14].Value = UnitID;
                     parametersOperateLog[15].Value = objDep_SID;
-
+                    parametersOperateLog[16].Value = 0;
                     //插入数据
                     SQLHelper.ExecuteNonQuery(tran, CommandType.Text, strSqlOperateLog.ToString(), parametersOperateLog);
                     #endregion 
@@ -1457,9 +1460,9 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
 
             StringBuilder strSqlOperateLog = new StringBuilder();
             strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
-            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
             strSqlOperateLog.Append(" values (");
-            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID,@numInterest)");
             strSqlOperateLog.Append(";select @@IDENTITY");
             SqlParameter[] parametersOperateLog = {
 					new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -1477,7 +1480,8 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
 					new SqlParameter("@dt_Trade", SqlDbType.DateTime),
 					new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
 					new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
-                    new SqlParameter("@Dep_SID", SqlDbType.Int,4)                        };
+                    new SqlParameter("@Dep_SID", SqlDbType.Int,4) ,
+                    new SqlParameter("@numInterest", SqlDbType.Decimal,9)                      };
             parametersOperateLog[0].Value = WBID;
             parametersOperateLog[1].Value = UserID;
             parametersOperateLog[2].Value = AccountNumber;
@@ -1494,7 +1498,7 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
             parametersOperateLog[13].Value = VarietyName;
             parametersOperateLog[14].Value = UnitID;
             parametersOperateLog[15].Value = ID;
-
+            parametersOperateLog[16].Value = 0;
 
             int storageType = 2;
             double numStorageIn = 0;
@@ -1642,9 +1646,9 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
             double Count_Balance = common.GetDep_StorageNumber(AccountNumber, VarietyID);//储户总结存
             StringBuilder strSqlOperateLog = new StringBuilder();
             strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
-            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
             strSqlOperateLog.Append(" values (");
-            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID,@numInterest)");
             strSqlOperateLog.Append(";select @@IDENTITY");
             SqlParameter[] parametersOperateLog = {
 					new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -1662,7 +1666,8 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
 					new SqlParameter("@dt_Trade", SqlDbType.DateTime),
 					new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
 					new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
-                       	new SqlParameter("@Dep_SID", SqlDbType.Int,4)                                   };
+                    new SqlParameter("@Dep_SID", SqlDbType.Int,4),
+                    new SqlParameter("@numInterest", SqlDbType.Decimal,9)                                   };
             parametersOperateLog[0].Value = WBID;
             parametersOperateLog[1].Value = UserID;
             parametersOperateLog[2].Value = AccountNumber;
@@ -1679,7 +1684,7 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
             parametersOperateLog[13].Value = TimeName + VarietyName;
             parametersOperateLog[14].Value = UnitID;
             parametersOperateLog[15].Value = ID;
-
+            parametersOperateLog[16].Value = 0;
             //添加事务处理
             using (SqlTransaction tran = SQLHelper.BeginTransaction(SQLHelper.connectionString))
             {
@@ -1776,9 +1781,9 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
 
             StringBuilder strSqlOperateLog = new StringBuilder();
             strSqlOperateLog.Append("insert into [Dep_OperateLog] (");
-            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+            strSqlOperateLog.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
             strSqlOperateLog.Append(" values (");
-            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID)");
+            strSqlOperateLog.Append("@WBID,@UserID,@Dep_AccountNumber,@BusinessNO,@BusinessName,@VarietyID,@UnitID,@Price,@GoodCount,@Count_Trade,@Money_Trade,@Count_Balance,@dt_Trade,@VarietyName,@UnitName,@Dep_SID,@numInterest)");
             strSqlOperateLog.Append(";select @@IDENTITY");
             SqlParameter[] parametersOperateLog = {
 					new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -1796,7 +1801,8 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
 					new SqlParameter("@dt_Trade", SqlDbType.DateTime),
 					new SqlParameter("@VarietyName", SqlDbType.NVarChar,50),
 					new SqlParameter("@UnitName", SqlDbType.NVarChar,50),
-					new SqlParameter("@Dep_SID", SqlDbType.Int,4)};
+					new SqlParameter("@Dep_SID", SqlDbType.Int,4),
+                    new SqlParameter("@numInterest", SqlDbType.Decimal,9)};
             parametersOperateLog[0].Value = WBID;
             parametersOperateLog[1].Value = UserID;
             parametersOperateLog[2].Value = AccountNumber;
@@ -1813,7 +1819,7 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
             parametersOperateLog[13].Value = VarietyName;
             parametersOperateLog[14].Value = UnitID;
             parametersOperateLog[15].Value = ID;
-
+            parametersOperateLog[16].Value = 0;
             //string strSqlDelete = " DELETE FROM dbo.Dep_StorageInfo WHERE ID="+ID;
             string strSqlUpdate_Dep = string.Format("   UPDATE dbo.Dep_StorageInfo SET StorageNumber=0 ,StorageNumberRaw=StorageNumberRaw-{0} WHERE ID={1}",StorageNumber, ID);
 

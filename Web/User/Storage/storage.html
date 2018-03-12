@@ -446,7 +446,7 @@
 
         function PrintCunZhe() {
             $.ajax({
-                url: '/Ashx/storage.ashx?type=PrintDep_OperateLog&BusinessNO=' + BusinessNO + '&AccountNumber=' + $('#QAccountNumber').val()+'&IsVirtual='+ $('input[name=ISVirtual]').val(),
+                url: '/Ashx/storage.ashx?type=PrintDep_OperateLog&BusinessNO=' + BusinessNO + '&AccountNumber=' + $('input[name=Dep_AccountNumber]').val()+'&IsVirtual='+ $('input[name=ISVirtual]').val(),
                 type: 'post',
                 data: '',
                 dataType: 'text',
@@ -464,7 +464,7 @@
 
         function PrintPage() {
             var url = '/Ashx/storage.ashx?type=PrintDep_StorageInfo';
-            var para = 'AccountNumber=' + $('#QAccountNumber').val() + '&BusinessNO=' + BusinessNO + '&OperateType=存粮';
+            var para = 'AccountNumber=' + $('input[name=Dep_AccountNumber]').val() + '&BusinessNO=' + BusinessNO + '&OperateType=存粮';
             $.ajax({
                 url: url,
                 type: 'post',

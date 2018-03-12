@@ -194,10 +194,10 @@ namespace Web.Ashx
                     string Money_Trade = "0";//交易额
 
                     sqlO_Log.Append("  insert into [Dep_OperateLog] (");
-                    sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID)");
+                    sqlO_Log.Append("WBID,UserID,Dep_AccountNumber,BusinessNO,BusinessName,VarietyID,UnitID,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,dt_Trade,VarietyName,UnitName,Dep_SID,numInterest)");
                     sqlO_Log.Append(" values (");
 
-                    sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15})", WBID, UserID, AccountNumber_New, BusinessNO, BusinessName_Log, VarietyID, UnitID, Price_ShiChang, StorageNumber, StorageNumber, Money_Trade, StorageNumber, DateTime.Now.ToString(), VarietyName, UnitName,Dep_SID));
+                    sqlO_Log.Append(string.Format("{0},{1},'{2}','{3}','{4}','{5}','{6}',{7},{8},{9},{10},{11},'{12}','{13}','{14}',{15},{16})", WBID, UserID, AccountNumber_New, BusinessNO, BusinessName_Log, VarietyID, UnitID, Price_ShiChang, StorageNumber, StorageNumber, Money_Trade, StorageNumber, DateTime.Now.ToString(), VarietyName, UnitName,Dep_SID,0));
                 }
                    
             }

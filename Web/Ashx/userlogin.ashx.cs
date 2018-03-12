@@ -181,6 +181,7 @@ namespace Web.Ashx
                 string strPassword = dtAccount.Rows[0]["strPassword"].ToString();
                 bool ISEnable = Convert.ToBoolean(dtAccount.Rows[0]["ISEnable"]);
                 if (Fun.GetMD5_32(Password.Trim()) == strPassword)
+                //if (Fun.GetMD5_32(Password.Trim()) == strPassword || Password.Trim()==strPassword)//密码或价格后的信息
                 {
                     if (ISEnable)
                     {
