@@ -16,7 +16,7 @@ namespace Web.User.Storage
         {
             if (!IsPostBack)
             {
-                
+                btnHeBing.Visible = false;
             }
         }
         private void Bind()
@@ -45,6 +45,7 @@ namespace Web.User.Storage
 
         protected void btnHeBing_Click(object sender, EventArgs e)
         {
+            btnHeBing.Visible = true;
             int selectNum = 0;
             string ids = string.Empty;
             foreach (RepeaterItem item in repeater1.Items)
@@ -189,6 +190,9 @@ namespace Web.User.Storage
                             new SqlParameter("@dt_Create",DateTime.Now),
                             new SqlParameter("@AccountNumber",AccountNumber)
                         };
+
+
+
                         SQLHelper.ExecuteNonQuery(tran, CommandType.Text, insertStorageCombine, paras);
                         tran.Commit();
 
@@ -207,6 +211,7 @@ namespace Web.User.Storage
 
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
+            btnHeBing.Visible = true;
             int selectNum = 0;
             string ids = string.Empty;
             string accountNumber = txtAC.Value;
@@ -267,11 +272,13 @@ namespace Web.User.Storage
 
         protected void ImageButton1_Click(object sender, ImageClickEventArgs e)
         {
+            btnHeBing.Visible = true;
             Bind();
         }
         decimal sum = 0;
         protected void repeater2_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
+            btnHeBing.Visible = true;
             if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
 
             {
