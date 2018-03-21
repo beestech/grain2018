@@ -176,7 +176,7 @@
             <td>
                 
                </td>
-            <td ><input type="button" id="Button2" value="设定总部网点" onclick="SetHQ()" />
+            <td ><input type="button" id="Button2" value="设定总部网点" disabled="disabled" onclick="SetHQ()" />
          
              </td>
             </tr>

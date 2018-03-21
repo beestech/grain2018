@@ -10,7 +10,25 @@ namespace Web
     //取数据表信息
     public class commondb
     {
-      
+
+
+        public static DataRow getStorageVarietyByID(string id)
+        {
+            string sql = "SELECT * FROM dbo.StorageVariety WHERE ID=@ID";
+            SqlParameter[] parameters = {
+                    new SqlParameter("@ID", SqlDbType.Int,4)};
+            parameters[0].Value = id;
+
+            DataTable dt = SQLHelper.ExecuteDataTable(sql, parameters);
+            if (dt == null || dt.Rows.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return dt.Rows[0];
+            }
+        }
 
         public static DataRow getStorageTimeByID(string id)
         {

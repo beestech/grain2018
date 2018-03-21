@@ -36,6 +36,7 @@ namespace Web.User.Storage
                     case "GetTimeByVUID": GetTimeByVUID(context); break;
                     case "GetSotorageByVUTID": GetSotorageByVUTID(context); break;
                     case "ShowOptionInfo": ShowOptionInfo(context); break;
+                    case "ShowOptionInfo_Jiexi": ShowOptionInfo_Jiexi(context); break;
 
                     case "Add_Dep_Storage": Add_Dep_Storage(context); break;
                     case "Update_Dep_Storage": Update_Dep_Storage(context); break;
@@ -89,11 +90,18 @@ namespace Web.User.Storage
             string WBID = context.Session["WB_ID"].ToString();
             string UserID = context.Session["ID"].ToString();
             string dsiID = context.Request.Form["dsiID"].ToString();
-            string JiexiType = context.Request.Form["JiexiType"].ToString();//转存类型(1:仅结息，2：结息后转存)
-            string numInterest = context.Request.Form["numInterest"].ToString();//利息         
+            string JiexiType = context.Request.Form["JiexiType"].ToString();//转存类型(1:不结息转存，2：结息后转存)
+            string numInterest = context.Request.Form["numInterest"].ToString();//利息  
+            if (JiexiType == "1") {
+                numInterest = "0";//不结息转存不计算利息
+            }
             string TypeID = context.Request.Form["txtTypeID"].ToString();//存储类型
             string TimeID = context.Request.Form["txtTimeID"].ToString();//存期
 
+            string Price_ShiChang_New = context.Request.Form["Price_ShiChang_New"].ToString();
+            string Price_DaoQi_New = context.Request.Form["Price_DaoQi_New"].ToString();
+            string Price_HeTong_New = context.Request.Form["Price_HeTong_New"].ToString();
+            string CurrentRate_New = context.Request.Form["CurrentRate_New"].ToString();
             #region 获取储户存粮信息，以便插入结息记录表
             //通过dsiID查询出之前存粮信息
             string getStorageInfoSql = string.Format(@"select TypeID,TimeID,StorageDate,StorageNumber,Price_ShiChang,CurrentRate from Dep_StorageInfo where ID={0}", dsiID);
@@ -142,14 +150,14 @@ namespace Web.User.Storage
             int InterestType = Convert.ToInt32(dtStorage.Rows[0]["InterestType"]);//利息计算方式
             double StorageNumber = Convert.ToDouble(dtStorage.Rows[0]["StorageNumber"]);//存储数量
             DateTime StorageDate = Convert.ToDateTime(dtStorage.Rows[0]["StorageDate"]);//存入日期
-            DateTime InterestDate = Convert.ToDateTime(dtStorage.Rows[0]["InterestDate"]);
+            DateTime InterestDate = Convert.ToDateTime(dtStorage.Rows[0]["InterestDate"]);//结息日期
             TimeSpan tsStorage = DateTime.Now.Subtract(StorageDate);
             TimeSpan tsInterest = DateTime.Now.Subtract(InterestDate);
             int numStorageDate = Convert.ToInt32(dtStorage.Rows[0]["numStorageDate"]);//约定存储时间
-            double CurrentRate = Convert.ToDouble(dtStorage.Rows[0]["CurrentRate"]);//活期利率
-            double Price_ShiChang = Convert.ToDouble(dtStorage.Rows[0]["Price_ShiChang"]);//市场价
-            double Price_DaoQi = Convert.ToDouble(dtStorage.Rows[0]["Price_DaoQi"]);//到期价
-            double Price_ShiChangNow = Price_ShiChang;//当前市场的价格
+            //double CurrentRate = Convert.ToDouble(dtStorage.Rows[0]["CurrentRate"]);//活期利率
+            //double Price_ShiChang = Convert.ToDouble(dtStorage.Rows[0]["Price_ShiChang"]);//市场价
+            //double Price_DaoQi = Convert.ToDouble(dtStorage.Rows[0]["Price_DaoQi"]);//到期价
+            //double Price_ShiChangNow = Price_ShiChang;//当前市场的价格
 
            
 
@@ -169,25 +177,19 @@ namespace Web.User.Storage
             }
             string InterestDate_new = DateTime.Now.ToString();
             string StorageRateID_new = dtPrice.Rows[0]["ID"].ToString();
-            string CurrentRate_new = dtPrice.Rows[0]["CurrentRate"].ToString();
-            string Price_ShiChang_new = dtPrice.Rows[0]["Price_ShiChang"].ToString();
-            Price_ShiChangNow = Convert.ToDouble(Price_ShiChang_new);
-            string Price_DaoQi_new = dtPrice.Rows[0]["Price_DaoQi"].ToString();
-            string Price_HeTong_new = dtPrice.Rows[0]["Price_HeTong"].ToString();
+           
             string StorageFee_new = dtPrice.Rows[0]["StorageFee"].ToString();
             string StorageRateID = dtPrice.Rows[0]["ID"].ToString();
 
             //修改结息前的存储记录
             StringBuilder strSqlUpdate = new StringBuilder();
 
-            if (JiexiType == "1") {//不结息转存，待添加
-            }
-            else if (JiexiType == "2") {
-                strSqlUpdate.Append("   UPDATE dbo.Dep_StorageInfo SET");
-                strSqlUpdate.Append("   InterestDate='" + InterestDate_new + "',");
-                strSqlUpdate.Append("   StorageNumber=0,StorageNumberRaw=0  ");                
-                strSqlUpdate.Append("  WHERE ID=" + dsiID);
-            }
+            strSqlUpdate.Append("   UPDATE dbo.Dep_StorageInfo SET");
+            strSqlUpdate.Append("   InterestDate='" + InterestDate_new + "',");
+            strSqlUpdate.Append("   StorageNumber=0,StorageNumberRaw=0  ");
+            strSqlUpdate.Append("  WHERE ID=" + dsiID);
+
+           
 
             //添加结息记录           
             #region 添加结息记录
@@ -256,11 +258,11 @@ namespace Web.User.Storage
             parameters_newStorage[10].Value = StorageNumber;
             parameters_newStorage[11].Value = StorageNumber;
             parameters_newStorage[12].Value = StorageFee_new;
-            parameters_newStorage[13].Value = CurrentRate_new;
+            parameters_newStorage[13].Value = CurrentRate_New;
            // parameters_newStorage[13].Value = Price_ShiChang_new;
-            parameters_newStorage[14].Value = Price_ShiChang;
-            parameters_newStorage[15].Value = Price_DaoQi_new;
-            parameters_newStorage[16].Value = Price_HeTong_new;
+            parameters_newStorage[14].Value = Price_ShiChang_New;
+            parameters_newStorage[15].Value = Price_DaoQi_New;
+            parameters_newStorage[16].Value = Price_HeTong_New;
             parameters_newStorage[17].Value = UserID;
             parameters_newStorage[18].Value = WBID;
             parameters_newStorage[19].Value = 0;
@@ -344,15 +346,16 @@ namespace Web.User.Storage
             parametersLog[4].Value = "11";//11:结息
             parametersLog[5].Value = VarietyID;
             parametersLog[6].Value = UnitName;
-            parametersLog[7].Value = Price_ShiChangNow;
+           // parametersLog[7].Value = Price_ShiChangNow;
+            parametersLog[7].Value = Price_ShiChang_New;
             parametersLog[8].Value = StorageNumber;
             parametersLog[9].Value = StorageNumber;
-            double Money_Trade = Math.Round(StorageNumber * Price_ShiChangNow, 2);
+            double Money_Trade = Math.Round(StorageNumber * Convert.ToDouble( Price_ShiChang_New), 2);
             parametersLog[10].Value = Money_Trade;
             parametersLog[11].Value = Count_Balance;
             parametersLog[12].Value = DateTime.Now;
             parametersLog[13].Value = VarietyName;
-            parametersLog[14].Value = UnitName;
+            parametersLog[14].Value = UnitName; 
             parametersLog[15].Value = dsiID;
             parametersLog[16].Value = numInterest;
             //添加事务处理
@@ -757,11 +760,7 @@ namespace Web.User.Storage
             string TypeID = context.Request.QueryString["TypeID"].ToString();
             string TimeID = context.Request.QueryString["TimeID"].ToString();
 
-            string Price_ShiChang_Cunru = "";//存粮时为“”，结息时存在
-            if (context.Request.QueryString["Price_ShiChang"] != null)
-            {
-                Price_ShiChang_Cunru = context.Request.QueryString["Price_ShiChang"].ToString();
-            }
+         
             StringBuilder strSql = new StringBuilder();
             strSql.Append(" select ID,TypeID,VarietyID,VarietyLevelID,TimeID,StorageFee,BankRate,");
             strSql.Append(" CurrentRate,EarningRate,LossRate,Price_ShiChang,Price_DaoQi,Price_HeTong,Price_XiaoShou ");
@@ -802,13 +801,7 @@ namespace Web.User.Storage
                     string InterestType = dtTime.Rows[0]["InterestType"].ToString();
                  
                     string numStorageDate = dtTime.Rows[0]["numStorageDate"].ToString();
-                    if (Price_ShiChang_Cunru == "")
-                    {
-                        strReturn += "当前选项: 存期：<b>" + strName + "</b>  存入价：<b>" + Price_ShiChang + "</b>元/" + strUnit;
-                    }
-                    else {
-                        strReturn += "当前选项: 存期：<b>" + strName + "</b>  存入价：<b>" + Price_ShiChang_Cunru + "</b>元/" + strUnit;
-                    }
+                    strReturn += "当前选项: 存期：<b>" + strName + "</b>  存入价：<b>" + Price_ShiChang + "</b>元/" + strUnit;
 
                     switch (InterestType)
                     {
@@ -832,6 +825,102 @@ namespace Web.User.Storage
             }
         }
 
+
+
+        /// <summary>
+        /// 根据存储产品ID\、户类型获、存期类型取与之关联的存储利率信息(storageRate表)
+        /// </summary>
+        /// <param name="context"></param>
+        void ShowOptionInfo_Jiexi(HttpContext context)
+        {
+            string VarietyID = context.Request.Form["VarietyID"].ToString();
+            string VarietyLevelID = context.Request.Form["VarietyLevelID"].ToString();
+            string TypeID = context.Request.Form["TypeID"].ToString();
+            string TimeID = context.Request.Form["TimeID"].ToString();
+            string JiexiType = context.Request.Form["JiexiType"].ToString();//1:不结息转存，2：结息后转存
+            string lixi = context.Request.Form["lixi"].ToString();
+
+            string dsiID = context.Request.Form["dsiID"].ToString();
+            
+            DataRow rowStorageOld = commondb.getDep_StorageInfoByID(dsiID);
+            if (rowStorageOld == null) {
+                var res = new { state = false, msg = "无法获取储户的原始存储信息" };
+                context.Response.Write(JsonHelper.ToJson(res));
+            }
+
+            double StorageNumber = Convert.ToDouble(rowStorageOld["StorageNumber"]);//剩余的存储数量
+            double Price_DaoQi_Old = Convert.ToDouble(rowStorageOld["Price_DaoQi"]);//剩余的存储数量
+            double Price_HeTong_Old = Convert.ToDouble(rowStorageOld["Price_HeTong"]);//剩余的存储数量
+            double Price_ShiChang_New = Convert.ToDouble(rowStorageOld["Price_ShiChang"]);//新的存入价格
+            if (JiexiType == "1")//如果是不计息方式，则计算新的存入价
+            {
+                Price_ShiChang_New = Price_ShiChang_New + Convert.ToDouble(lixi) / StorageNumber;
+            }
+
+
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append(" select ID,TypeID,VarietyID,VarietyLevelID,TimeID,StorageFee,BankRate,");
+            strSql.Append(" CurrentRate,EarningRate,LossRate,Price_ShiChang,Price_DaoQi,Price_HeTong,Price_XiaoShou ");
+            strSql.Append(" FROM  dbo.StorageRate");
+            strSql.Append("  WHERE VarietyID= " + VarietyID + " and VarietyLevelID=" + VarietyLevelID + " and TypeID=" + TypeID + " and TimeID=" + TimeID);
+            DataTable dt = SQLHelper.ExecuteDataTable(strSql.ToString());
+            if (dt == null|| dt.Rows.Count==0)
+            {
+                var res = new { state = false, msg = "无法获取当前的市场价格利率信息" };
+                context.Response.Write(JsonHelper.ToJson(res));
+            }
+
+            double R_ShiChang = Convert.ToDouble( dt.Rows[0]["Price_ShiChang"]);
+            double R_DaoQi = Convert.ToDouble(dt.Rows[0]["Price_DaoQi"]);
+            double R_HeTong = Convert.ToDouble(dt.Rows[0]["Price_HeTong"]);
+            string R_CurrentRate = dt.Rows[0]["CurrentRate"].ToString();
+            string EarningRate = dt.Rows[0]["EarningRate"].ToString();
+            string LossRate = dt.Rows[0]["LossRate"].ToString();
+
+            double Price_DaoQi_New=Price_ShiChang_New*(R_DaoQi/R_ShiChang);
+            double Price_HeTong_New = Price_ShiChang_New * (R_HeTong / R_ShiChang);
+
+            //获取存储产品的计量单位
+            string strUnit =  commondb.getStorageVarietyByID(VarietyID)["strName"].ToString();
+           
+            //查询当前选项的结息方式==
+            DataRow rowTime = commondb.getStorageTimeByID(TimeID);
+            if (rowTime == null)
+            {
+                var res = new { state = false, msg = "无法获取当前的存储期限信息" };
+                context.Response.Write(JsonHelper.ToJson(res));
+            }
+           
+            string strName = rowTime["strName"].ToString();
+            //string PricePolicy = rowTime["PricePolicy"].ToString();
+            string InterestType = rowTime["InterestType"].ToString();
+            string numStorageDate = rowTime["numStorageDate"].ToString();
+
+
+            string strReturn = "";
+            strReturn += "当前选项: 存期：<b>" + strName + "</b>  存入价：<b>" + Price_ShiChang_New + "</b>元/" + strUnit;
+
+            switch (InterestType)
+            {
+                case "1":
+                    strReturn += ",活期利率：<b>" + R_CurrentRate + "</b>元/" + strUnit + "/月";
+                    break;
+                case "2":
+                    strReturn += ",约定存储期限：<b>" + numStorageDate + "</b>天,到期受益比例：<b>" + EarningRate + "%</b>,到期亏损承担比例：<b>" + LossRate + "%</b>";
+                    break;
+                case "3":
+                    strReturn += ",约定存储期限：<b>" + numStorageDate + "</b>天,到期价：<b>" + Price_DaoQi_New + "</b>元/" + strUnit;
+                    break;
+                case "4":
+                    strReturn += ",约定存储期限：<b>" + numStorageDate + "</b>天,合同价：<b>" + Price_HeTong_New + "</b>元/" + strUnit;
+                    break;
+            }
+            strReturn += "  请注意存储产品与存期，并核对账号与数量。";
+
+            var resmsg = new { state = true, StorageNumber= StorageNumber, Price_ShiChang_New = Price_ShiChang_New, Price_DaoQi_New = Price_DaoQi_New, Price_HeTong_New = Price_HeTong_New, CurrentRate_New = R_CurrentRate, msg = strReturn };
+            context.Response.Write(JsonHelper.ToJson(resmsg));
+
+        }
 
 
 

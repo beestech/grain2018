@@ -18,7 +18,7 @@
         var BusinessNO = '';//存转销完成时生成的序列号
         var dsiID = '';
         $(function () {
-            //$('#QAccountNumber').val('0040000003');
+            $('#QAccountNumber').val('0030000002');
             $('.pageQuery #QSelect').click(function () {
                 // $('.divloading').fadeIn();
                 FunDepSelect();
@@ -275,7 +275,13 @@
                     } else {
                         showWarningMsg(false, '');
                     }
-                    $('input[name=numInterest]').val(numLixi);
+                    var jiexitype = $('input[name=JiexiType]').val();
+                    if (jiexitype == '1') {
+                        $('input[name=numInterest]').val('0');
+                    } else {
+                        $('input[name=numInterest]').val(numLixi);
+                    }
+                  
 
                  
                 }, error: function (r) {
@@ -303,18 +309,37 @@
             var VarietyLevelID = $('input[name=txtVarietyLevelID]').val();
             var TypeID = $('select[name=TypeID] option:selected').val();
             var TimeID = $('select[name=TimeID] option:selected').val();
-
-            var Price_ShiChang = $('input[name=txtPrice_ShiChang]').val();
+            var JiexiType = $('input[name=JiexiType]').val();
+            var lixi = $('input[name=numInterest]').val();
+           
+            var para = 'VarietyID=' + VarietyID + '&VarietyLevelID=' + VarietyLevelID + '&TypeID=' + TypeID + '&TimeID=' + TimeID + '&JiexiType=' + JiexiType + '&lixi=' + lixi + "&dsiID=" + dsiID;
             $.ajax({
-                url: '/User/Storage/storage.ashx?type=ShowOptionInfo&VarietyID=' + VarietyID + '&VarietyLevelID=' + VarietyLevelID + '&TypeID=' + TypeID + '&TimeID=' + TimeID + "&Price_ShiChang=" + Price_ShiChang,
+                url: '/User/Storage/storage.ashx?type=ShowOptionInfo_Jiexi',
                 type: 'post',
-                data: '',
-                dataType: 'text',
+                data: para,
+                dataType: 'json',
                 success: function (r) {
+                    if (r.state == false || r.state == 'false') {
+                        showMsg(r.msg);
+                        return;
+                    }
+                    $('input[name=Price_ShiChang_New]').val(r.Price_ShiChang_New);
+                    $('input[name=Price_DaoQi_New]').val(r.Price_DaoQi_New);
+                    $('input[name=Price_HeTong_New]').val(r.Price_HeTong_New);
+                    $('input[name=CurrentRate_New]').val(r.CurrentRate_New);
+                    var strhtml = "<p><span style='font-weight:bold;'>以下为您的转存信息：</span></p>";
+                    strhtml += "<p><span>转存类型：</span><span style='color:blue;'>" + $('select[name=TypeID] option:selected').text() + $('select[name=TimeID] option:selected').text() + "</span>";
+                    strhtml += "<span style='margin-left:10px;'>转存数量：</span><span style='color:blue;'>" + r.StorageNumber + "</span></p>";
+
+                    strhtml += "<p><span>存入价：</span><span style='color:blue;'>" + changeTwoDecimal_f( r.Price_ShiChang_New) + "</span>";
+                    strhtml += "<span style='margin-left:10px;'>活期利率：</span><span style='color:blue;'>" + changeTwoDecimal_f(r.CurrentRate_New) + "</span>";
+                    strhtml += "<span style='margin-left:10px;'>到期价：</span><span style='color:blue;'>" + changeTwoDecimal_f(r.Price_DaoQi_New) + "</span>";
+                    strhtml += "<span style='margin-left:10px;'>合同价：</span><span style='color:blue;'>" + changeTwoDecimal_f( r.Price_HeTong_New) + "</span></p>";
                     $('#divMsg').html('');
-                    $('#divMsg').append(r+'(结息续存的存入价为首次存入价格!)');
+                    //$('#divMsg').append(r.msg);
+                    $('#divMsg').append(strhtml);
                 }, error: function (r) {
-                    $('#divMsg').html('');
+                    showMsg(r.msg);
                 }
             });
         }
@@ -340,12 +365,14 @@
                 }
             }
             var numInterest = $('input[name=numInterest]').val();
-            //var txtTypeID = $('input[name=txtTypeID]').val();
-            //var txtTimeID = $('input[name=txtTimeID]').val();
             var txtTypeID = $('select[name=TypeID]').val();
             var txtTimeID = $('select[name=TimeID]').val();
-            var para = 'dsiID=' + dsiID + '&JiexiType=' + JiexiType + '&numInterest=' + numInterest + '&txtTypeID=' + txtTypeID + '&txtTimeID=' + txtTimeID;
 
+            var Price_ShiChang_New = $('input[name=Price_ShiChang_New]').val();
+            var Price_DaoQi_New = $('input[name=Price_DaoQi_New]').val();
+            var Price_HeTong_New = $('input[name=Price_HeTong_New]').val();
+            var CurrentRate_New = $('input[name=CurrentRate_New]').val();
+            var para = 'dsiID=' + dsiID + '&JiexiType=' + JiexiType + '&numInterest=' + numInterest + '&txtTypeID=' + txtTypeID + '&txtTimeID=' + txtTimeID + '&Price_ShiChang_New=' + Price_ShiChang_New + '&Price_DaoQi_New=' + Price_DaoQi_New + '&Price_HeTong_New=' + Price_HeTong_New + '&CurrentRate_New=' + CurrentRate_New;
             var msg = '确认已经认真检查输入信息,并继续提交吗？';
             showConfirm(msg, function (obj) {
                 if (obj == 'yes') {
@@ -384,6 +411,9 @@
 
         function ChangeType(type) {
             $('input[name=JiexiType]').val(type);
+            GetInterestState(dsiID);//显示利息金额
+            //$('#trTime').fadeIn();
+            //$('#tr_msg').fadeIn();
             switch (type) {
                 case 0://重新选择存粮种类
                     $('input[name=txtInterestType]').val('');
@@ -393,14 +423,17 @@
                     $('#tr_msg').fadeOut();
                     break;
                 case 1://仅结息
-                    $('#trTime').fadeOut();
-                    $('#tr_msg').fadeOut();
+                    $('#trTime').fadeIn();
+                    $('#tr_msg').fadeIn();
+                    ShowOptionInfo();
                     break;
                 case 2://结息后转存
                     $('#trTime').fadeIn();
                     $('#tr_msg').fadeIn();
+                    ShowOptionInfo();
                     break;
             }
+           
         }
 
 
@@ -589,8 +622,9 @@
                     </td>
                     <td colspan="3" style="width: 650px; text-align:left;">
                         <!--<input type="radio" name="InterestType" value="1" onclick="ChangeType(1)" />仅结息
-                        <input type="radio" name="InterestType" value="2" onclick="ChangeType(2)" />结息后转存-->
+    <input type="radio" name="InterestType" value="2" onclick="ChangeType(2)" />结息后转存-->
                         <!--<input type="radio" id="InterestType1" name="InterestType" value="1" class="custom-radio" /><label for="InterestType1" onclick="ChangeType(1)"></label><span>仅结息</span>-->
+                        <input type="radio" id="InterestType1" name="InterestType" value="1" class="custom-radio" /><label for="InterestType1" onclick="ChangeType(1)"></label><span>不结息转存</span>
                         <input type="radio" id="InterestType2" name="InterestType" value="2" class="custom-radio" /><label for="InterestType2" onclick="ChangeType(2)"></label><span>结息后转存</span>
                     </td>
                   
@@ -641,9 +675,14 @@
             <input type="text" name="txtVarietyID" />
             <input type="text" name="txtVarietyLevelID" />
             <input type="text" name="txtTypeID" />
-            <input type="text" name="txtTimeID" />            
+            <input type="text" name="txtTimeID" />
             <!--粮食第一次的存入价格-->
             <input type="text" name="txtPrice_ShiChang" />
+
+            <input type="text" name="Price_ShiChang_New" />
+            <input type="text" name="Price_DaoQi_New" />
+            <input type="text" name="Price_HeTong_New" />
+            <input type="text" name="CurrentRate_New" />
 
 
             <input type="text" name="JiexiType" />
