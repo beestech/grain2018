@@ -160,7 +160,7 @@
                             <%#Eval("VarietyName")%>
                         </td>
                         <td>
-                            <%#Eval("StorageNumberRaw")%>
+                            <%# Eval("StorageNumberRaw") %>
                         </td>
                         <td>
  

@@ -27,6 +27,7 @@ namespace Web.Ashx
                     case "PrintDep_StorageInfo": PrintDep_StorageInfo(context); break;//储户的存折内容打印
                     case "getDepOperateLogAll": getDepOperateLogAll(context); break;
                     case "PrintDep_OperateLog": PrintDep_OperateLog(context); break;//储户的存折内容打印
+                    case "Print_returnDep":Print_ReturnDep(context);break;//打印退还储户存粮小票
                    // case "PrintDep_OperateLogList": PrintDep_OperateLogList(context); break;//储户的存折内容打印
 
                     case "PrintStorageSell": PrintStorageSell(context); break;//打印存转销凭据
@@ -146,7 +147,115 @@ namespace Web.Ashx
 
             
         }
+        /// <summary>
+        /// 打印储户存粮小票
+        /// </summary>
+        /// <param name="context"></param>
+        void Print_ReturnDep(HttpContext context)
+        {
+            string BusinessNO = context.Request.QueryString["BusinessNO"].ToString();
+            string AccountNumber = context.Request.QueryString["AccountNumber"].ToString();
+            //StringBuilder strSqlLog = new StringBuilder();
+            //strSqlLog.Append(" select A.ID,  A.BusinessName");
+            //strSqlLog.Append("  , B.strName AS  WBID, VarietyID,UnitID,VarietyName,UnitName,Price,GoodCount,Count_Trade,Money_Trade,Count_Balance,CONVERT(NVARCHAR(100),dt_Trade,23) AS  dt_Trade");
+            //strSqlLog.Append("  FROM dbo.Dep_OperateLog A INNER JOIN dbo.WB B ON A.WBID=B.ID");
+            //strSqlLog.Append(" where BusinessNO='" + BusinessNO + "' and  Dep_AccountNumber='" + AccountNumber + "'");
 
+            //DataTable dtLog = SQLHelper.ExecuteDataTable(strSqlLog.ToString());
+            //string numBusinessName = dtLog.Rows[0]["BusinessName"].ToString();
+            string BusinessName = "退还存粮";
+
+
+            #region MyRegion
+            StringBuilder sql = new StringBuilder();
+            sql.Append("   SELECT W.strName AS WBName,U.strRealName AS UserName,D.strName AS DepName,CONVERT(varchar(100), A.dt_Trade, 23)AS dt_Trade,");
+            sql.Append("   A.VarietyName,A.UnitName,A.Price,A.Count_Trade,A.Count_Balance,A.BusinessName,A.GoodCount");
+            sql.Append("   FROM dbo.Dep_OperateLog A LEFT OUTER JOIN dbo.WB W ON A.WBID=W.ID ");
+            sql.Append("   LEFT OUTER JOIN dbo.Users U ON A.UserID=U.ID");
+            sql.Append("   LEFT OUTER JOIN dbo.Depositor D ON A.Dep_AccountNumber=D.AccountNumber");
+            sql.Append(string.Format("   WHERE Dep_AccountNumber='{0}' AND BusinessNO='{1}'", AccountNumber, BusinessNO));
+            //  sql.Append(" where BusinessNO='" + BusinessNO + "' and  A.AccountNumber='" + AccountNumber + "'");
+
+            DataTable dtLog = SQLHelper.ExecuteDataTable(sql.ToString());
+            if (dtLog == null || dtLog.Rows.Count == 0)
+            {
+                context.Response.Write("");
+                return;
+            }
+
+            //共有参数
+            string DepName = dtLog.Rows[0]["DepName"].ToString();
+            string VarietyName = dtLog.Rows[0]["VarietyName"].ToString();
+            string UnitName = dtLog.Rows[0]["UnitName"].ToString();
+            string StorageDate = dtLog.Rows[0]["dt_Trade"].ToString();
+            string Price_ShiChang = dtLog.Rows[0]["Price"].ToString();
+            string StorageNumberRaw = dtLog.Rows[0]["Count_Trade"].ToString();//交易数量
+            string Count_Balance = dtLog.Rows[0]["Count_Balance"].ToString();//结存
+            string goodCount = dtLog.Rows[0]["GoodCount"].ToString();
+            string WBName = dtLog.Rows[0]["WBName"].ToString();
+            string UserName = dtLog.Rows[0]["UserName"].ToString();
+            double numMoney = Convert.ToDouble(Price_ShiChang) * Convert.ToDouble(StorageNumberRaw);
+            numMoney = Math.Round(numMoney, 2);
+            #endregion
+
+            StringBuilder strReturn = new StringBuilder();
+            //标题
+            string CompanyName = common.GetCompanyInfo()["strName"].ToString();
+            strReturn.Append("  <table style='width: 640px; padding: 10px 0px;'>");
+
+            strReturn.Append("   <tr><td align='center' style='font-size: 18px; font-weight: bolder; text-align: center;'><span>" + CompanyName + "  储户" + BusinessName + "凭证</span></td> </tr>");
+            strReturn.Append("  </table>");
+
+            //首行内容
+            strReturn.Append("  <table style='font-size: 14px; padding-bottom:5px;'><tr>");
+            strReturn.Append("    <td style='width: 200px;'>  <span >姓名：" + DepName + "</span> </td>");
+            strReturn.Append("    <td style='width: 200px;'>  <span >账号：" + AccountNumber + "</span> </td>");
+            strReturn.Append("    <td style='width: 240px;'>  <span >网点：" + WBName + "</span> </td>");
+            strReturn.Append("   </tr> </table>");
+
+            //表格内容
+            strReturn.Append("    <table class='tabPrint' style='padding: 5px 0px; font-size: 14px;'>");
+            //添加表格样式
+            strReturn.Append("    <style>");
+            strReturn.Append("    table.tabPrint{ border-collapse: collapse; border: 1px solid #666;  font-size: 14px;}");
+            strReturn.Append("     table.tabPrint thead td, table.set_border th{ font-weight: bold; background-color: White;}");
+            strReturn.Append("    table.tabPrint tr:nth-child(even){ background-color: #666;}");
+            strReturn.Append("     table.tabPrint td, table.border th{  border: 1px solid #666;}");
+            strReturn.Append("   </style>");
+
+
+            strReturn.Append("   <tr style='height: 20px;'>");
+            strReturn.Append("    <td style='width: 80px;'> <span>业务名称</span></td>");
+            strReturn.Append("    <td style='width: 80px;'> <span>存粮种类</span></td>");
+            strReturn.Append("    <td style='width: 80px;'> <span>单位</span></td>");
+            strReturn.Append("    <td style='width: 80px;'> <span>存入价</span></td>");
+            strReturn.Append("    <td style='width: 80px;'> <span>本次存粮</span></td>");          
+            strReturn.Append("    <td style='width: 80px;'> <span>退还数量</span></td>");
+
+
+            strReturn.Append("    <td style='width: 80px;'> <span>时间</span></td>");
+            strReturn.Append("  </tr>");
+
+            strReturn.Append("   <tr style='height: 20px;'>");
+            strReturn.Append("    <td > <span>" + BusinessName + "</span></td>");
+            strReturn.Append("    <td> <span>" + VarietyName + "</span></td>");
+            strReturn.Append("    <td> <span>" + UnitName + "</span></td>");
+            strReturn.Append("    <td> <span>" + Price_ShiChang + "</span></td>");
+            strReturn.Append("    <td> <span>" + goodCount + "</span></td>");
+            strReturn.Append("    <td> <span>" + StorageNumberRaw + "</span></td>");
+            strReturn.Append("    <td> <span>" + StorageDate + "</span></td>");
+            strReturn.Append("  </tr>");
+            strReturn.Append("   </table>");
+            //第三行内容
+            strReturn.Append("   <table style='font-size: 14px; padding:5px 0px;'>");
+            strReturn.Append("    <tr style='height: 25px;'>");
+            strReturn.Append("   <td colspan='3' style='width: 200px;'> <span>营业员：</span> <span>" + UserName + "</span>  </td>");
+           // strReturn.Append("  <td>   <span>储户签名：</span> </td><td> <div style='width:100px;height:25px; border-bottom:1px solid #333;'></div></td>");
+            strReturn.Append("   </tr>   </table>");
+
+
+            context.Response.Write(strReturn.ToString());
+        }
 
         /// <summary>
         /// 储户的存折内容打印(打印单条存折的记录)

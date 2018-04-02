@@ -12,7 +12,7 @@
     <link href="../../Styles/Common.css" rel="stylesheet" type="text/css" />
 
     <script src="../../Lodop6.198/LodopFuncs.js" type="text/javascript"></script>
-
+    <script src="../../Scripts/LodopPrint.js"></script>
     <script type="text/javascript">
         /*--------窗体启动设置和基本设置--------*/
         /*--loadFuntion--*/
@@ -81,18 +81,22 @@
                             if (r == "0") {
                                 showMsg('这是一条不存在的存储记录，不可以退还 ！');
                                 $('#divfrm').fadeOut('normal');
+                                $('#divfrm1').fadeOut('normal');
                             }
                             else if (r == "OK") {
                           
                                 showMsg('退还储户存粮成功 ！');
                                 $('#divfrm').fadeIn('normal');
+                                $('#divfrm1').fadeIn('normal');
                             } else {
                                 showMsg('退还储户存粮失败 ！');
                                 $('#divfrm').fadeOut('normal');
+                                $('#divfrm1').fadeOut('normal');
                             }
                         }, error: function (r) {
                             showMsg('退还储户存粮失败 ！');
                             $('#divfrm').fadeOut('normal');
+                            $('#divfrm1').fadeOut('normal');
                         }
                     });
 
@@ -153,7 +157,28 @@
                     CreateOneFormPage();
                     LODOP.PREVIEW(); //打印存折
                 }, error: function (r) {
-                   showMsg('加载打印坐标时出现错误 ！');
+                    showMsg('加载打印坐标时出现错误 ！');
+                }
+            });
+        };
+        function PrintPage() {                       
+            var url = '/Ashx/storage.ashx?type=Print_returnDep&BusinessNO=' + $('input[name=BusinessNO]').val() + '&AccountNumber=' + $('#D_AccountNumber').html();            
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: '',
+                dataType: 'text',
+                success: function (r) {
+                    if (r == '') {
+                        showMsg('打印内容不可以为空!');
+                        return false;
+                    }
+                    $('#divPrintPaper').html('');
+                    $('#divPrintPaper').append(r);
+                    CreatePage();
+                    LODOP.PREVIEW(); //打印存折
+                }, error: function (r) {
+                    showMsg('加载打印坐标时出现错误 ！');
                 }
             });
         }
@@ -293,9 +318,13 @@
         </asp:Repeater>
   
     
-     <div id="divfrm" class="pageEidtInner" style="border-radius: 20px; width:200px;  padding:5px; display: none; text-align:center;">
-        <input type="button" id="btnCunZhe" value="打印存折"  onclick="PrintCunZhe()" />
+     <div id="divfrm" class="pageEidtInner" style="border-radius: 20px; width:150px;  padding:5px; display: none; text-align:center; float:left">
+        <input type="button" id="btnCunZhe" value="打印存折"  onclick="PrintCunZhe()" />&nbsp;&nbsp;
+         
     </div>
+        <div id="divfrm1" class="pageEidtInner" style="border-radius: 20px; width:150px;  padding:5px; display: none; text-align:center; float:left">
+        <input type="button" id="btnPrint" value="打印小票"  onclick="PrintPage()" />
+            </div>
 
 
     <div style="display: none;">

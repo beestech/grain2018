@@ -35,7 +35,7 @@ namespace Web
             string sql = "SELECT * FROM dbo.StorageTime WHERE ID=@ID";
             SqlParameter[] parameters = {
                     new SqlParameter("@ID", SqlDbType.Int,4)};
-            parameters[0].Value = id;
+            parameters[0].Value = id; 
 
             DataTable dt = SQLHelper.ExecuteDataTable(sql, parameters);
             if (dt == null || dt.Rows.Count == 0)
