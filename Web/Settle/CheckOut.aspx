@@ -91,6 +91,7 @@
                         <%-- <th style="width: 100px; text-align: center;">
                            等级
                         </th>--%>
+
                         <th style="width: 150px; text-align: center;">库存
                         </th>
 

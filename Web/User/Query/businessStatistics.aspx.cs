@@ -74,11 +74,8 @@ namespace Web.User.Query
 
                     StringBuilder sql = new StringBuilder();
                     sql.Append(@"SELECT DISTINCT Dep_AccountNumber,P.strName AS DepName, b.strName AS VarietyName,b.ID,
-                                ( SELECT SUM( StorageNumberRaw)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID )-
-                                ( SELECT SUM( Count_Trade)  FROM dbo.Dep_OperateLog m WHERE BusinessName ='5' AND m.Dep_AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID)
-                                AS StorageNumberRaw,
-                                ( SELECT SUM( StorageNumber)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID )
-                                AS StorageNumber,
+                                ( SELECT SUM( StorageNumberRaw)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID ) StorageNumberRaw,
+                                ( SELECT SUM( StorageNumber)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID ) AS StorageNumber,
                                 ( SELECT SUM( Count_Trade)  FROM dbo.Dep_OperateLog m WHERE BusinessName ='5' AND m.Dep_AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID)
                                 AS VarietyCount_error,
                                 ( SELECT SUM( Count_Trade)  FROM dbo.Dep_OperateLog m WHERE BusinessName ='8' AND m.Dep_AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID)
@@ -94,6 +91,7 @@ namespace Web.User.Query
                                 FROM dbo.Dep_OperateLog A INNER JOIN dbo.Depositor P ON A.Dep_AccountNumber=P.AccountNumber
                                 LEFT OUTER JOIN dbo.StorageVariety B ON A.VarietyID=B.ID OR A.VarietyID=B.strName
                                 WHERE 1=1  AND P.ISClosing=0 ");
+                    //判断VarietyCount_error是否为0
                     string wd = ddlWd.SelectedValue;
                     string vy = ddlName.SelectedValue;
                     if (!string.IsNullOrWhiteSpace(wd))
@@ -121,8 +119,7 @@ namespace Web.User.Query
                     //网点
                     StringBuilder sql = new StringBuilder();
                     sql.Append(@"SELECT DISTINCT Dep_AccountNumber,P.strName AS DepName, b.strName AS VarietyName,b.ID,
-                                ( SELECT SUM( StorageNumberRaw)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID )-
-                                ( SELECT SUM( Count_Trade)  FROM dbo.Dep_OperateLog m WHERE BusinessName ='5' AND m.Dep_AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID)
+                                ( SELECT SUM( StorageNumberRaw)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID )
                                 AS StorageNumberRaw,
                                 ( SELECT SUM( StorageNumber)  FROM dbo.Dep_StorageInfo m  WHERE  m.AccountNumber=A.Dep_AccountNumber AND m.VarietyID=A.VarietyID )
                                 AS StorageNumber,
@@ -141,6 +138,7 @@ namespace Web.User.Query
                                 FROM dbo.Dep_OperateLog A INNER JOIN dbo.Depositor P ON A.Dep_AccountNumber=P.AccountNumber
                                 LEFT OUTER JOIN dbo.StorageVariety B ON A.VarietyID=B.ID OR A.VarietyID=B.strName
                                 WHERE 1=1  AND P.ISClosing=0 ");
+                    //判断VarietyCount_error是否为0
                     var wbid = Session["WB_ID"];
 
                     if (!string.IsNullOrWhiteSpace(wbid.ToString()))
@@ -158,6 +156,7 @@ namespace Web.User.Query
                         sql.Append(" AND A.Dep_AccountNumber='" + QAccountNumber.Value + "' ");
                     }
                     DataTable dt = SQLHelper.ExecuteDataTable(sql.ToString());
+
                     var newDt = ForDt(dt);
                     Repeater1.DataSource = newDt;
                     Repeater1.DataBind();
@@ -165,6 +164,8 @@ namespace Web.User.Query
                 }
             }
         }
+
+       
 
         private List<BusinessStatisticsModel> ForDt(DataTable dt)
         {
