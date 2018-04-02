@@ -321,6 +321,10 @@ namespace Web.Ashx
             //string VarietyID = dtLog.Rows[0]["VarietyID"].ToString();            
             //string UnitID = dtLog.Rows[0]["UnitID"].ToString();
             string VarietyID = dtLog.Rows[0]["VarietyName"].ToString();
+
+            //兑换时显示VarietyName（折合原粮名称）
+            string VarietyName = commondb.getStorageVarietyByID(dtLog.Rows[0]["VarietyID"].ToString())["strName"].ToString();
+
             string UnitID = dtLog.Rows[0]["UnitName"].ToString();
             string Price = dtLog.Rows[0]["Price"].ToString();
             string GoodCount = dtLog.Rows[0]["GoodCount"].ToString();
@@ -407,7 +411,14 @@ namespace Web.Ashx
 
                 strReturn.Append("   <td style='width:" + (RecordC7X - RecordC6X).ToString() + "px;'>" + GoodCount + "</td>");
                 strReturn.Append("   <td style='width:" + (RecordC8X - RecordC7X).ToString() + "px;'>" + Count_Trade + "</td>");
-                strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" + Count_Balance + "kg</td>");
+                if (numBusinessName == "2" || numBusinessName == "6")
+                {
+                    strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" +VarietyName+ Count_Balance + "kg</td>");
+                }
+                else {
+                    strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" + Count_Balance + "kg</td>");
+                }
+               
                 strReturn.Append("   <td >" + WBID + " </td>");
 
                 strReturn.Append("   </tr></table>");
