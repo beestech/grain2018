@@ -877,8 +877,10 @@ namespace Web.User.Storage
             string EarningRate = dt.Rows[0]["EarningRate"].ToString();
             string LossRate = dt.Rows[0]["LossRate"].ToString();
 
-            double Price_DaoQi_New=Price_ShiChang_New*(R_DaoQi/R_ShiChang);
-            double Price_HeTong_New = Price_ShiChang_New * (R_HeTong / R_ShiChang);
+            //double Price_DaoQi_New=Price_ShiChang_New*(R_DaoQi/R_ShiChang);
+            //double Price_HeTong_New = Price_ShiChang_New * (R_HeTong / R_ShiChang);
+            double Price_DaoQi_New = Price_ShiChang_New + (R_DaoQi - R_ShiChang);
+            double Price_HeTong_New = Price_ShiChang_New + (R_HeTong - R_ShiChang);
 
             //获取存储产品的计量单位
             string strUnit =  commondb.getStorageVarietyByID(VarietyID)["strName"].ToString();
