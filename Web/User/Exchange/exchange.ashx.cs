@@ -209,8 +209,7 @@ namespace Web.User.Exchange
                 SQLHelper.ExecuteNonQuery(sql_insert.ToString());
 
                 dt_Depositor = SQLHelper.ExecuteDataTable(string.Format(" SELECT * FROM dbo.Depositor WHERE AccountNumber='{0}'", AccountNumber));
-            }
-
+            }            
             context.Response.Write(JsonHelper.ToJson(dt_Depositor));
 
 

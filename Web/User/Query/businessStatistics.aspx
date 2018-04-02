@@ -163,7 +163,6 @@
                             <%# Eval("StorageNumberRaw") %>
                         </td>
                         <td>
- 
                             <%# Eval("ExhcangeNumberTotal") %>
                         </td>
                         <td>
