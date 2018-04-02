@@ -256,16 +256,19 @@ namespace Web.User.Exchange
             strSql.Append("   B.ISHQ,B.ISSimulate ");
             strSql.Append("  FROM dbo.Depositor A INNER JOIN dbo.WB B ON A.WBID=B.ID   where 1=1");
             strSql.Append("  and A.ISClosing=0 ");//排除已经被销户的储户
-            if (Convert.ToBoolean(common.GetWBAuthority()["Enable_Distance"]) == false)//不允许异地存取的情况
+            if (!Convert.ToBoolean(context.Session["ISHQ"]))//在非总部网点查看的情况下检查当前的网点限制
             {
-                strSql.Append(" and WBID= " + WBID);
-            }
-            else
-            {
-                //当前登录的网店是模拟网点
-                if (Convert.ToBoolean(context.Session["ISSimulate"]) == true)
+                if (Convert.ToBoolean(common.GetWBAuthority()["Enable_Distance"]) == false)//不允许异地存取的情况
                 {
                     strSql.Append(" and WBID= " + WBID);
+                }
+                else
+                {
+                    //当前登录的网店是模拟网点
+                    if (Convert.ToBoolean(context.Session["ISSimulate"]) == true)
+                    {
+                        strSql.Append(" and WBID= " + WBID);
+                    }
                 }
             }
 
@@ -2036,7 +2039,9 @@ namespace Web.User.Exchange
                     string WBID = dtLog.Rows[0]["WBID"].ToString();
                     //string VarietyID = dtLog.Rows[0]["VarietyID"].ToString();             
                     //string UnitID = dtLog.Rows[0]["UnitID"].ToString();
-                    string VarietyID = dtLog.Rows[0]["VarietyName"].ToString();
+                    string GoodName = dtLog.Rows[0]["VarietyName"].ToString();
+
+                    string VarietyName = commondb.getStorageVarietyByID(dtLog.Rows[0]["VarietyID"].ToString())["strName"].ToString();
                     string UnitID = dtLog.Rows[0]["UnitName"].ToString();
                     string BusinessName = dtLog.Rows[0]["BusinessName"].ToString();
                     string Price = dtLog.Rows[0]["Price"].ToString();
@@ -2056,7 +2061,7 @@ namespace Web.User.Exchange
                     strReturn.Append("   <table style='margin-left:" + RecordC1X + "px; font-size:" + FontSize + "px;'><tr>");
                     strReturn.Append("   <td style='width:" + (RecordC2X - RecordC1X).ToString() + "px;height:25px;'>" + dt_Trade + " </td>");
                     strReturn.Append("   <td style='width:" + (RecordC3X - RecordC2X).ToString() + "px;'>" + BusinessName + " </td>");
-                    strReturn.Append("   <td style='width:" + (RecordC4X - RecordC3X).ToString() + "px;'>" + VarietyID + " </td>");
+                    strReturn.Append("   <td style='width:" + (RecordC4X - RecordC3X).ToString() + "px;'>" + GoodName + " </td>");
                     //strReturn.Append("   <td style='width:" + (RecordC5X - RecordC4X).ToString() + "px;'>" + Price + " </td>");
                     //strReturn.Append("   <td style='width:" + (RecordC6X - RecordC5X).ToString() + "px;'>" + UnitID + " </td>");
 
@@ -2064,7 +2069,7 @@ namespace Web.User.Exchange
                     double goodCount = Convert.ToDouble(Money_Trade) / Convert.ToDouble(Price);
                     strReturn.Append("   <td style='width:" + (RecordC7X - RecordC6X).ToString() + "px;'>" + Math.Round(goodCount, 2).ToString() + "</td>");
                     strReturn.Append("   <td style='width:" + (RecordC8X - RecordC7X).ToString() + "px;'>" + Count_Trade + "</td>");
-                    strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" + Count_Balance + "kg</td>");
+                    strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" + VarietyName+ Count_Balance + "kg</td>");
                     strReturn.Append("   <td >" + WBID + " </td>");
 
                     strReturn.Append("   </tr></table>");
