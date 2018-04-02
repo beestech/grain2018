@@ -249,8 +249,8 @@ namespace Web.Ashx
             //第三行内容
             strReturn.Append("   <table style='font-size: 14px; padding:5px 0px;'>");
             strReturn.Append("    <tr style='height: 25px;'>");
-            strReturn.Append("   <td colspan='3' style='width: 200px;'> <span>营业员：</span> <span>" + UserName + "</span>  </td>");
-           // strReturn.Append("  <td>   <span>储户签名：</span> </td><td> <div style='width:100px;height:25px; border-bottom:1px solid #333;'></div></td>");
+            strReturn.Append("   <td style='width: 200px;'> <span>营业员：</span> <span>" + UserName + "</span>  </td>");
+            strReturn.Append("  <td>   <span>储户签名：</span> </td><td> <div style='width:100px;height:25px; border-bottom:1px solid #333;'></div></td>");
             strReturn.Append("   </tr>   </table>");
 
 
