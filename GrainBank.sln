@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{C461EEBA-0FFB-43BB-97F0-2086E2728682}"
 EndProject
@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{90FAED
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "grainApi", "grainApi\grainApi.csproj", "{20B389D8-6494-4906-8607-AD3E91E83E42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,12 +28,11 @@ Global
 		{14592A01-3D53-4CF9-915F-9D2B55AAF5B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14592A01-3D53-4CF9-915F-9D2B55AAF5B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14592A01-3D53-4CF9-915F-9D2B55AAF5B9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{20B389D8-6494-4906-8607-AD3E91E83E42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{20B389D8-6494-4906-8607-AD3E91E83E42}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{20B389D8-6494-4906-8607-AD3E91E83E42}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{20B389D8-6494-4906-8607-AD3E91E83E42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E13EEDC2-E93D-47D7-9A91-B91F45879E9A}
 	EndGlobalSection
 EndGlobal

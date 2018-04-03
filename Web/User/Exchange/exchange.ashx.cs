@@ -204,8 +204,8 @@ namespace Web.User.Exchange
             {
                 StringBuilder sql_insert = new StringBuilder();
                 sql_insert.Append(" INSERT INTO dbo.Depositor");
-                sql_insert.Append(" ( WBID,AccountNumber,strPassword,strAddress,XianID,XiangID,CunID ,strName , IDCard ,PhoneNO , ISSendMessage , BankCardNO ,numState ,dt_Add , dt_Update , ISClosing )");
-                sql_insert.Append(string.Format(" VALUES  ( {0} , N'{1}' , N'******' , N'******' ,  0 , 0 , 0 , N'模拟储户' ,N'***' , N'***' , 0 ,  N'***' ,  0 , GETDATE() , GETDATE(), 1)", WBID, AccountNumber));
+                sql_insert.Append(" ( WBID,AccountNumber,strPassword,strAddress,XianID,XiangID,CunID ,strName , IDCard ,PhoneNO , ISSendMessage , BankCardNO ,numState ,dt_Add , dt_Update , ISClosing,IsPoor )");
+                sql_insert.Append(string.Format(" VALUES  ( {0} , N'{1}' , N'******' , N'******' ,  0 , 0 , 0 , N'模拟储户' ,N'***' , N'***' , 0 ,  N'***' ,  0 , GETDATE() , GETDATE(), 1,0)", WBID, AccountNumber));
                 SQLHelper.ExecuteNonQuery(sql_insert.ToString());
 
                 dt_Depositor = SQLHelper.ExecuteDataTable(string.Format(" SELECT * FROM dbo.Depositor WHERE AccountNumber='{0}'", AccountNumber));

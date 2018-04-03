@@ -1908,7 +1908,8 @@ values(@Dep_StorageInfo_ID,@AccountNumber,@VarietyID,@VarietyName,@StorageNumber
             parametersOperateLog[7].Value = Price;
             parametersOperateLog[8].Value = StorageNumber;
             parametersOperateLog[9].Value = -StorageNumber;
-            parametersOperateLog[10].Value = StorageNumber;
+            //parametersOperateLog[10].Value = StorageNumber;
+            parametersOperateLog[10].Value = 0;
             parametersOperateLog[11].Value = 0;
             parametersOperateLog[12].Value = DateTime.Now;
             parametersOperateLog[13].Value = VarietyName;
