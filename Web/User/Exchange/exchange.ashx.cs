@@ -286,7 +286,6 @@ namespace Web.User.Exchange
                         context.Response.Write(JsonHelper.ToJson(res));
                         return;
                     }
-
                 }
 
                 if (ApplyID == "")

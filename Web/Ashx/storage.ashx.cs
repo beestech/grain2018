@@ -258,7 +258,7 @@ namespace Web.Ashx
         }
 
         /// <summary>
-        /// 储户的存折内容打印(打印单条存折的记录)
+        /// 储户的存折内容打印(打印单条存折的记录) 
         /// </summary>
         /// <param name="context"></param>
         void PrintDep_OperateLog(HttpContext context)
