@@ -151,7 +151,9 @@
                                     BusinessNO = r.BusinessNO;
                                     $('#QSelect').attr('disabled', 'disabled')
                                 }
-
+                                else {
+                                    showMsg(r.msg);
+                                }
 
                             }, error: function (r) {
                                 showMsg(' 退还操作失败 ！');
