@@ -44,8 +44,7 @@ namespace Web.Ashx
                 }
             }
 
-        }
-
+        }        
 
         /// <summary>
         /// 打印储户存粮凭证
@@ -53,7 +52,7 @@ namespace Web.Ashx
         /// <param name="context"></param>
         void getDepOperateLogAll(HttpContext context)
         {
-            string WBID = context.Request.Form["WBID"].ToString(); ;//当前网点ID
+           string WBID = context.Request.Form["WBID"].ToString(); ;//当前网点ID
            string AccountNumber = context.Request.Form["AccountNumber"].ToString();//当前网点ID
           
            string Qdtstart = "";//当前网点ID
@@ -66,9 +65,9 @@ namespace Web.Ashx
            {
               Qdtend= context.Request.Form["Qdtend"].ToString();
            }
-
-             StringBuilder strSql = new StringBuilder();
-             strSql.Append("   select ID,WBID,AccountNumber,strPassword, CunID as  BD_Address_CunID,strAddress,strName,PhoneNO,ISSendMessage,BankCardNO,dt_Update,ISClosing,numState,");
+            
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("   select ID,WBID,AccountNumber,strPassword, CunID as  BD_Address_CunID,strAddress,strName,PhoneNO,ISSendMessage,BankCardNO,dt_Update,ISClosing,numState,");
             strSql.Append("   CASE( numState) WHEN 1 THEN '正常' ELSE '挂失' END AS numState,dt_Add,");
             strSql.Append("   CASE (IDCard) WHEN '' THEN '未填写' ELSE '******' END as IDCard");
             strSql.Append(" FROM dbo.Depositor  where 1=1 ");
@@ -413,7 +412,7 @@ namespace Web.Ashx
                 strReturn.Append("   <td style='width:" + (RecordC8X - RecordC7X).ToString() + "px;'>" + Count_Trade + "</td>");
                 if (numBusinessName == "2" || numBusinessName == "6")
                 {
-                    strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" +VarietyName+ Count_Balance + "kg</td>");
+                    strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" +VarietyName+ "/" + Count_Balance + "kg</td>");
                 }
                 else {
                     strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" + Count_Balance + "kg</td>");
