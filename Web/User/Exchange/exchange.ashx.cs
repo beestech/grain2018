@@ -2068,7 +2068,7 @@ namespace Web.User.Exchange
                     double goodCount = Convert.ToDouble(Money_Trade) / Convert.ToDouble(Price);
                     strReturn.Append("   <td style='width:" + (RecordC7X - RecordC6X).ToString() + "px;'>" + Math.Round(goodCount, 2).ToString() + "</td>");
                     strReturn.Append("   <td style='width:" + (RecordC8X - RecordC7X).ToString() + "px;'>" + Count_Trade + "</td>");
-                    strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" + VarietyName+ Count_Balance + "kg</td>");
+                    strReturn.Append("   <td style='width:" + (RecordC9X - RecordC8X).ToString() + "px;'>" + VarietyName + "/" + Count_Balance + "kg</td>");
                     strReturn.Append("   <td >" + WBID + " </td>");
 
                     strReturn.Append("   </tr></table>");
