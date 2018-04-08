@@ -120,7 +120,7 @@
 
 
             $('.datadetail').fadeOut();
-            var report_type = $('#report_type').find('option:selected').val();
+            var report_type = 1;//$('#report_type').find('option:selected').val();
             var trade_type = $('#trade_type').find('option:selected').val();
             var QVarietyID = $('#QVarietyID').find('option:selected').val();
             var QWBID = $('#WBID').val();
@@ -248,7 +248,7 @@
   
         function showDetail(obj) {
 
-            var report_type = $('#report_type').find('option:selected').val();
+            var report_type = 1;//$('#report_type').find('option:selected').val();
             //if (report_type == 'ALL') {//没有选择报表类型
             //    $('.head_report_type').hide();
             //} else {
@@ -425,11 +425,11 @@
     </div>
 
     <div class="Query">
-        <span>报表类型:</span>
-        <select id="report_type" style="width: 80px; margin-right: 5px;">
+        <!--<span>报表类型:</span>-->
+        <!--<select id="report_type" style="width: 80px; margin-right: 5px;">
             <option value="1">存粮报表</option>
             <option value="2">结存报表</option>
-        </select>
+        </select>-->
         <span class="QWBInfo">网点</span>
         <select class="QWBInfo" id="QWBID" style="width: 120px; margin-right: 5px;"></select>
         <span>交易类型</span>
