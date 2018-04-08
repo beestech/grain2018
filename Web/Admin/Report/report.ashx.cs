@@ -150,19 +150,7 @@ namespace Web.Admin.Report
             strSql.Append("  INNER JOIN dbo.StorageVariety E ON A.VarietyID=E.ID");
             strSql.Append("  where 1=1 and C.ISSimulate=0");
 
-            //if (trade_type == "1")
-            //{
-            //    strSql.Append("   AND A.WBID=B.WBID");
-            //}
-            //else if (trade_type == "2")
-            //{
-            //    strSql.Append("   AND A.WBID!=B.WBID");
-            //}
-
-            //if (QWBID != "0")
-            //{
-            //    strSql.Append("   AND C.ID = " + QWBID);
-            //}
+         
             if (QWBID != "0" && QWBID != "")//查询指定的粮食银行
             {
                 //strSql.Append("   AND W.ID =" + QWBID);
@@ -240,18 +228,7 @@ namespace Web.Admin.Report
             strSql_T.Append("  INNER JOIN dbo.StorageVariety E ON A.VarietyID=E.ID");
             strSql_T.Append("  where 1=1 and C.ISSimulate=0");
 
-            //if (trade_type == "1")
-            //{
-            //    strSql_T.Append("   AND A.WBID=B.WBID");
-            //}
-            //else if (trade_type == "2")
-            //{
-            //    strSql_T.Append("   AND A.WBID!=B.WBID");
-            //}
-            //if (QWBID != "0")
-            //{
-            //    strSql_T.Append("   AND C.ID = " + QWBID);
-            //}
+            
 
             if (QWBID != "0" && QWBID != "")//查询指定的粮食银行
             {
