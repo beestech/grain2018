@@ -107,7 +107,7 @@
                             <%#Eval("TimeName")%>
                         </td>
                         <td>
-                            <asp:Label Text='<%# getDepStorageNum(Eval("StorageNumber").ToString(),Eval("WBID").ToString(),Eval("VarietyID").ToString(),ddlYear.SelectedValue,select_month.Value) %>' ID="lblNumber" runat="server" />
+                            <asp:Label Text='<%# getDepStorageNum(Eval("StorageNumber").ToString(),Eval("WBID").ToString(),Eval("VarietyID").ToString(),Eval("TimeID").ToString(),Eval("Price_ShiChang").ToString(),ddlYear.SelectedValue,select_month.Value) %>' ID="lblNumber" runat="server" />
                             
                         </td>
                         <td>
@@ -117,7 +117,7 @@
                             <%# Eval("Price_ShiChang") %>
                         </td>
                         <td>
-                            <asp:Label Text='<%#  Calculate(Eval("Price_ShiChang").ToString(),Eval("StorageNumber").ToString(),Eval("WBID").ToString(),Eval("VarietyID").ToString(),ddlYear.SelectedValue,select_month.Value)%>' ID="lblMoney" runat="server" />
+                            <asp:Label Text='<%#  Calculate(Eval("Price_ShiChang").ToString(),Eval("StorageNumber").ToString(),Eval("WBID").ToString(),Eval("VarietyID").ToString(),Eval("TimeID").ToString(),Eval("Price_ShiChang").ToString(),ddlYear.SelectedValue,select_month.Value)%>' ID="lblMoney" runat="server" />
                             
                         </td>                        
                                        

@@ -92,9 +92,9 @@ SUM( count_trade) as StorageNumber, (sum(count_trade)*s.Price_ShiChang) as Total
 
         }
 
-        public string Calculate(string price,string storageNumber, string WBID, string VarietyID, string year, string month)
+        public string Calculate(string price,string storageNumber, string WBID, string VarietyID, string timeID, string price_sc, string year, string month)
         {
-            string number = getDepStorageNum(storageNumber, WBID, VarietyID, year, month);
+            string number = getDepStorageNum(storageNumber, WBID, VarietyID,timeID,price_sc, year, month);
             if (number.Equals("0"))
             {
                 return "0.00";
@@ -109,7 +109,7 @@ SUM( count_trade) as StorageNumber, (sum(count_trade)*s.Price_ShiChang) as Total
         /// <param name="VarietyID">产品ID</param>
         /// <param name="Qdtstart">开始时间</param>
         /// <param name="Qdtend">结束时间</param>
-        public string getDepStorageNum(string storageNumber,string WBID, string VarietyID, string year, string month)
+        public string getDepStorageNum(string storageNumber,string WBID, string VarietyID,string timeID,string price, string year, string month)
         {
 
                 if (storageNumber.Equals("0.00")||storageNumber.Equals("0"))
@@ -125,10 +125,10 @@ SUM( count_trade) as StorageNumber, (sum(count_trade)*s.Price_ShiChang) as Total
             var dtEnd = LastDayOfMonth(d_t);
             StringBuilder strSqlCommune = new StringBuilder();
             strSqlCommune.Append("  SELECT A.BusinessName, A.Count_Trade, A.GoodCount, CONVERT(NVARCHAR(100),A.dt_Trade,23) AS dt_Trade ");
-            strSqlCommune.Append("  FROM dbo.Dep_OperateLog A ");
+            strSqlCommune.Append("  FROM dbo.Dep_OperateLog A  inner join Dep_StorageInfo as s on s.ID = A.Dep_SID ");
             strSqlCommune.Append("  where 1=1");
             strSqlCommune.Append("  AND A.WBID = '" + WBID + "'");
-            strSqlCommune.Append("  AND A.VarietyID = '" + VarietyID + "'");
+            strSqlCommune.Append("  AND A.VarietyID = '" + VarietyID + "' and s.TimeID='" + timeID + "' and s.Price_ShiChang='" + price + "'");
 
           
                 strSqlCommune.Append("   AND A.dt_Trade> '" +dtStart + "'");
