@@ -135,6 +135,7 @@
                         $('input[name=PricePolicy]').val(r[0].PricePolicy);
 
                         var InterestType = parseInt(parseInt(r[0].InterestType) - 1);
+                        var InterestType2 = parseInt(parseInt(r[0].InterestType));
                       
                         // $('input[name=InterestType]:eq(0)').attr('checked', 'checked');
 
@@ -145,17 +146,17 @@
                         }
                         if (r[0].ISRegular == true) {//定期
                             $('#ISRegular-2').attr('checked', 'checked');
-                            ShowOption('2');
+                            ShowOption(InterestType2);
                         } else {
                             $('#ISRegular-1').attr('checked', 'checked');
-                            ShowOption('1');
+                            ShowOption(InterestType2);
                         }
                         if (InterestType == '2') {
                             $('#tr-numExChangeProp').show();
                         } else {
                             $('#tr-numExChangeProp').hide();
                         }
-                        $('input[name=InterestType]:eq(' + InterestType + ')').attr('checked', 'checked');
+                        //$('input[name=InterestType]:eq(' + InterestType2 + ')').attr('checked', 'checked');
 
                     }, error: function (r) {
                         showMsg('加载信息失败 ！');
@@ -185,7 +186,21 @@
                 $('#div-InterestType-3').show();
                 $('#div-InterestType-4').show();
                 //$('#tr-numExChangeProp').show();
-                $('#InterestType-2').attr('checked', 'checked');
+                if (type == '2')
+                {
+                    $('#InterestType-2').attr('checked', 'checked');
+                }
+                else if (type == '21')
+                {
+                    $('#InterestType-21').attr('checked', 'checked');
+                }
+                else if (type == '3')
+                {
+                    $('#InterestType-3').attr('checked', true);
+                }
+                else if (type == '4') {
+                    $('#InterestType-4').attr('checked', 'checked');
+                }
             }
         }
 
