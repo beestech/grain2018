@@ -83,7 +83,7 @@ SUM( count_trade) as StorageNumber, (sum(count_trade)*s.Price_ShiChang) as Total
             var dtStart=FirstDayOfMonth(d_t);
             var dtEnd = LastDayOfMonth(d_t);
 
-            sql.Append(string.Format(" and  A.dt_Trade >'{0}' and A.dt_Trade < '{1}' ", dtStart.ToString(), dtEnd.ToString()));
+            sql.Append(string.Format("  and A.dt_Trade < '{0}' ", dtEnd.AddDays(1).ToString()));
             sql.Append("  group by  C.ID, C.strName,T.ID, T.strName ,E.ID, E.strName,s.Price_ShiChang");
 
             var dt = SQLHelper.ExecuteDataTable(sql.ToString());
@@ -127,18 +127,14 @@ SUM( count_trade) as StorageNumber, (sum(count_trade)*s.Price_ShiChang) as Total
             strSqlCommune.Append("  SELECT A.BusinessName, A.Count_Trade, A.GoodCount, CONVERT(NVARCHAR(100),A.dt_Trade,23) AS dt_Trade ");
             strSqlCommune.Append("  FROM dbo.Dep_OperateLog A  inner join Dep_StorageInfo as s on s.ID = A.Dep_SID ");
             strSqlCommune.Append("  where 1=1");
-            strSqlCommune.Append("  AND A.WBID = '" + WBID + "'");
+            strSqlCommune.Append("  AND (A.WBID = '" + WBID + "' OR ( s.WBID= '" + WBID + "' AND A.WBID= '2')) ");
             strSqlCommune.Append("  AND A.VarietyID = '" + VarietyID + "' and s.TimeID='" + timeID + "' and s.Price_ShiChang='" + price + "'");
+            //Qdtend = Convert.ToDateTime(Qdtend).AddDays(1).ToString();
+            strSqlCommune.Append("   AND A.dt_Trade < '" + dtEnd.AddDays(1) + "'");
 
-          
-                strSqlCommune.Append("   AND A.dt_Trade> '" +dtStart + "'");
-            
-           
-                //Qdtend = Convert.ToDateTime(Qdtend).AddDays(1).ToString();
-                strSqlCommune.Append("   AND A.dt_Trade < '" +dtEnd + "'");
-            
 
             strSqlCommune.Append("   order by A.dt_Trade desc");
+
 
             DataTable dt = SQLHelper.ExecuteDataTable(strSqlCommune.ToString());
             decimal storageNum = 0;
