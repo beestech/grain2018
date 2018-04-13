@@ -1345,6 +1345,7 @@ namespace Web.User.Storage
 
                     if (!ISVirtual)//实际存粮
                     {
+
                         #region  网点库存和库存日志
                         //添加网点的产品库存记录
                         string VarietyStorageExit = " SELECT COUNT(ID)   FROM dbo.SA_VarietyStorage WHERE WBID=" + WBID + " AND VarietyID=" + VarietyID + " and VarietyLevelID=" + VarietyLevelID;
