@@ -228,7 +228,7 @@ namespace Web.Ashx
             strReturn.Append("    <td style='width: 80px;'> <span>存粮种类</span></td>");
             strReturn.Append("    <td style='width: 80px;'> <span>单位</span></td>");
             strReturn.Append("    <td style='width: 80px;'> <span>存入价</span></td>");
-            strReturn.Append("    <td style='width: 80px;'> <span>本次存粮</span></td>");          
+            strReturn.Append("    <td style='width: 80px;'> <span>存粮结存</span></td>");          
             strReturn.Append("    <td style='width: 80px;'> <span>退还数量</span></td>");
 
 

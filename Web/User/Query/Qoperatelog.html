@@ -238,7 +238,7 @@
                 }
 
                 if (jsondata[i].BusinessName != '5' && jsondata[i].BusinessName != '12' && jsondata[i].BusinessName != '16' && jsondata[i].BusinessName != '19') {
-                    operate += '<a href="#" onclick="FunPrintPage(\'' + jsondata[i].BusinessNO + '\',\'' + jsondata[i].BusinessNameRemark + '\',\'' + jsondata[i].numInterest + '\')">补打凭据</a>';
+                    operate += '<a href="#" onclick="FunPrintPage(\'' + jsondata[i].BusinessNO + '\',\'' + jsondata[i].BusinessNameRemark + '\',\'' + jsondata[i].numInterest + '\',\''+AccountNumber+'\')">补打凭据</a>';
                 } else {
                     operate += '<a href="#" style="color:#999;" disabled>补打凭据</a>';
                 }
@@ -281,7 +281,7 @@
         }
         /*-------End 打印存折--------*/
 
-        function FunPrintPage(BusinessNO, BusinessName, numInterest) {
+        function FunPrintPage(BusinessNO, BusinessName, numInterest,AccountNumber) {
             if (BusinessName == "存入") {
                 PrintPageStorage(BusinessNO, '存粮',numInterest);
             }
@@ -329,6 +329,10 @@
             else if (BusinessName == "批量兑换") {
 
                 PrintPageExchangeGroup(BusinessNO);
+            }
+            else if (BusinessName == "退还存粮")
+            {
+                PrintPageReturnStorage(BusinessNO, AccountNumber);
             }
         }
 
@@ -657,6 +661,28 @@
                 }
             });
         }
+
+        function PrintPageReturnStorage(BusinessNO,AccountNumber) {
+            var url = '/Ashx/storage.ashx?type=Print_returnDep&BusinessNO=' + BusinessNO + '&AccountNumber=' + AccountNumber;
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: '',
+                dataType: 'text',
+                success: function (r) {
+                    if (r == '') {
+                        showMsg('打印内容不可以为空!');
+                        return false;
+                    }
+                    $('#divPrintPaper').html('');
+                    $('#divPrintPaper').append(r);
+                    CreatePage();
+                    LODOP.PREVIEW(); //打印存折
+                }, error: function (r) {
+                    showMsg('加载打印坐标时出现错误 ！');
+                }
+            });
+        };
 
         //小票打印
         function CreatePage() {
