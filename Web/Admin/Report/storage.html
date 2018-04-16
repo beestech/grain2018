@@ -120,7 +120,7 @@
 
 
             $('.datadetail').fadeOut();
-           $('#report_type').find('option:selected').val();
+            var report_type = $('#report_type').find('option:selected').val();
             var trade_type = $('#trade_type').find('option:selected').val();
             var QVarietyID = $('#QVarietyID').find('option:selected').val();
             var QWBID = $('#WBID').val();
@@ -248,7 +248,7 @@
   
         function showDetail(obj) {
 
-            var report_type = 1;//$('#report_type').find('option:selected').val();
+           $('#report_type').find('option:selected').val();
             //if (report_type == 'ALL') {//没有选择报表类型
             //    $('.head_report_type').hide();
             //} else {
