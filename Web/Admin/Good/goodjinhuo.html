@@ -155,6 +155,16 @@
 
         }
 
+        function changeState()
+        {
+            if ($('#ISPay').attr("checked") == true) {
+                $('#PayMode').attr("disabled", false);
+                $('#PayMoney').attr("disabled", false);                
+            } else {
+                $('#PayMode').attr("disabled", true);
+                $('#PayMoney').attr("disabled", true); 
+            }
+        }
         /*--------End  窗体启动设置和基本设置--------*/
         //当前当前系统中有没有此商品
         function GoodQuery() {
@@ -182,6 +192,9 @@
                 return false;
             }
             if (!CheckNumInt($('input[name=Quantity]').val(), '进货数量', '-1', '-1')) {
+                return false;
+            }
+            if (!CheckNumDecimal($('input[name=PayMoney]').val(), '付款金额', 2)) {
                 return false;
             }
             $.ajax({
@@ -283,6 +296,30 @@
                             <input name="Quantity" type="text" onkeyup="calcSum()" style="width: 100px;" />
 
                             <span id="spanUnit2"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <span>是否付款:</span>
+                        </td>
+                        <td>
+                            <input type="checkbox" id="ISPay" name="ISPay" onclick="changeState()"  class="custom-checkbox" /><label for="ISPay"></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <span>付款方式:</span>
+                        </td>
+                        <td>
+                            <input type="text" id="PayMode" name="PayMode" disabled="disabled" style="width:100px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <span>付款金额:</span>
+                        </td>
+                        <td>
+                            <input type="text" id="PayMoney" name="PayMoney" disabled="disabled" style="width:100px;" />
                         </td>
                     </tr>
                     <tr>

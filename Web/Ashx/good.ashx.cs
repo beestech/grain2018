@@ -1328,11 +1328,20 @@ namespace Web.Admin.Good
             {
                 ISCash = true;
             }
+            bool ISPay = false;
+            string PayMode = "";
+            string PayMoney = "0";
+            if (context.Request.Form["ISPay"] != null)
+            {
+                ISPay = true;
+                PayMode = context.Request.Form["PayMode"].ToString();
+                PayMoney = context.Request.Form["PayMoney"].ToString();
+            }
             StringBuilder strSql = new StringBuilder();
             strSql.Append("insert into [GoodStock] (");
-            strSql.Append("WBID,GoodID,Price_Stock,Num_Stock,Quantity,ISCash,dt_Trade,WBWareHouseID,WBSupplierID)");
+            strSql.Append("WBID,GoodID,Price_Stock,Num_Stock,Quantity,ISCash,dt_Trade,WBWareHouseID,WBSupplierID,ISPay,PayMode,PayMoney)");
             strSql.Append(" values (");
-            strSql.Append("@WBID,@GoodID,@Price_Stock,@Num_Stock,@Quantity,@ISCash,@dt_Trade,@WBWareHouseID,@WBSupplierID)");
+            strSql.Append("@WBID,@GoodID,@Price_Stock,@Num_Stock,@Quantity,@ISCash,@dt_Trade,@WBWareHouseID,@WBSupplierID,@ISPay,@PayMode,@PayMoney)");
             strSql.Append(";select @@IDENTITY");
             SqlParameter[] parameters = {
 					new SqlParameter("@WBID", SqlDbType.Int,4),
@@ -1342,8 +1351,11 @@ namespace Web.Admin.Good
 					new SqlParameter("@Quantity", SqlDbType.BigInt,8),
 					new SqlParameter("@ISCash", SqlDbType.Bit,1),
 					new SqlParameter("@dt_Trade", SqlDbType.DateTime),
-                   new SqlParameter("@WBWareHouseID", SqlDbType.Int,4),
-                   new SqlParameter("@WBSupplierID", SqlDbType.Int,4)};
+                    new SqlParameter("@WBWareHouseID", SqlDbType.Int,4),
+                    new SqlParameter("@WBSupplierID", SqlDbType.Int,4),
+                    new SqlParameter("@ISPay", SqlDbType.Bit,4),
+                    new SqlParameter("@PayMode", SqlDbType.VarChar,10),
+                    new SqlParameter("@PayMoney", SqlDbType.Decimal,9)};
             parameters[0].Value = WBID;
             parameters[1].Value = GoodID;
             parameters[2].Value = Price_Stock;
@@ -1353,7 +1365,10 @@ namespace Web.Admin.Good
             parameters[6].Value = DateTime.Now;
             parameters[7].Value = WBWareHouseID;
             parameters[8].Value = WBSupplierID;
-          
+            parameters[9].Value = ISPay;
+            parameters[10].Value = PayMode;
+            parameters[11].Value = PayMoney;
+
             using (SqlTransaction tran = SQLHelper.BeginTransaction(SQLHelper.connectionString))
             {
                 try

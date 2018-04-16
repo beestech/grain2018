@@ -66,6 +66,12 @@
                         </th>
                         <th style="min-width: 100px; text-align: center;">入库仓库
                         </th>
+                        <th style="min-width: 100px; text-align: center;">是否付款
+                        </th>
+                        <th style="min-width: 100px; text-align: center;">付款方式
+                        </th>
+                        <th style="min-width: 100px; text-align: center;">付款金额
+                        </th>
                         <th style="min-width: 80px; text-align: center;">购买日期
                         </th>
 
@@ -98,6 +104,15 @@
                     </td>
                     <td>
                         <%#Eval("WBWareHouseName")%>
+                    </td>
+                    <td>
+                        <%#Eval("ISPay")%>
+                    </td>
+                    <td>
+                        <%#Eval("PayMode")%>
+                    </td>
+                    <td>
+                        <%#Eval("PayMoney")%>
                     </td>
                     <td>
                         <%#Eval("dt_Trade")%>

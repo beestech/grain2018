@@ -29,7 +29,7 @@ namespace Web.Admin.Good
 
             //获取存粮信息
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("  SELECT  A.ID, B.ID as WBID,B.strName AS WBName,C.ID as GoodID,  C.strName AS GoodName,D.strName AS UnitID,E.strName AS SpecID,W.strName AS WBWareHouseName,WS.strName as WBSupplierName, A.Price_Stock,A.Quantity,CONVERT(NVARCHAR(100),A.dt_Trade,23) AS dt_Trade");
+            strSql.Append("  SELECT  A.ID, B.ID as WBID,B.strName AS WBName,C.ID as GoodID,  C.strName AS GoodName,D.strName AS UnitID,E.strName AS SpecID,W.strName AS WBWareHouseName,WS.strName as WBSupplierName, A.Price_Stock,A.Quantity,case when A.ISPay=1 then '是' else '否' end as ISPay, A.PayMode, A.PayMoney,CONVERT(NVARCHAR(100),A.dt_Trade,23) AS dt_Trade");
             strSql.Append("   FROM dbo.GoodStock A INNER JOIN dbo.WB B ON A.WBID=B.ID");
             strSql.Append("  INNER JOIN dbo.Good C ON A.GoodID=C.ID");
             strSql.Append("   LEFT OUTER JOIN dbo.BD_MeasuringUnit D ON C.MeasuringUnit=D.ID");
