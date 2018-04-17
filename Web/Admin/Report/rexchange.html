@@ -156,7 +156,9 @@
                         strhtml += '</tr>';
                     }
 
-
+                    var sum_Goodscount = 0; //交易量总计
+                    var sum_VarietyMoney = 0;//结算金额总计
+                    var sum_VarietyInterest = 0;//利息总计
 
                     var strhtml_t = '';
                     var jsondata_t = JSON.parse(r.data_t);
@@ -173,8 +175,14 @@
                         strhtml_t += ' <td>' + jsondata_t[i].VarietyInterest + '</td>';
                         strhtml_t += '</tr>';
 
+                        sum_VarietyInterest = parseFloat(sum_VarietyInterest) + parseFloat(jsondata_t[i].VarietyInterest);
+                        sum_VarietyMoney = parseFloat(sum_VarietyMoney) + parseFloat(jsondata_t[i].Money_DuiHuan);
+                        sum_Goodscount = parseFloat(sum_Goodscount) + parseFloat(jsondata_t[i].VarietyCount);
                        
                     }
+                    strhtml_t += '<tr class="trappend"><td colspan="9" style="height:25px;">折合原粮总计：' + changeTwoDecimal_f(sum_Goodscount) +
+                        ', 金额总计：' + changeTwoDecimal_f(sum_VarietyMoney) +
+                        ', 利息总计：' + changeTwoDecimal_f(sum_VarietyInterest) + '</td>';
                     $('#dataInfo').fadeIn();
                     $('#dataInfo .trappend').remove();//清除之前的添加项
                     $('#dataInfo').append(strhtml);
